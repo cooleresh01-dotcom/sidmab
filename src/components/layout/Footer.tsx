@@ -20,6 +20,7 @@ const services = [
 const defaultSettings = {
   siteName: 'SIDMAB',
   tagline: 'Events & Management',
+  companyLogo: '',
   email: 'info@sidmab.com',
   phone: '+234 800 000 0000',
   address: '123 Event Street, Lagos, Nigeria',
@@ -137,9 +138,13 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 md:gap-10">
             <div className="lg:col-span-6">
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white font-bold text-sm">
-                  S
-                </div>
+                {settings.companyLogo ? (
+                  <img src={settings.companyLogo} alt={settings.siteName} className="h-10 w-auto" />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white font-bold text-sm">
+                    {settings.siteName.charAt(0)}
+                  </div>
+                )}
                 <div>
                   <p className="text-xl font-bold text-white">{settings.siteName}</p>
                   <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">

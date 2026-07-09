@@ -25,6 +25,7 @@ const settingsSchema = z.object({
   ceoBio: z.string().min(10, 'Bio must be at least 10 characters'),
   ceoMessage: z.string().min(20, 'Message must be at least 20 characters'),
   ceoSignature: z.string().min(1, 'Signature is required'),
+  companyLogo: z.string().or(z.literal('')),
   emailSignature: z.string().or(z.literal('')),
   smtpHost: z.string().or(z.literal('')),
   smtpPort: z.string().or(z.literal('')),
@@ -85,6 +86,7 @@ const defaultSettings: SettingsFormData = {
   ceoBio: 'With over 15 years of experience in event management, Sarah founded SIDMAB with a vision to transform the Nigerian events industry.',
   ceoMessage: "Welcome to SIDMAB Events & Management. Our journey began with a simple belief: every event should be extraordinary. Today, that belief drives our team of dedicated professionals who pour their passion into creating unforgettable experiences. We don't just plan events — we craft moments that last a lifetime. Thank you for considering us to be part of your special story.",
   ceoSignature: 'Sarah Johnson',
+  companyLogo: '',
   emailSignature: '',
   smtpHost: '',
   smtpPort: '587',
@@ -345,6 +347,20 @@ export default function SettingsPage() {
                         </label>
                       )}
                     </div>
+                  </div>
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-medium">Company Logo URL</span>
+                    </label>
+                    <input
+                      type="url"
+                      placeholder="https://example.com/logo.png"
+                      className="input input-bordered"
+                      {...register('companyLogo')}
+                    />
+                    <label className="label">
+                      <span className="label-text-alt text-base-content/50">Shown in navbar & footer. Leave empty to show text logo.</span>
+                    </label>
                   </div>
                   <div className="divider" />
                   <div>

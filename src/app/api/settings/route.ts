@@ -21,6 +21,7 @@ const defaultSettings = {
   ceoBio: 'With over 15 years of experience in event management, Sarah founded SIDMAB with a vision to transform the Nigerian events industry.',
   ceoMessage: 'Welcome to SIDMAB Events & Management. Our journey began with a simple belief: every event should be extraordinary. Today, that belief drives our team of dedicated professionals who pour their passion into creating unforgettable experiences. We don\'t just plan events — we craft moments that last a lifetime. Thank you for considering us to be part of your special story.',
   ceoSignature: 'Sarah Johnson',
+  companyLogo: '',
   officeHours: 'Mon-Fri: 8AM - 6PM\nSat: 9AM - 4PM',
   whatsapp: '+2348000000000',
   facebook: 'https://facebook.com/sidmab',

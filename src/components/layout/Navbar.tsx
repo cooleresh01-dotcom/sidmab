@@ -29,6 +29,8 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [showSocial, setShowSocial] = useState(true)
   const [socialUrls, setSocialUrls] = useState<Record<string, string>>({})
+  const [companyLogo, setCompanyLogo] = useState('')
+  const [companyName, setCompanyName] = useState('SIDMAB')
   const { data: session } = useSession()
   const pathname = usePathname()
   const socialRef = useRef<HTMLDivElement>(null)
@@ -41,6 +43,8 @@ export default function Navbar() {
     fetch('/api/settings')
       .then(r => r.json())
       .then(data => {
+        setCompanyLogo(data.companyLogo || '')
+        setCompanyName(data.siteName || 'SIDMAB')
         setSocialUrls({
           facebook: data.facebook || 'https://facebook.com/sidmab',
           instagram: data.instagram || 'https://instagram.com/sidmab',
@@ -282,11 +286,15 @@ export default function Navbar() {
                     transition={{ delay: 0.35, duration: 0.5 }}
                   >
                   <div className="flex items-center gap-4 mb-12">
-                    <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-white font-bold text-base">
-                      S
-                    </div>
+                    {companyLogo ? (
+                      <img src={companyLogo} alt={companyName} className="h-10 w-auto" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-white font-bold text-base">
+                        {companyName.charAt(0)}
+                      </div>
+                    )}
                     <div>
-                      <p className="text-xl font-bold text-white">SIDMAB</p>
+                      <p className="text-xl font-bold text-white">{companyName}</p>
                       <p className="text-[10px] uppercase tracking-[0.25em] text-white/40">Events & Management</p>
                     </div>
                   </div>
