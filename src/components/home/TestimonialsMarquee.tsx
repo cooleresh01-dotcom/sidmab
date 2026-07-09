@@ -9,7 +9,7 @@ function TestimonialCard({ name, role, company, image, content, rating }: {
   name: string; role: string; company: string; image: string; content: string; rating: number
 }) {
   return (
-    <div className="w-full p-6 bg-white rounded-2xl border border-black/[0.06] hover:border-black/10 transition-all duration-500 hover:shadow-xl flex flex-col group h-[260px]">
+    <div className="p-6 bg-white rounded-2xl border border-black/[0.06] hover:border-black/10 transition-all duration-500 hover:shadow-xl flex flex-col group h-[260px]">
       <FaQuoteLeft className="text-2xl mb-4" style={{ color: 'color-mix(in srgb, var(--site-primary) 15%, transparent)' }} />
       <p className="text-black/60 text-sm leading-relaxed flex-1 line-clamp-4">
         &ldquo;{content}&rdquo;
@@ -39,7 +39,8 @@ export default function TestimonialsMarquee() {
   const [current, setCurrent] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
   const [items, setItems] = useState<{ name: string; role: string; company: string; image: string; content: string; rating: number }[]>([])
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [mobileIndex, setMobileIndex] = useState(0)
 
   useEffect(() => {
     fetch('/api/testimonials')
@@ -50,20 +51,32 @@ export default function TestimonialsMarquee() {
       .catch(() => {})
   }, [])
 
+  // Desktop auto-slide
   const itemsPerPage = 3
   const totalSlides = Math.ceil(items.length / itemsPerPage) || 1
-
   const slides = Array.from({ length: totalSlides }, (_, i) =>
     items.slice(i * itemsPerPage, i * itemsPerPage + itemsPerPage)
   )
 
   useEffect(() => {
     if (isPaused) return
-    intervalRef.current = setInterval(() => {
+    const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % totalSlides)
     }, 4000)
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
+    return () => clearInterval(interval)
   }, [isPaused, totalSlides])
+
+  // Mobile auto-scroll
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el || items.length === 0) return
+    const interval = setInterval(() => {
+      const next = (mobileIndex + 1) % items.length
+      el.scrollTo({ left: next * el.clientWidth, behavior: 'smooth' })
+      setMobileIndex(next)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [mobileIndex, items.length])
 
   return (
     <section className="py-16 bg-black/[0.02] relative overflow-hidden">
@@ -81,24 +94,61 @@ export default function TestimonialsMarquee() {
         </div>
       </div>
 
+      {/* Mobile: auto-scroll carousel */}
+      <div className="sm:hidden max-w-7xl mx-auto px-6">
+        <div ref={scrollRef} className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-6 px-6">
+          {items.map((t, i) => (
+            <div key={i} className="w-full shrink-0 snap-center px-1">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+              >
+                <TestimonialCard {...t} />
+              </motion.div>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-center gap-1.5 mt-4">
+          {items.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                const el = scrollRef.current
+                if (el) { el.scrollTo({ left: i * el.clientWidth, behavior: 'smooth' }); setMobileIndex(i) }
+              }}
+              className="rounded-full transition-all duration-300"
+              style={{
+                width: i === mobileIndex ? '24px' : '6px',
+                height: '6px',
+                background: i === mobileIndex ? 'var(--site-primary)' : 'rgba(0,0,0,0.15)',
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop: slide pages */}
       <div
-        className="max-w-6xl mx-auto px-6"
+        className="hidden sm:block max-w-6xl mx-auto px-6"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
         <div className="overflow-hidden">
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-            key={current}
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -40 }}
-            transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            {slides[current].map((t, i) => (
-              <TestimonialCard key={`${current}-${i}`} {...t} />
-            ))}
-          </motion.div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current}
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -40 }}
+              transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {slides[current].map((t, i) => (
+                <TestimonialCard key={`${current}-${i}`} {...t} />
+              ))}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         <div className="flex justify-center gap-2 mt-8">
@@ -106,8 +156,11 @@ export default function TestimonialsMarquee() {
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className={`h-2 rounded-full transition-all duration-300 ${i === current ? 'w-8' : 'w-2 bg-black/15'}`}
-              style={i === current ? { background: 'var(--site-primary)', width: '32px' } : {}}
+              className="h-2 rounded-full transition-all duration-300"
+              style={{
+                width: i === current ? '32px' : '8px',
+                background: i === current ? 'var(--site-primary)' : 'rgba(0,0,0,0.15)',
+              }}
             />
           ))}
         </div>

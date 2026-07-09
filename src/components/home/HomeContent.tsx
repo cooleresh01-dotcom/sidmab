@@ -469,6 +469,8 @@ function ServicesSection() {
 function WhyChooseUsSection() {
   const [why, setWhy] = useState<Record<string, string>>({})
   const [apiTeam, setApiTeam] = useState<Array<{ name: string; role: string; image: string }>>([])
+  const whyScrollRef = useRef<HTMLDivElement>(null)
+  const [whyIndex, setWhyIndex] = useState(0)
 
   useEffect(() => {
     fetch('/api/settings?_=' + Date.now())
@@ -480,6 +482,17 @@ function WhyChooseUsSection() {
       .then((data) => { if (Array.isArray(data)) setApiTeam(data) })
       .catch(() => {})
   }, [])
+
+  useEffect(() => {
+    const el = whyScrollRef.current
+    if (!el) return
+    const interval = setInterval(() => {
+      const next = (whyIndex + 1) % 4
+      el.scrollTo({ left: next * el.clientWidth, behavior: 'smooth' })
+      setWhyIndex(next)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [whyIndex])
 
   const cards = [
     { icon: HiBadgeCheck, key: '0' },
@@ -508,7 +521,51 @@ function WhyChooseUsSection() {
           </div>
         </FadeIn>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Mobile: auto-scroll carousel */}
+        <div ref={whyScrollRef} className="flex sm:hidden overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-6 px-6">
+          {cards.map(({ icon: Icon, key }, i) => (
+            <div key={key} className="w-full shrink-0 snap-center px-1">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
+                className="p-6 rounded-2xl bg-white border border-black/[0.06]"
+              >
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+                  style={{ background: 'color-mix(in srgb, var(--site-primary) 10%, white)' }}>
+                  <Icon className="w-5 h-5" style={{ color: 'var(--site-primary)' }} />
+                </div>
+                <h3 className="text-base font-bold text-black mb-2">{why[`whyCard${key}_title`] || ['Proven Expertise', 'Creative Excellence', 'End-to-End Service', 'Tailored Solutions'][i]}</h3>
+                <p className="text-sm text-black/50 leading-relaxed mb-3">{why[`whyCard${key}_desc`] || ['1000+ events delivered with excellence across Nigeria over 15 years.', 'Award-winning design team transforming ordinary spaces into extraordinary experiences.', 'From concept to cleanup, we handle every detail so you can enjoy your event.', 'Every event is unique. We craft custom packages that fit your vision and budget.'][i]}</p>
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--site-primary)' }} />
+                  <span className="text-xs font-semibold" style={{ color: 'var(--site-primary)' }}>{why[`whyCard${key}_stat`] || ['15+ Years', '50+ Awards', '100% Dedicated', 'Fully Custom'][i]}</span>
+                </div>
+              </motion.div>
+            </div>
+          ))}
+        </div>
+        {/* Mobile dots */}
+        <div className="flex sm:hidden justify-center gap-1.5 mt-4">
+          {cards.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                const el = whyScrollRef.current
+                if (el) { el.scrollTo({ left: i * el.clientWidth, behavior: 'smooth' }); setWhyIndex(i) }
+              }}
+              className="rounded-full transition-all duration-300"
+              style={{
+                width: i === whyIndex ? '24px' : '6px',
+                height: '6px',
+                background: i === whyIndex ? 'var(--site-primary)' : 'rgba(0,0,0,0.15)',
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Desktop: grid */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {cards.map(({ icon: Icon, key }, i) => (
             <FadeIn key={key} delay={i * 0.08}>
               <div className="p-8 rounded-2xl bg-white border border-black/[0.06] hover:border-black/10 transition-all duration-500 hover:shadow-xl hover:-translate-y-1 group">
