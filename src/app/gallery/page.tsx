@@ -150,24 +150,28 @@ function VideosTab() {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: index * 0.1 }}
             className="card bg-base-100 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
-            onClick={() => setSelectedVideo(video.videoUrl)}
           >
-            <figure className="relative h-56 overflow-hidden">
-              <Image
-                src={video.thumbnail}
-                alt={video.title}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:bg-primary/80 transition-colors duration-300">
-                  <FaYoutube className="w-7 h-7 text-white ml-0.5" />
+            <button
+              onClick={() => setSelectedVideo(video.videoUrl)}
+              className="w-full text-left"
+            >
+              <figure className="relative h-56 overflow-hidden">
+                <Image
+                  src={video.thumbnail}
+                  alt={video.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none">
+                  <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:bg-primary/80 transition-colors duration-300">
+                    <FaYoutube className="w-7 h-7 text-white ml-0.5" />
+                  </div>
                 </div>
+              </figure>
+              <div className="card-body p-4">
+                <h3 className="font-semibold">{video.title}</h3>
               </div>
-            </figure>
-            <div className="card-body p-4">
-              <h3 className="font-semibold">{video.title}</h3>
-            </div>
+            </button>
           </motion.div>
         ))}
       </div>
