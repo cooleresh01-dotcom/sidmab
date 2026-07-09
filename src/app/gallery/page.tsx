@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import Image from 'next/image'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { HiPhotograph, HiPlay, HiX } from 'react-icons/hi'
@@ -8,56 +8,45 @@ import { FaYoutube } from 'react-icons/fa'
 import { cn } from '@/lib/utils'
 import PageHero from '@/components/ui/PageHero'
 
+interface GalleryItem {
+  id: string
+  title: string
+  type: 'image' | 'video' | 'drone' | 'before-after'
+  url: string
+  thumbnail?: string | null
+  category: string
+  before?: string | null
+  after?: string | null
+}
+
 function getYoutubeEmbed(url: string) {
   const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/)
-  return match ? `https://www.youtube.com/embed/${match[1]}?autoplay=1` : null
+  return match ? `https://www.youtube.com/embed/${match[1]}?autoplay=1` : url
 }
 
 const galleryTabs = [
-  { id: 'photos', label: 'Photos' },
-  { id: 'videos', label: 'Videos' },
-  { id: 'drone', label: 'Drone Footage' },
-  { id: 'before-after', label: 'Before & After' },
+  { id: 'photos', label: 'Photos', type: 'image' },
+  { id: 'videos', label: 'Videos', type: 'video' },
+  { id: 'drone', label: 'Drone Footage', type: 'drone' },
+  { id: 'before-after', label: 'Before & After', type: 'before-after' },
 ]
 
-const galleryCategories = ['All', 'Wedding', 'Corporate', 'Birthday', 'Decoration']
+const categories = ['All', 'Wedding', 'Corporate', 'Birthday', 'Decoration']
 
-const galleryImages = [
-  { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600', category: 'Wedding', title: 'Elegant Wedding Reception' },
-  { src: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600', category: 'Corporate', title: 'Corporate Gala Dinner' },
-  { src: 'https://images.unsplash.com/photo-1478147427282-58a87a120781?w=600', category: 'Decoration', title: 'Luxury Event Setup' },
-  { src: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600', category: 'Decoration', title: 'Floral Decoration' },
-  { src: 'https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=600', category: 'Birthday', title: 'Birthday Celebration' },
-  { src: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=600', category: 'Wedding', title: 'Outdoor Wedding' },
-  { src: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600', category: 'Corporate', title: 'Tech Conference' },
-  { src: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=600', category: 'Birthday', title: 'Pool Party' },
-  { src: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600', category: 'Wedding', title: 'Wedding Decor' },
-  { src: 'https://images.unsplash.com/photo-1475721027785-74f2ea81e8e9?w=600', category: 'Corporate', title: 'Product Launch' },
-  { src: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=600', category: 'Birthday', title: 'Kids Birthday Party' },
-  { src: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600', category: 'Wedding', title: 'Wedding Ceremony' },
-]
-
-const videos = [
-  { id: 1, title: 'Wedding Highlights', thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600', videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-  { id: 2, title: 'Corporate Event Recap', thumbnail: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600', videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-  { id: 3, title: 'Birthday Moments', thumbnail: 'https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=600', videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-  { id: 4, title: 'Decoration Timelapse', thumbnail: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600', videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-]
-
-function PhotosTab() {
+function PhotosTab({ items }: { items: GalleryItem[] }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true })
   const [catFilter, setCatFilter] = useState('All')
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   const filtered = catFilter === 'All'
-    ? galleryImages
-    : galleryImages.filter((img) => img.category === catFilter)
+    ? items
+    : items.filter((img) => img.category === catFilter)
 
   return (
     <div ref={ref}>
       <div className="flex flex-wrap justify-center gap-2 mb-8">
-        {galleryCategories.map((cat) => (
+        {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setCatFilter(cat)}
@@ -74,16 +63,16 @@ function PhotosTab() {
       <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
         {filtered.map((img, i) => (
           <motion.div
-            key={i}
+            key={img.id}
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.4, delay: i * 0.05 }}
             className="relative overflow-hidden rounded-xl group break-inside-avoid cursor-pointer"
-            onClick={() => setSelectedImage(img.src)}
+            onClick={() => setSelectedImage(img.url)}
           >
             <div className="relative" style={{ height: `${200 + (i % 4) * 80}px` }}>
               <Image
-                src={img.src}
+                src={img.url}
                 alt={img.title}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -135,46 +124,50 @@ function PhotosTab() {
   )
 }
 
-function VideosTab() {
+function VideosTab({ items }: { items: GalleryItem[] }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true })
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null)
 
   return (
     <div ref={ref}>
-      <div className="grid sm:grid-cols-2 gap-6">
-        {videos.map((video, index) => (
-          <motion.div
-            key={video.id}
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="card bg-base-100 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
-          >
-            <button
-              onClick={() => setSelectedVideo(video.videoUrl)}
-              className="w-full text-left"
+      {items.length === 0 ? (
+        <p className="text-center text-gray-400 py-12">No videos yet. Add some from the dashboard.</p>
+      ) : (
+        <div className="grid sm:grid-cols-2 gap-6">
+          {items.map((video, index) => (
+            <motion.div
+              key={video.id}
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="card bg-base-100 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
             >
-              <figure className="relative h-56 overflow-hidden">
-                <Image
-                  src={video.thumbnail}
-                  alt={video.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none">
-                  <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:bg-primary/80 transition-colors duration-300">
-                    <FaYoutube className="w-7 h-7 text-white ml-0.5" />
+              <button
+                onClick={() => setSelectedVideo(video.url ? getYoutubeEmbed(video.url) : '')}
+                className="w-full text-left"
+              >
+                <figure className="relative h-56 overflow-hidden">
+                  <Image
+                    src={video.thumbnail || video.url}
+                    alt={video.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none">
+                    <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:bg-primary/80 transition-colors duration-300">
+                      <FaYoutube className="w-7 h-7 text-white ml-0.5" />
+                    </div>
                   </div>
+                </figure>
+                <div className="card-body p-4">
+                  <h3 className="font-semibold">{video.title}</h3>
                 </div>
-              </figure>
-              <div className="card-body p-4">
-                <h3 className="font-semibold">{video.title}</h3>
-              </div>
-            </button>
-          </motion.div>
-        ))}
-      </div>
+              </button>
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       <AnimatePresence>
         {selectedVideo && (
@@ -212,119 +205,117 @@ function VideosTab() {
   )
 }
 
-function DroneTab() {
+function DroneTab({ items }: { items: GalleryItem[] }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true })
 
-  const droneImages = [
-    { src: 'https://images.unsplash.com/photo-1478147427282-58a87a120781?w=800', title: 'Venue Aerial View' },
-    { src: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800', title: 'Event Grounds' },
-    { src: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800', title: 'Outdoor Setup' },
-    { src: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800', title: 'Grand Venue' },
-  ]
-
   return (
     <div ref={ref}>
-      <div className="grid sm:grid-cols-2 gap-6">
-        {droneImages.map((img, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="relative overflow-hidden rounded-xl group h-72"
-          >
-            <Image
-              src={img.src}
-              alt={img.title}
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-              <p className="text-white font-medium">{img.title}</p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+      {items.length === 0 ? (
+        <p className="text-center text-gray-400 py-12">No drone footage yet. Add some from the dashboard.</p>
+      ) : (
+        <div className="grid sm:grid-cols-2 gap-6">
+          {items.map((img, index) => (
+            <motion.div
+              key={img.id}
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="relative overflow-hidden rounded-xl group h-72"
+            >
+              <Image
+                src={img.url}
+                alt={img.title}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                <p className="text-white font-medium">{img.title}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
 
-function BeforeAfterTab() {
+function BeforeAfterTab({ items }: { items: GalleryItem[] }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true })
 
-  const transformations = [
-    {
-      before: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600',
-      after: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600',
-      title: 'Hall Transformation',
-    },
-    {
-      before: 'https://images.unsplash.com/photo-1475721027785-74f2ea81e8e9?w=600',
-      after: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600',
-      title: 'Garden Setup',
-    },
-    {
-      before: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=600',
-      after: 'https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=600',
-      title: 'Birthday Venue',
-    },
-  ]
-
   return (
     <div ref={ref}>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {transformations.map((item, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="card bg-base-100 shadow-sm"
-          >
-            <div className="grid grid-cols-2 gap-0">
-              <div className="relative h-48">
-                <Image
-                  src={item.before}
-                  alt={`${item.title} Before`}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/60 text-white text-xs rounded">
-                  Before
+      {items.length === 0 ? (
+        <p className="text-center text-gray-400 py-12">No before & after sets yet. Add some from the dashboard.</p>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {items.map((item, index) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="card bg-base-100 shadow-sm"
+            >
+              <div className="grid grid-cols-2 gap-0">
+                <div className="relative h-48">
+                  <Image
+                    src={item.before || item.url}
+                    alt={`${item.title} Before`}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/60 text-white text-xs rounded">
+                    Before
+                  </div>
+                </div>
+                <div className="relative h-48">
+                  <Image
+                    src={item.after || item.url}
+                    alt={`${item.title} After`}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute top-2 left-2 px-2 py-0.5 bg-primary/80 text-white text-xs rounded">
+                    After
+                  </div>
                 </div>
               </div>
-              <div className="relative h-48">
-                <Image
-                  src={item.after}
-                  alt={`${item.title} After`}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute top-2 left-2 px-2 py-0.5 bg-primary/80 text-white text-xs rounded">
-                  After
-                </div>
+              <div className="card-body p-4">
+                <h3 className="font-semibold text-sm">{item.title}</h3>
               </div>
-            </div>
-            <div className="card-body p-4">
-              <h3 className="font-semibold text-sm">{item.title}</h3>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
 
 function GalleryContent() {
   const [activeTab, setActiveTab] = useState('photos')
+  const [allItems, setAllItems] = useState<GalleryItem[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/gallery')
+      .then((r) => r.json())
+      .then((data: GalleryItem[]) => setAllItems(data))
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
+
+  const photos = allItems.filter((i) => i.type === 'image')
+  const videos = allItems.filter((i) => i.type === 'video')
+  const drone = allItems.filter((i) => i.type === 'drone')
+  const beforeAfter = allItems.filter((i) => i.type === 'before-after')
 
   const tabComponents: Record<string, React.ReactNode> = {
-    photos: <PhotosTab />,
-    videos: <VideosTab />,
-    drone: <DroneTab />,
-    'before-after': <BeforeAfterTab />,
+    photos: <PhotosTab items={photos} />,
+    videos: <VideosTab items={videos} />,
+    drone: <DroneTab items={drone} />,
+    'before-after': <BeforeAfterTab items={beforeAfter} />,
   }
 
   return (
@@ -373,7 +364,13 @@ function GalleryContent() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            {tabComponents[activeTab]}
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <span className="loading loading-spinner loading-lg" />
+              </div>
+            ) : (
+              tabComponents[activeTab]
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
