@@ -691,24 +691,44 @@ function PartnersSection() {
   const partnerIcons = [FaLaptopCode, FaUniversity, FaPiggyBank, FaLeaf, FaTruck, FaPlay]
   const fallbackNames = ['TechBridge', 'Lagos Business School', 'AfriBank Plc', 'Greenfield Energy', 'Nexus Logistics', 'Prime Media']
   return (
-    <section className="py-16 bg-white relative overflow-hidden">
-      <div className="absolute inset-0 opacity-[0.015] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 75% 25%, var(--site-primary) 0%, transparent 50%)' }} />
+    <section className="py-8 md:py-16 bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <FadeIn>
-          <div className="text-center mb-10">
+          <div className="text-center mb-6 md:mb-10">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/[0.03] border border-black/5 text-black/40 text-xs uppercase tracking-[0.15em] font-medium mb-4">
               {partnerData.partnersBadge || 'Our Partners'}
             </div>
-            <h2 className="text-4xl lg:text-6xl font-bold text-black tracking-tight">
+            <h2 className="text-2xl md:text-6xl font-bold text-black tracking-tight">
               {partnerData.partnersTitle || 'Trusted Partners'}
             </h2>
-            <p className="text-black/45 mt-4 max-w-lg mx-auto text-lg leading-relaxed">
-              {partnerData.partnersSubtitle || 'Proud to collaborate with leading organizations across Nigeria.'}
-            </p>
           </div>
         </FadeIn>
 
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-5 max-w-4xl mx-auto">
+        {/* Mobile: horizontal scroll */}
+        <div className="flex md:hidden overflow-x-auto scrollbar-hide gap-6 -mx-6 px-6">
+          {[0, 1, 2, 3, 4, 5].map((i) => {
+            const Icon = partnerIcons[i]
+            const name = partnerData[`partner${i}_name`] || fallbackNames[i]
+            const logo = partnerData[`partner${i}_logo`]
+            return (
+              <div key={i} className="flex flex-col items-center gap-2 shrink-0">
+                <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                  {logo ? (
+                    <Image src={logo} alt={name} width={28} height={28} className="object-contain" />
+                  ) : (
+                    <Icon className="w-5 h-5 text-black/30" />
+                  )}
+                </div>
+                {name && (
+                  <span className="text-[10px] font-semibold text-black/50 text-center whitespace-nowrap">{name}</span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Desktop: grid */}
+        <div className="hidden md:grid md:grid-cols-6 gap-5 max-w-4xl mx-auto">
           {[0, 1, 2, 3, 4, 5].map((i) => {
             const Icon = partnerIcons[i]
             const name = partnerData[`partner${i}_name`] || fallbackNames[i]
