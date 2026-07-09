@@ -16,19 +16,18 @@ const InstagramIcon = ({ className }: { className?: string }) => (
 )
 
 const navItems = [
-  { name: 'Home', href: '/', preview: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&h=500&fit=crop' },
-  { name: 'About', href: '/about', preview: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=500&fit=crop' },
-  { name: 'Services', href: '/services', preview: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=400&h=500&fit=crop' },
-  { name: 'Portfolio', href: '/portfolio', preview: 'https://images.unsplash.com/photo-1559028012-481c04fa702d?w=400&h=500&fit=crop' },
-  { name: 'Gallery', href: '/gallery', preview: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&h=500&fit=crop' },
-  { name: 'Blog', href: '/blog', preview: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=400&h=500&fit=crop' },
-  { name: 'Contact', href: '/contact', preview: 'https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=400&h=500&fit=crop' },
+  { name: 'Home', href: '/' },
+  { name: 'About', href: '/about' },
+  { name: 'Services', href: '/services' },
+  { name: 'Portfolio', href: '/portfolio' },
+  { name: 'Gallery', href: '/gallery' },
+  { name: 'Blog', href: '/blog' },
+  { name: 'Contact', href: '/contact' },
 ]
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [showSocial, setShowSocial] = useState(true)
-  const [hoveredNav, setHoveredNav] = useState<string | null>(null)
   const [socialUrls, setSocialUrls] = useState<Record<string, string>>({})
   const { data: session } = useSession()
   const pathname = usePathname()
@@ -214,31 +213,16 @@ export default function Navbar() {
                             <Link
                               href={item.href}
                               onClick={() => setIsOpen(false)}
-                              onMouseEnter={() => setHoveredNav(item.name)}
-                              onMouseLeave={() => setHoveredNav(null)}
                               className={cn(
-                                'group relative flex items-center gap-5 py-2.5 px-3 -mx-3 rounded-xl transition-all duration-300',
+                                'block py-2.5 px-3 -mx-3 rounded-xl transition-colors text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight',
                                 active
                                   ? 'text-white'
-                                  : 'text-gray-700 hover:text-white'
+                                  : 'text-gray-700 hover:text-gray-900'
                               )}
                               style={active ? { background: 'var(--site-primary)' } : {}}
                             >
-                              <span className={cn(
-                                'text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight transition-all duration-300',
-                                active ? 'text-black' : 'text-inherit'
-                              )}>
+                              <span className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">
                                 {item.name}
-                              </span>
-                              {active && (
-                                <motion.span
-                                  layoutId="menu-active"
-                                  className="w-1.5 h-1.5 rounded-full"
-                                  style={{ background: 'var(--site-primary)' }}
-                                />
-                              )}
-                              <span className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity mr-4">
-                                <HiArrowRight className="w-4 h-4 text-gray-300" />
                               </span>
                             </Link>
                             <div className="ml-0 h-px bg-gray-100 last:hidden" />
@@ -291,27 +275,6 @@ export default function Navbar() {
 
               {/* Right - Info panel */}
               <div className="lg:w-96 bg-black lg:bg-gray-950 relative overflow-hidden">
-                {/* Preview image */}
-                <AnimatePresence>
-                  {hoveredNav && (
-                    <motion.div
-                      key={hoveredNav}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.4 }}
-                      className="absolute inset-0 z-0"
-                    >
-                      <img
-                        src={navItems.find(i => i.name === hoveredNav)?.preview}
-                        alt={hoveredNav}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/70" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
                 <div className="relative z-10 p-10 md:p-14 flex flex-col justify-center min-h-full">
                   <motion.div
                     initial={{ x: 40, opacity: 0 }}
