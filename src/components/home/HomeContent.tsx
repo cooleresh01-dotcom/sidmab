@@ -323,35 +323,78 @@ function ServicesSection() {
           </div>
         </FadeIn>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Mobile: horizontal snap scroll */}
+        <div className="flex sm:hidden overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-4 pb-2 -mx-6 px-6">
+          {services.slice(0, 4).map((service, i) => (
+            <Link
+              key={service.id}
+              href={`/services/${service.slug}`}
+              className="group block min-w-[80vw] snap-center shrink-0"
+            >
+              <div className="h-full rounded-2xl bg-white border border-black/[0.06] transition-all duration-300">
+                <div className="relative h-48 overflow-hidden rounded-t-2xl">
+                  <Image
+                    src={service.image}
+                    alt={service.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="80vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-3 left-4 right-4 z-10">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-2xl drop-shadow-lg">{service.icon}</span>
+                      <h3 className="text-white font-bold text-base leading-tight">{service.title}</h3>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4 space-y-3">
+                  <p className="text-sm text-black/60 leading-relaxed line-clamp-2">{service.tagline}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {service.features.slice(0, 3).map((f) => (
+                      <span key={f} className="text-[11px] px-2.5 py-1 rounded-full bg-black/[0.04] text-black/50 font-medium">{f}</span>
+                    ))}
+                  </div>
+                  <div className="pt-2">
+                    <span className="inline-flex items-center gap-1 text-sm font-semibold" style={{ color: 'var(--site-primary)' }}>
+                      Learn More <HiArrowRight className="w-3.5 h-3.5" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+        {/* Scroll dots */}
+        <div className="flex sm:hidden justify-center gap-1.5 mt-4">
+          {services.slice(0, 4).map((_, i) => (
+            <span key={i} className="w-1.5 h-1.5 rounded-full bg-black/20" />
+          ))}
+        </div>
+        {/* Desktop: grid */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.slice(0, 4).map((service, i) => (
             <FadeIn key={service.id} delay={i * 0.08}>
               <Link href={`/services/${service.slug}`} className="group block h-full">
                 <div className="h-full rounded-2xl bg-white border border-black/[0.06] transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 hover:border-black/10">
-                  {/* Image area */}
                   <div className="relative h-56 overflow-hidden rounded-t-2xl">
                     <Image
                       src={service.image}
                       alt={service.title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      sizes="(max-width: 640px) 100vw, 33vw"
+                      sizes="(max-width: 1024px) 50vw, 25vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <div className="absolute bottom-3 left-4 right-4 z-10">
                       <div className="flex items-center gap-2.5">
                         <span className="text-2xl drop-shadow-lg">{service.icon}</span>
-                        <h3 className="text-white font-bold text-base leading-tight">
-                          {service.title}
-                        </h3>
+                        <h3 className="text-white font-bold text-base leading-tight">{service.title}</h3>
                       </div>
                     </div>
                   </div>
-                  {/* Content */}
                   <div className="p-4 space-y-3">
-                    <p className="text-sm text-black/60 leading-relaxed line-clamp-2">
-                      {service.tagline}
-                    </p>
+                    <p className="text-sm text-black/60 leading-relaxed line-clamp-2">{service.tagline}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {service.features.slice(0, 3).map((f) => (
                         <span key={f} className="text-[11px] px-2.5 py-1 rounded-full bg-black/[0.04] text-black/50 font-medium">{f}</span>
