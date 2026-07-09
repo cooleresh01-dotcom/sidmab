@@ -44,7 +44,7 @@ export default function NewsletterForm({ dark }: { dark?: boolean }) {
   const bgCls = 'bg-white'
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
+    <form onSubmit={handleSubmit} className="space-y-1.5 md:space-y-3">
       <div className="flex">
         <input
           type="email"
@@ -52,12 +52,12 @@ export default function NewsletterForm({ dark }: { dark?: boolean }) {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Your email"
           required
-          className={`flex-1 min-w-0 px-5 py-[14px] text-sm ${bgCls} ${textCls} outline-none transition-colors placeholder:text-black/30`}
+          className={`flex-1 min-w-0 px-3 py-2.5 md:px-5 md:py-[14px] text-xs md:text-sm ${bgCls} ${textCls} outline-none transition-colors placeholder:text-black/30`}
         />
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="px-6 py-3 text-sm font-medium text-white transition-all disabled:opacity-50 whitespace-nowrap border-2"
+          className="px-3 py-2.5 md:px-6 md:py-3 text-xs md:text-sm font-medium text-white transition-all disabled:opacity-50 whitespace-nowrap border-2"
           style={{ background: 'var(--site-primary)', borderColor: 'var(--site-primary)' }}
           onMouseEnter={(e) => e.currentTarget.style.filter = 'brightness(1.15)'}
           onMouseLeave={(e) => e.currentTarget.style.filter = 'brightness(1)'}
