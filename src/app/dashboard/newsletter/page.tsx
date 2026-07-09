@@ -113,7 +113,9 @@ export default function NewsletterPage() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <Mail className="w-4 h-4 text-base-content/40 flex-shrink-0" />
-                        <span className="text-sm font-medium">{sub.email}</span>
+                        <a href={`mailto:${sub.email}`} className="text-sm font-medium text-primary hover:underline">
+                          {sub.email}
+                        </a>
                       </div>
                     </td>
                     <td className="px-4 py-3 hidden sm:table-cell text-sm text-base-content/60">
