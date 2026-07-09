@@ -15,10 +15,39 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Subject and body are required' }, { status: 400 })
     }
 
-    const signatureSetting = await prisma.setting.findUnique({ where: { key: 'emailSignature' } })
-    const signature = signatureSetting?.value || ''
+    const [signatureSetting, smtpHostSetting, smtpPortSetting, smtpUserSetting, smtpPassSetting, smtpFromSetting, smtpSecureSetting] =
+      await Promise.all([
+        prisma.setting.findUnique({ where: { key: 'emailSignature' } }),
+        prisma.setting.findUnique({ where: { key: 'smtpHost' } }),
+        prisma.setting.findUnique({ where: { key: 'smtpPort' } }),
+        prisma.setting.findUnique({ where: { key: 'smtpUser' } }),
+        prisma.setting.findUnique({ where: { key: 'smtpPass' } }),
+        prisma.setting.findUnique({ where: { key: 'smtpFrom' } }),
+        prisma.setting.findUnique({ where: { key: 'smtpSecure' } }),
+      ])
 
-    const htmlBody = body.replace(/\n/g, '<br/>') + (signature ? `<br/><br/>${signature}` : '')
+    const signature = signatureSetting?.value || ''
+    const htmlBody = body + (signature ? `<br/><br/>${signature}` : '')
+
+    const smtpHost = smtpHostSetting?.value || process.env.SMTP_HOST || ''
+    if (!smtpHost) {
+      return NextResponse.json({
+        error: 'SMTP not configured',
+        mailto: `mailto:?bcc=${(await prisma.newsletter.findMany({ where: { active: true }, select: { email: true } })).map((s) => s.email).join(',')}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body.replace(/<[^>]+>/g, '') + '\n\n' + signature.replace(/<[^>]+>/g, ''))}`,
+      }, { status: 400 })
+    }
+
+    const transporter = nodemailer.createTransport({
+      host: smtpHost,
+      port: Number(smtpPortSetting?.value || process.env.SMTP_PORT || '587'),
+      secure: (smtpSecureSetting?.value || process.env.SMTP_SECURE || 'false') === 'true',
+      auth: {
+        user: smtpUserSetting?.value || process.env.SMTP_USER || '',
+        pass: smtpPassSetting?.value || process.env.SMTP_PASS || '',
+      },
+    })
+
+    const from = smtpFromSetting?.value || process.env.SMTP_FROM || admin.email
 
     const subscribers = await prisma.newsletter.findMany({
       where: { active: true },
@@ -27,26 +56,6 @@ export async function POST(req: NextRequest) {
     if (subscribers.length === 0) {
       return NextResponse.json({ error: 'No active subscribers' }, { status: 400 })
     }
-
-    const smtpHost = process.env.SMTP_HOST
-    if (!smtpHost) {
-      return NextResponse.json({
-        error: 'SMTP not configured',
-        mailto: `mailto:?bcc=${subscribers.map((s) => s.email).join(',')}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + '\n\n' + signature.replace(/<[^>]+>/g, ''))}`,
-      }, { status: 400 })
-    }
-
-    const transporter = nodemailer.createTransport({
-      host: smtpHost,
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    })
-
-    const from = process.env.SMTP_FROM || admin.email
 
     let sent = 0
     let failed = 0

@@ -26,6 +26,12 @@ const settingsSchema = z.object({
   ceoMessage: z.string().min(20, 'Message must be at least 20 characters'),
   ceoSignature: z.string().min(1, 'Signature is required'),
   emailSignature: z.string().or(z.literal('')),
+  smtpHost: z.string().or(z.literal('')),
+  smtpPort: z.string().or(z.literal('')),
+  smtpUser: z.string().or(z.literal('')),
+  smtpPass: z.string().or(z.literal('')),
+  smtpFrom: z.string().or(z.literal('')),
+  smtpSecure: z.string().or(z.literal('')),
   officeHours: z.string().or(z.literal('')),
   whatsapp: z.string().or(z.literal('')),
   facebook: z.string().url('Must be a valid URL').or(z.literal('')),
@@ -80,6 +86,12 @@ const defaultSettings: SettingsFormData = {
   ceoMessage: "Welcome to SIDMAB Events & Management. Our journey began with a simple belief: every event should be extraordinary. Today, that belief drives our team of dedicated professionals who pour their passion into creating unforgettable experiences. We don't just plan events — we craft moments that last a lifetime. Thank you for considering us to be part of your special story.",
   ceoSignature: 'Sarah Johnson',
   emailSignature: '',
+  smtpHost: '',
+  smtpPort: '587',
+  smtpUser: '',
+  smtpPass: '',
+  smtpFrom: '',
+  smtpSecure: 'false',
   officeHours: 'Mon-Fri: 8AM - 6PM\nSat: 9AM - 4PM',
   whatsapp: '+2348000000000',
   facebook: 'https://facebook.com/sidmab',
@@ -821,6 +833,79 @@ export default function SettingsPage() {
                     <label className="label">
                       <span className="label-text-alt text-base-content/50">Appended to all newsletter emails. HTML allowed.</span>
                     </label>
+                  </div>
+
+                  <div className="divider">SMTP Configuration</div>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text font-medium">SMTP Host</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="smtp.sendgrid.net"
+                        className="input input-bordered"
+                        {...register('smtpHost')}
+                      />
+                    </div>
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text font-medium">SMTP Port</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="587"
+                        className="input input-bordered"
+                        {...register('smtpPort')}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text font-medium">SMTP Username</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="apikey"
+                        className="input input-bordered"
+                        {...register('smtpUser')}
+                      />
+                    </div>
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text font-medium">SMTP Password</span>
+                      </label>
+                      <input
+                        type="password"
+                        placeholder="••••••••"
+                        className="input input-bordered"
+                        {...register('smtpPass')}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text font-medium">From Email</span>
+                      </label>
+                      <input
+                        type="email"
+                        placeholder="newsletter@sidmab.com"
+                        className="input input-bordered"
+                        {...register('smtpFrom')}
+                      />
+                    </div>
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text font-medium">Secure (SSL/TLS)</span>
+                      </label>
+                      <select className="select select-bordered" {...register('smtpSecure')}>
+                        <option value="false">No (Port 587)</option>
+                        <option value="true">Yes (Port 465)</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>

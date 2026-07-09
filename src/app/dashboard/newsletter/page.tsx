@@ -1,9 +1,76 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Mail, Trash2, Send, X } from 'lucide-react'
+import { Mail, Trash2, Send, X, Bold, Italic, Underline, Heading1, List, Link as LinkIcon, Image } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
+
+function RichEditor({ value, onChange }: { value: string; onChange: (html: string) => void }) {
+  const editorRef = useRef<HTMLDivElement>(null)
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  useEffect(() => {
+    if (editorRef.current && !isInitialized) {
+      editorRef.current.innerHTML = value || ''
+      setIsInitialized(true)
+    }
+  }, [value, isInitialized])
+
+  const exec = useCallback((cmd: string, val?: string) => {
+    document.execCommand(cmd, false, val)
+    if (editorRef.current) onChange(editorRef.current.innerHTML)
+  }, [onChange])
+
+  const handleInput = () => {
+    if (editorRef.current) onChange(editorRef.current.innerHTML)
+  }
+
+  const addLink = () => {
+    const url = prompt('Enter URL:')
+    if (url) exec('createLink', url)
+  }
+
+  const addImage = () => {
+    const url = prompt('Enter image URL:')
+    if (url) exec('insertImage', url)
+  }
+
+  const toolbar = [
+    { icon: Bold, cmd: 'bold', label: 'Bold' },
+    { icon: Italic, cmd: 'italic', label: 'Italic' },
+    { icon: Underline, cmd: 'underline', label: 'Underline' },
+    { icon: Heading1, cmd: 'formatBlock', val: 'h2', label: 'Heading' },
+    { icon: List, cmd: 'insertUnorderedList', label: 'List' },
+    { icon: LinkIcon, action: addLink, label: 'Link' },
+    { icon: Image, action: addImage, label: 'Image' },
+  ]
+
+  return (
+    <div className="border border-base-300 rounded-xl overflow-hidden">
+      <div className="flex items-center gap-0.5 p-1.5 bg-base-200/50 border-b border-base-300 flex-wrap">
+        {toolbar.map((btn) => (
+          <button
+            key={btn.label}
+            type="button"
+            onClick={() => btn.action ? btn.action() : exec(btn.cmd, btn.val)}
+            className="p-1.5 rounded-lg hover:bg-base-300/50 transition-colors"
+            title={btn.label}
+            onMouseDown={(e) => e.preventDefault()}
+          >
+            <btn.icon className="w-4 h-4" />
+          </button>
+        ))}
+      </div>
+      <div
+        ref={editorRef}
+        contentEditable
+        onInput={handleInput}
+        className="p-4 text-sm min-h-[200px] max-h-[400px] overflow-y-auto outline-none leading-relaxed"
+        style={{ whiteSpace: 'pre-wrap' }}
+      />
+    </div>
+  )
+}
 
 interface Subscriber {
   id: string
@@ -248,13 +315,7 @@ export default function NewsletterPage() {
                       placeholder="Subject"
                       className="input input-bordered w-full text-sm"
                     />
-                    <textarea
-                      value={body}
-                      onChange={(e) => setBody(e.target.value)}
-                      placeholder="Write your message..."
-                      rows={8}
-                      className="textarea textarea-bordered w-full text-sm"
-                    />
+                    <RichEditor value={body} onChange={setBody} />
                     <div className="flex gap-3 justify-end">
                       <button
                         onClick={() => setShowCompose(false)}
