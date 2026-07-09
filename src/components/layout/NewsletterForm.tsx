@@ -57,7 +57,7 @@ export default function NewsletterForm({ dark }: { dark?: boolean }) {
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="px-3 py-2.5 md:px-6 md:py-3 text-xs md:text-sm font-medium text-white transition-all disabled:opacity-50 whitespace-nowrap border-2"
+          className="px-3 py-3 md:px-6 md:py-3.5 text-xs md:text-sm font-medium text-white transition-all disabled:opacity-50 whitespace-nowrap border-2"
           style={{ background: 'var(--site-primary)', borderColor: 'var(--site-primary)' }}
           onMouseEnter={(e) => e.currentTarget.style.filter = 'brightness(1.15)'}
           onMouseLeave={(e) => e.currentTarget.style.filter = 'brightness(1)'}
