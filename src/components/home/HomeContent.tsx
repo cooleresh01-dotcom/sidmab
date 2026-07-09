@@ -291,6 +291,8 @@ function ServicesSection() {
   const [badge, setBadge] = useState('What We Do')
   const [title, setTitle] = useState('Our Services')
   const [desc, setDesc] = useState('Comprehensive event planning and management solutions tailored to your needs.')
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [activeIndex, setActiveIndex] = useState(0)
 
   useEffect(() => {
     fetch('/api/settings?_=' + Date.now())
@@ -304,6 +306,24 @@ function ServicesSection() {
       })
       .catch(() => {})
   }, [])
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const interval = setInterval(() => {
+      const next = (activeIndex + 1) % services.slice(0, 4).length
+      el.scrollTo({ left: next * el.clientWidth, behavior: 'smooth' })
+      setActiveIndex(next)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [activeIndex])
+
+  const handleScroll = () => {
+    const el = scrollRef.current
+    if (!el) return
+    const idx = Math.round(el.scrollLeft / el.clientWidth)
+    setActiveIndex(idx)
+  }
 
   return (
     <section className="py-12 bg-white relative overflow-hidden">
@@ -323,22 +343,22 @@ function ServicesSection() {
           </div>
         </FadeIn>
 
-        {/* Mobile: horizontal snap scroll */}
-        <div className="flex sm:hidden overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-4 pb-2 -mx-6 px-6">
-          {services.slice(0, 4).map((service, i) => (
+        {/* Mobile: auto-scroll carousel */}
+        <div ref={scrollRef} onScroll={handleScroll} className="flex sm:hidden overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-6 px-6">
+          {services.slice(0, 4).map((service) => (
             <Link
               key={service.id}
               href={`/services/${service.slug}`}
-              className="group block min-w-[80vw] snap-center shrink-0"
+              className="group block w-full shrink-0 snap-center"
             >
-              <div className="h-full rounded-2xl bg-white border border-black/[0.06] transition-all duration-300">
-                <div className="relative h-48 overflow-hidden rounded-t-2xl">
+              <div className="mx-1 rounded-2xl bg-white border border-black/[0.06] overflow-hidden">
+                <div className="relative h-52">
                   <Image
                     src={service.image}
                     alt={service.title}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="80vw"
+                    className="object-cover"
+                    sizes="100vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-3 left-4 right-4 z-10">
@@ -365,10 +385,25 @@ function ServicesSection() {
             </Link>
           ))}
         </div>
-        {/* Scroll dots */}
+        {/* Carousel dots */}
         <div className="flex sm:hidden justify-center gap-1.5 mt-4">
           {services.slice(0, 4).map((_, i) => (
-            <span key={i} className="w-1.5 h-1.5 rounded-full bg-black/20" />
+            <button
+              key={i}
+              onClick={() => {
+                const el = scrollRef.current
+                if (el) {
+                  el.scrollTo({ left: i * el.clientWidth, behavior: 'smooth' })
+                  setActiveIndex(i)
+                }
+              }}
+              className="rounded-full transition-all duration-300"
+              style={{
+                width: i === activeIndex ? '24px' : '6px',
+                height: '6px',
+                background: i === activeIndex ? 'var(--site-primary)' : 'rgba(0,0,0,0.15)',
+              }}
+            />
           ))}
         </div>
         {/* Desktop: grid */}
