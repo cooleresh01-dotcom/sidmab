@@ -15,6 +15,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Subject and body are required' }, { status: 400 })
     }
 
+    const signatureSetting = await prisma.setting.findUnique({ where: { key: 'emailSignature' } })
+    const signature = signatureSetting?.value || ''
+
+    const htmlBody = body.replace(/\n/g, '<br/>') + (signature ? `<br/><br/>${signature}` : '')
+
     const subscribers = await prisma.newsletter.findMany({
       where: { active: true },
     })
@@ -27,7 +32,7 @@ export async function POST(req: NextRequest) {
     if (!smtpHost) {
       return NextResponse.json({
         error: 'SMTP not configured',
-        mailto: `mailto:?bcc=${subscribers.map((s) => s.email).join(',')}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,
+        mailto: `mailto:?bcc=${subscribers.map((s) => s.email).join(',')}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + '\n\n' + signature.replace(/<[^>]+>/g, ''))}`,
       }, { status: 400 })
     }
 
@@ -52,7 +57,7 @@ export async function POST(req: NextRequest) {
           from,
           to: sub.email,
           subject,
-          html: body.replace(/\n/g, '<br/>'),
+          html: htmlBody,
         })
         sent++
       } catch {

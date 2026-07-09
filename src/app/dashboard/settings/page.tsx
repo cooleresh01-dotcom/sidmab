@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { Save, Sun, Moon, Globe, Phone, Share2, User, Palette, AlertCircle } from 'lucide-react'
+import { Save, Sun, Moon, Globe, Phone, Share2, User, Palette, AlertCircle, Mail } from 'lucide-react'
 import { useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -25,6 +25,7 @@ const settingsSchema = z.object({
   ceoBio: z.string().min(10, 'Bio must be at least 10 characters'),
   ceoMessage: z.string().min(20, 'Message must be at least 20 characters'),
   ceoSignature: z.string().min(1, 'Signature is required'),
+  emailSignature: z.string().or(z.literal('')),
   officeHours: z.string().or(z.literal('')),
   whatsapp: z.string().or(z.literal('')),
   facebook: z.string().url('Must be a valid URL').or(z.literal('')),
@@ -78,6 +79,7 @@ const defaultSettings: SettingsFormData = {
   ceoBio: 'With over 15 years of experience in event management, Sarah founded SIDMAB with a vision to transform the Nigerian events industry.',
   ceoMessage: "Welcome to SIDMAB Events & Management. Our journey began with a simple belief: every event should be extraordinary. Today, that belief drives our team of dedicated professionals who pour their passion into creating unforgettable experiences. We don't just plan events — we craft moments that last a lifetime. Thank you for considering us to be part of your special story.",
   ceoSignature: 'Sarah Johnson',
+  emailSignature: '',
   officeHours: 'Mon-Fri: 8AM - 6PM\nSat: 9AM - 4PM',
   whatsapp: '+2348000000000',
   facebook: 'https://facebook.com/sidmab',
@@ -794,6 +796,31 @@ export default function SettingsPage() {
                         <span className="label-text-alt text-error">{errors.ceoSignature.message}</span>
                       </label>
                     )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="card bg-base-100 shadow-sm border border-base-200">
+              <div className="card-body p-6">
+                <div className="flex items-center gap-2 mb-6">
+                  <Mail className="w-5 h-5 text-primary" />
+                  <h2 className="card-title text-lg">Newsletter Email</h2>
+                </div>
+                <div className="space-y-4">
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-medium">Email Signature (HTML)</span>
+                    </label>
+                    <textarea
+                      rows={4}
+                      className="textarea textarea-bordered font-mono text-xs"
+                      placeholder='<br/>--<br/><strong>SIDMAB Events &amp; Management</strong><br/>info@sidmab.com'
+                      {...register('emailSignature')}
+                    />
+                    <label className="label">
+                      <span className="label-text-alt text-base-content/50">Appended to all newsletter emails. HTML allowed.</span>
+                    </label>
                   </div>
                 </div>
               </div>
