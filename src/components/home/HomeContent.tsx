@@ -696,7 +696,7 @@ function PartnersSection() {
     const count = 6
     const interval = setInterval(() => {
       const next = (partnerIdx + 1) % count
-      el.scrollTo({ left: next * (el.scrollWidth / count), behavior: 'smooth' })
+      el.scrollTo({ left: next * (el.clientWidth / 2), behavior: 'smooth' })
       setPartnerIdx(next)
     }, 3000)
     return () => clearInterval(interval)
@@ -725,7 +725,7 @@ function PartnersSection() {
             const name = partnerData[`partner${i}_name`] || fallbackNames[i]
             const logo = partnerData[`partner${i}_logo`]
             return (
-              <div key={i} className="flex flex-col items-center gap-2 shrink-0 w-full snap-center">
+              <div key={i} className="flex flex-col items-center gap-2 shrink-0 w-1/2 snap-center">
                 <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-sm">
                   {logo ? (
                     <Image src={logo} alt={name} width={28} height={28} className="object-contain" />
