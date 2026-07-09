@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { HiMail, HiPhone, HiLocationMarker } from 'react-icons/hi'
+import { motion, AnimatePresence } from 'framer-motion'
+import { HiMail, HiPhone, HiLocationMarker, HiChevronDown } from 'react-icons/hi'
 import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter, FaWhatsapp } from 'react-icons/fa'
 import NewsletterForm from './NewsletterForm'
 
@@ -33,6 +34,7 @@ const defaultSettings = {
 export default function Footer() {
   const [settings, setSettings] = useState(defaultSettings)
   const pathname = usePathname()
+  const [openSection, setOpenSection] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/settings')
@@ -52,22 +54,87 @@ export default function Footer() {
     { icon: FaTwitter, href: settings.twitter },
   ].filter((s) => s.href && s.href !== '#')
 
+  const quickLinks = [
+    { name: 'About Us', href: '/about' },
+    { name: 'CEO & Founder', href: '/ceo' },
+    { name: 'Portfolio', href: '/portfolio' },
+    { name: 'Gallery', href: '/gallery' },
+    { name: 'Testimonials', href: '/testimonials' },
+    { name: 'Blog', href: '/blog' },
+    { name: 'Careers', href: '/careers' },
+  ]
+
+  const sections = [
+    { id: 'links', label: 'Quick Links', content: (
+      <ul className="space-y-2">
+        {quickLinks.map((link) => (
+          <li key={link.name}>
+            <Link href={link.href} className="text-sm text-white/50 hover:text-white transition-colors">{link.name}</Link>
+          </li>
+        ))}
+      </ul>
+    )},
+    { id: 'services', label: 'Services', content: (
+      <ul className="space-y-2">
+        {services.map((service) => (
+          <li key={service.name}>
+            <Link href={service.href} className="text-sm text-white/50 hover:text-white transition-colors">{service.name}</Link>
+          </li>
+        ))}
+      </ul>
+    )},
+    { id: 'contact', label: 'Contact', content: (
+      <>
+        <ul className="space-y-2">
+          <li className="flex items-start gap-2">
+            <div className="w-5 h-5 rounded-md bg-white/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <HiLocationMarker className="w-2.5 h-2.5 text-white" />
+            </div>
+            <span className="text-sm text-white/50 leading-relaxed">{settings.address}</span>
+          </li>
+          <li className="flex items-center gap-2">
+            <div className="w-5 h-5 rounded-md bg-white/10 flex items-center justify-center flex-shrink-0">
+              <HiPhone className="w-2.5 h-2.5 text-white" />
+            </div>
+            <a href={`tel:${settings.phone.replace(/\s/g, '')}`} className="text-sm text-white/50 hover:text-white transition-colors">{settings.phone}</a>
+          </li>
+          <li className="flex items-center gap-2">
+            <div className="w-5 h-5 rounded-md bg-white/10 flex items-center justify-center flex-shrink-0">
+              <HiMail className="w-2.5 h-2.5 text-white" />
+            </div>
+            <a href={`mailto:${settings.email}`} className="text-sm text-white/50 hover:text-white transition-colors">{settings.email}</a>
+          </li>
+        </ul>
+        <a
+          href={`https://wa.me/${settings.whatsapp.replace(/\s/g, '')}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-full text-[11px] font-medium text-white transition-all hover:brightness-110"
+          style={{ background: '#25D366' }}
+        >
+          <FaWhatsapp className="w-2.5 h-2.5" />
+          Chat on WhatsApp
+        </a>
+      </>
+    )},
+  ]
+
   return (
     <footer className="bg-black">
       <div className="container mx-auto">
-        <div className="py-12 border-b border-white/10">
+        <div className="py-8 md:py-12 border-b border-white/10">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-white">Stay Updated</h3>
-              <p className="text-sm text-white/40">Subscribe for event tips, inspiration & exclusive offers.</p>
+              <h3 className="text-base md:text-lg font-semibold text-white">Stay Updated</h3>
+              <p className="text-xs md:text-sm text-white/40">Subscribe for event tips, inspiration & exclusive offers.</p>
             </div>
             <div className="w-full max-w-md">
               <NewsletterForm dark />
             </div>
           </div>
         </div>
-        <div className="py-20">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
+        <div className="py-8 md:py-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 md:gap-10">
             <div className="lg:col-span-6">
               <div className="flex items-center gap-3 mb-5">
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white font-bold text-sm">
@@ -86,7 +153,7 @@ export default function Footer() {
                 across Nigeria.
               </p>
               {socialLinks.length > 0 && (
-                <div className="flex gap-3 mt-8">
+                <div className="flex gap-3 mt-6 md:mt-8">
                   {socialLinks.map(({ icon: Icon, href }, i) => (
                     <a
                       key={i}
@@ -102,75 +169,43 @@ export default function Footer() {
               )}
             </div>
 
-            <div className="lg:col-span-2">
-              <h4 className="font-semibold mb-4 text-xs uppercase tracking-widest text-white">
-                Quick Links
-              </h4>
-              <ul className="space-y-2.5">
-                {[
-                  { name: 'About Us', href: '/about' },
-                  { name: 'CEO & Founder', href: '/ceo' },
-                  { name: 'Portfolio', href: '/portfolio' },
-                  { name: 'Gallery', href: '/gallery' },
-                  { name: 'Testimonials', href: '/testimonials' },
-                  { name: 'Blog', href: '/blog' },
-                  { name: 'Careers', href: '/careers' },
-                ].map((link) => (
-                  <li key={link.name}>
-                    <Link href={link.href} className="text-sm text-white/50 hover:text-white transition-colors">{link.name}</Link>
-                  </li>
+            {/* Mobile accordion */}
+            <div className="md:hidden">
+              <div className="flex gap-4">
+                {sections.map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => setOpenSection(openSection === s.id ? null : s.id)}
+                    className="flex items-center gap-1 text-xs uppercase tracking-widest text-white font-semibold transition-colors hover:text-white/70"
+                  >
+                    {s.label}
+                    <HiChevronDown className={`w-3 h-3 transition-transform duration-200 ${openSection === s.id ? 'rotate-180' : ''}`} />
+                  </button>
                 ))}
-              </ul>
+              </div>
+              <AnimatePresence>
+                {openSection && (
+                  <motion.div
+                    key={openSection}
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="overflow-hidden mt-3"
+                  >
+                    {sections.find((s) => s.id === openSection)?.content}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            <div className="lg:col-span-2">
-              <h4 className="font-semibold mb-4 text-xs uppercase tracking-widest text-white">
-                Services
-              </h4>
-              <ul className="space-y-2.5">
-                {services.map((service) => (
-                  <li key={service.name}>
-                    <Link href={service.href} className="text-sm text-white/50 hover:text-white transition-colors">{service.name}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="lg:col-span-2">
-              <h4 className="font-semibold mb-4 text-xs uppercase tracking-widest text-white">
-                Contact
-              </h4>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-2.5">
-                  <div className="w-6 h-6 rounded-md bg-white/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <HiLocationMarker className="w-3 h-3 text-white" />
-                  </div>
-                  <span className="text-sm text-white/50 leading-relaxed">{settings.address}</span>
-                </li>
-                <li className="flex items-center gap-2.5">
-                  <div className="w-6 h-6 rounded-md bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <HiPhone className="w-3 h-3 text-white" />
-                  </div>
-                  <a href={`tel:${settings.phone.replace(/\s/g, '')}`} className="text-sm text-white/50 hover:text-white transition-colors">{settings.phone}</a>
-                </li>
-                <li className="flex items-center gap-2.5">
-                  <div className="w-6 h-6 rounded-md bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <HiMail className="w-3 h-3 text-white" />
-                  </div>
-                  <a href={`mailto:${settings.email}`} className="text-sm text-white/50 hover:text-white transition-colors">{settings.email}</a>
-                </li>
-              </ul>
-              <a
-                href={`https://wa.me/${settings.whatsapp.replace(/\s/g, '')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-full text-xs font-medium text-white transition-all hover:brightness-110"
-                style={{ background: '#25D366' }}
-              >
-                <FaWhatsapp className="w-3 h-3" />
-                Chat on WhatsApp
-              </a>
-            </div>
+            {/* Desktop columns */}
+            {sections.map((s) => (
+              <div key={s.id} className="hidden md:block lg:col-span-2">
+                <h4 className="font-semibold mb-4 text-xs uppercase tracking-widest text-white">{s.label}</h4>
+                {s.content}
+              </div>
+            ))}
           </div>
         </div>
 
