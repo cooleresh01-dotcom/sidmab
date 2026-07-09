@@ -1,0 +1,143 @@
+[
+  {
+    "id": "1783436513656",
+    "title": "Wedding ",
+    "slug": "wedding-",
+    "category": "Decoration Showcase",
+    "description": "Wedding At Lagos",
+    "client": "Madam Cash",
+    "images": [
+      "https://scontent.fiba2-1.fna.fbcdn.net/v/t39.30808-6/468396982_1249854693202786_547006541489289039_n.jpg?stp=dst-jpg_tt6&cstp=mx720x960&ctp=s720x960&_nc_cat=103&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHodDwWbC9d9MflIG1N9Hsql1zqmuP0k4qXXOqa4_STivKm7EKjipDip3hCUn50sqW2nXqZGBkDCpUuHAM0mxMv&_nc_ohc=DtS9A3ixnMQQ7kNvwEXAUrv&_nc_oc=Ado8aOnmiOFUGG9gsvplH6inSwDQeqGoSuS0VFAVG8v9sCtO0sBLTgp_uzgJuL5KAgM&_nc_zt=23&_nc_ht=scontent.fiba2-1.fna&_nc_gid=4j4GpNRqGj1XTFETpdCwew&_nc_ss=7b2a8&oh=00_AQBJLTq1cMWZgwNbKF8YQjgbvHnPxeL8fWW_LVx4gMIeTw&oe=6A52DB5D"
+    ],
+    "date": "2025-01-11T00:00:00.000Z",
+    "published": true,
+    "featured": false
+  },
+  {
+    "id": "1783433029529",
+    "title": "Hall Birthday",
+    "slug": "hall-birthday",
+    "category": "Birthday",
+    "description": "Bithday at Osogbo",
+    "client": "Mr. Agbabiaka",
+    "images": [
+      "https://scontent.fiba2-1.fna.fbcdn.net/v/t51.75761-15/501437241_18356751418146597_8485799744199950210_n.jpg?stp=dst-jpg_tt6&cstp=mx1440x1800&ctp=s1440x1800&_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeHo4uBEAo-Id_WbWZCzCjLAg_FMCkldJLqD8UwKSV0kunkIu-mAOOj7_ExI98b9DQbE93SieCouiLK9u2MPX-4T&_nc_ohc=EagRBzgiwzQQ7kNvwG3YppB&_nc_oc=Adpbq3ebQncnQTyZQs02UhNucGIP_r-LKAqGoAlzeTHeI7J4EqBOKB9p3olP0GTX6hE&_nc_zt=23&_nc_ht=scontent.fiba2-1.fna&_nc_gid=36ooBU3ZBmCAHDhsePM5TA&_nc_ss=7a2a8&oh=00_AQC5Ju7GQcWIoUfkC32Uafc9AIx5zDAbRAnsLkNqtH1rDg&oe=6A52E143"
+    ],
+    "video": "https://www.instagram.com/p/DKNdoLwIFVE/",
+    "date": "2026-07-07T00:00:00.000Z",
+    "published": true,
+    "featured": true
+  },
+  {
+    "id": "1",
+    "title": "Luxury Wedding",
+    "slug": "luxury-wedding",
+    "category": "Wedding",
+    "images": [
+      "https://scontent.fiba2-2.fna.fbcdn.net/v/t39.30808-6/481154399_940899284760979_1555640155745563573_n.jpg?stp=dst-jpg_tt6&cstp=mx1080x719&ctp=s1080x719&_nc_cat=104&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeFHKozY6LjPLlSUOZOk4Q7ujaueFCYGeCuNq54UJgZ4K11ulBFA35Uy1wSSM85m_8WdcXvIEfv2EUMQi4E49o2w&_nc_ohc=_Tvo40M6q3IQ7kNvwERVG0P&_nc_oc=Adq2m0j_47cXObyBkti_tQ3k1jkfbuJOxU7a_xsGT4wyyM7WWdDxi6VP0kp5ybv6DDU&_nc_zt=23&_nc_ht=scontent.fiba2-2.fna&_nc_gid=2hSSQR-PgVU_d1bzrVHozQ&_nc_ss=7a2a8&oh=00_AQDZuEggKkuHi-T9mG986Q4bvhfssSDUmNntSk0J3a651g&oe=6A549CA0"
+    ],
+    "description": "A grand wedding celebration with 500 guests, featuring exquisite floral arrangements and live entertainment.",
+    "client": "Chioma & Ade",
+    "date": "2025-12-15T00:00:00.000Z",
+    "featured": true,
+    "published": true
+  },
+  {
+    "id": "2",
+    "title": "Tech Conference 2025",
+    "slug": "tech-conference-2025",
+    "category": "Corporate",
+    "images": [
+      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600"
+    ],
+    "description": "Annual tech conference for 1000+ attendees with keynote speeches, workshops, and networking sessions.",
+    "client": "TechBridge Nigeria",
+    "date": "2025-11-20T00:00:00.000Z",
+    "featured": true,
+    "published": true
+  },
+  {
+    "id": "3",
+    "title": "Garden Birthday",
+    "slug": "garden-birthday",
+    "category": "Birthday",
+    "images": [
+      "https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=600"
+    ],
+    "description": "50th birthday celebration in a beautiful garden setting with outdoor dining and live music.",
+    "client": "Amara E.",
+    "date": "2026-01-10T00:00:00.000Z",
+    "featured": false,
+    "published": true
+  },
+  {
+    "id": "4",
+    "title": "Corporate Gala Dinner",
+    "slug": "corporate-gala-dinner",
+    "category": "Corporate",
+    "images": [
+      "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600"
+    ],
+    "description": "Annual corporate gala dinner with awards ceremony and entertainment.",
+    "client": "First Bank PLC",
+    "date": "2025-09-30T00:00:00.000Z",
+    "featured": true,
+    "published": true
+  },
+  {
+    "id": "5",
+    "title": "Outdoor Wedding",
+    "slug": "outdoor-wedding",
+    "category": "Wedding",
+    "images": [
+      "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=600"
+    ],
+    "description": "Beautiful outdoor wedding ceremony by the beach with sunset reception.",
+    "client": "Tunde & Bisola",
+    "date": "2026-02-14T00:00:00.000Z",
+    "featured": true,
+    "published": true
+  },
+  {
+    "id": "6",
+    "title": "Decoration Showcase",
+    "slug": "decoration-showcase",
+    "category": "Decoration",
+    "images": [
+      "https://scontent.fiba2-2.fna.fbcdn.net/v/t39.30808-6/225739986_107776658265274_7712154207231215236_n.jpg?stp=dst-jpg_tt6&cstp=mx2010x2015&ctp=s2010x2015&_nc_cat=104&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeFkfslNs9xsSivIjDtZR2F4LKY_LoYfvI4spj8uhh-8jmraiOv7nyh7V9pHxF-yDeblUEseWZc16vyubkj4Vzss&_nc_ohc=KO12rLAIcVAQ7kNvwE3ezLi&_nc_oc=Adp9XP3YT7lGzWmkNsIV_0gfNhGRdPs_-rszOnO9PMgmcAdGME5kjAZCO_N2vFqatj0&_nc_zt=23&_nc_ht=scontent.fiba2-2.fna&_nc_gid=i5XTOGerNfLe_qm0gpttpA&_nc_ss=7b2a8&oh=00_AQB9eZYhqVxyihZyXZOLdGlJjivqv1Nz3X_a_4o3pWfuww&oe=6A52E728"
+    ],
+    "description": "Luxury event decoration showcase featuring our award-winning design portfolio.",
+    "client": "SIDMAB Events",
+    "date": "2026-03-01T00:00:00.000Z",
+    "featured": false,
+    "published": true
+  },
+  {
+    "id": "7",
+    "title": "Birthday Pool Party",
+    "slug": "birthday-pool-party",
+    "category": "Birthday",
+    "images": [
+      "https://images.unsplash.com/photo-1530023367847-a683933f4172?w=600"
+    ],
+    "description": "Poolside birthday celebration with DJ, catering, and themed decorations.",
+    "client": "David O.",
+    "date": "2026-04-05T00:00:00.000Z",
+    "featured": false,
+    "published": true
+  },
+  {
+    "id": "8",
+    "title": "Product Launch Event",
+    "slug": "product-launch-event",
+    "category": "Corporate",
+    "images": [
+      "https://images.unsplash.com/photo-1478147427282-58a87a120781?w=600"
+    ],
+    "description": "Major product launch event with media coverage and VIP guest experience.",
+    "client": "Gloo Technologies",
+    "date": "2026-05-20T00:00:00.000Z",
+    "featured": true,
+    "published": true
+  }
+]
