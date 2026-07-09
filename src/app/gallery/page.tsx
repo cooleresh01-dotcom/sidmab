@@ -8,6 +8,11 @@ import { FaYoutube } from 'react-icons/fa'
 import { cn } from '@/lib/utils'
 import PageHero from '@/components/ui/PageHero'
 
+function getYoutubeEmbed(url: string) {
+  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/)
+  return match ? `https://www.youtube.com/embed/${match[1]}?autoplay=1` : null
+}
+
 const galleryTabs = [
   { id: 'photos', label: 'Photos' },
   { id: 'videos', label: 'Videos' },
@@ -33,10 +38,10 @@ const galleryImages = [
 ]
 
 const videos = [
-  { id: 1, title: 'Wedding Highlights', thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600' },
-  { id: 2, title: 'Corporate Event Recap', thumbnail: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600' },
-  { id: 3, title: 'Birthday Moments', thumbnail: 'https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=600' },
-  { id: 4, title: 'Decoration Timelapse', thumbnail: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600' },
+  { id: 1, title: 'Wedding Highlights', thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600', videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+  { id: 2, title: 'Corporate Event Recap', thumbnail: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600', videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+  { id: 3, title: 'Birthday Moments', thumbnail: 'https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=600', videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+  { id: 4, title: 'Decoration Timelapse', thumbnail: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600', videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
 ]
 
 function PhotosTab() {
@@ -133,6 +138,7 @@ function PhotosTab() {
 function VideosTab() {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true })
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null)
 
   return (
     <div ref={ref}>
@@ -144,6 +150,7 @@ function VideosTab() {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: index * 0.1 }}
             className="card bg-base-100 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
+            onClick={() => setSelectedVideo(video.videoUrl)}
           >
             <figure className="relative h-56 overflow-hidden">
               <Image
@@ -164,6 +171,39 @@ function VideosTab() {
           </motion.div>
         ))}
       </div>
+
+      <AnimatePresence>
+        {selectedVideo && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+            onClick={() => setSelectedVideo(null)}
+          >
+            <button
+              onClick={() => setSelectedVideo(null)}
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10"
+            >
+              <HiX className="w-5 h-5" />
+            </button>
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.8 }}
+              className="relative w-full max-w-4xl aspect-video"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <iframe
+                src={selectedVideo}
+                className="w-full h-full rounded-2xl"
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

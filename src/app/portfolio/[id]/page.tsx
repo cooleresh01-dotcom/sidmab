@@ -18,6 +18,12 @@ interface PortfolioItem {
   client: string
   date: string
   featured: boolean
+  video?: string
+}
+
+function getYoutubeEmbed(url: string) {
+  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/)
+  return match ? `https://www.youtube.com/embed/${match[1]}?autoplay=1` : url
 }
 
 const sampleGallery = [
@@ -124,35 +130,48 @@ export default function PortfolioDetailPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <FadeIn>
               <div className="relative">
-                <div
-                  className={`relative rounded-2xl overflow-hidden cursor-pointer ${isLandscape ? 'aspect-video' : 'aspect-[3/4]'}`}
-                  onClick={() => setFullscreen(true)}
-                >
-                  <img
-                    src={item.images[0]}
-                    alt={item.title}
-                    className="w-full h-full object-contain"
-                    onLoad={(e) => {
-                      const img = e.currentTarget
-                      setIsLandscape(img.naturalWidth > img.naturalHeight)
-                    }}
-                  />
-                </div>
-              </div>
-
-              {fullscreen && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 cursor-pointer"
-                  onClick={() => setFullscreen(false)}
-                >
-                  <div className="relative w-full h-full max-w-6xl max-h-[90vh] pointer-events-none">
-                    <Image src={item.images[0]} alt={item.title} fill className="object-contain" />
+                {item.video ? (
+                  <div className="relative rounded-2xl overflow-hidden aspect-video">
+                    <iframe
+                      src={getYoutubeEmbed(item.video)}
+                      className="w-full h-full"
+                      allow="autoplay; encrypted-media"
+                      allowFullScreen
+                    />
                   </div>
-                </motion.div>
-              )}
+                ) : (
+                  <>
+                    <div
+                      className={`relative rounded-2xl overflow-hidden cursor-pointer ${isLandscape ? 'aspect-video' : 'aspect-[3/4]'}`}
+                      onClick={() => setFullscreen(true)}
+                    >
+                      <img
+                        src={item.images[0]}
+                        alt={item.title}
+                        className="w-full h-full object-contain"
+                        onLoad={(e) => {
+                          const img = e.currentTarget
+                          setIsLandscape(img.naturalWidth > img.naturalHeight)
+                        }}
+                      />
+                    </div>
+
+                    {fullscreen && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 cursor-pointer"
+                        onClick={() => setFullscreen(false)}
+                      >
+                        <div className="relative w-full h-full max-w-6xl max-h-[90vh] pointer-events-none">
+                          <Image src={item.images[0]} alt={item.title} fill className="object-contain" />
+                        </div>
+                      </motion.div>
+                    )}
+                  </>
+                )}
+              </div>
             </FadeIn>
             <FadeIn delay={0.15}>
               <div>
