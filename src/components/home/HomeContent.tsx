@@ -774,7 +774,7 @@ function PartnersSection() {
 
 function CTASection() {
   return (
-    <section className="relative py-20 bg-black overflow-hidden">
+    <section className="relative py-12 md:py-20 bg-black overflow-hidden">
       <div className="absolute inset-0">
         <Image
           src="https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=1920"
@@ -789,27 +789,27 @@ function CTASection() {
 
       <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
         <FadeIn>
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/50 text-xs uppercase tracking-[0.15em] font-medium mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/50 text-[10px] uppercase tracking-[0.15em] font-medium mb-3 md:mb-4">
             <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--site-primary)' }} />
             Let&apos;s Create Something Amazing
           </div>
-          <h2 className="text-4xl lg:text-6xl font-bold text-white tracking-tight leading-[1.05]">
+          <h2 className="text-3xl md:text-6xl font-bold text-white tracking-tight leading-[1.05]">
             Ready to Plan Your Event?
           </h2>
-          <p className="text-white/45 mt-4 mx-auto text-lg leading-relaxed whitespace-nowrap">
+          <p className="text-white/45 mt-3 md:mt-4 mx-auto text-sm md:text-lg leading-relaxed">
             Get in touch today for a free consultation. No obligation, just inspiration.
           </p>
-          <div className="flex flex-wrap justify-center gap-4 mt-8">
+          <div className="flex flex-wrap justify-center gap-3 md:gap-4 mt-5 md:mt-8">
             <Link
               href="/book"
-              className="group inline-flex items-center gap-2 px-8 py-3.5 text-white font-semibold rounded-xl transition-all duration-300 text-sm shadow-xl shadow-black/30 hover:-translate-y-0.5"
+              className="group inline-flex items-center gap-2 px-6 md:px-8 py-3 text-white font-semibold rounded-xl transition-all duration-300 text-xs md:text-sm shadow-xl shadow-black/30 hover:-translate-y-0.5"
               style={{ background: 'var(--site-primary)' }}
             >
-              Book a Consultation <HiArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+              Book a Consultation <HiArrowRight className="w-3.5 h-3.5 md:w-4 md:h-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 px-8 py-3.5 text-white/70 font-medium rounded-xl transition-all duration-300 text-sm hover:text-white hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 px-6 md:px-8 py-3 text-white/70 font-medium rounded-xl transition-all duration-300 text-xs md:text-sm hover:text-white hover:-translate-y-0.5"
               style={{ border: '1.5px solid rgba(255,255,255,0.15)' }}
               onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'var(--site-primary)' }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)' }}
@@ -817,7 +817,7 @@ function CTASection() {
               Contact Us
             </Link>
           </div>
-          <p className="text-white/25 text-xs mt-6 tracking-wide flex items-center justify-center gap-1.5">
+          <p className="text-white/25 text-[11px] md:text-xs mt-4 md:mt-6 tracking-wide flex items-center justify-center gap-1.5">
             <FaCalendarCheck className="w-3 h-3" />
             Typically responds within 24 hours
           </p>
