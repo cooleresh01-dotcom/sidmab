@@ -25,18 +25,11 @@ const navItems = [
   { name: 'Contact', href: '/contact', preview: 'https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=400&h=500&fit=crop' },
 ]
 
-const socialLinks = [
-  { icon: FaFacebook, href: '#', label: 'Facebook', color: '#1877F2', id: '@sidmabevents' },
-  { icon: InstagramIcon, href: '#', label: 'Instagram', color: '#E4405F', id: '@sidmab_events' },
-  { icon: FaXTwitter, href: '#', label: 'X', color: '#000000', id: '@sidmab_ng' },
-  { icon: FaLinkedinIn, href: '#', label: 'LinkedIn', color: '#0A66C2', id: 'SIDMAB Events' },
-  { icon: FaYoutube, href: '#', label: 'YouTube', color: '#FF0000', id: 'SIDMAB TV' },
-]
-
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [showSocial, setShowSocial] = useState(true)
   const [hoveredNav, setHoveredNav] = useState<string | null>(null)
+  const [socialUrls, setSocialUrls] = useState<Record<string, string>>({})
   const { data: session } = useSession()
   const pathname = usePathname()
   const socialRef = useRef<HTMLDivElement>(null)
@@ -44,6 +37,21 @@ export default function Navbar() {
   useEffect(() => {
     setIsOpen(false)
   }, [pathname])
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(r => r.json())
+      .then(data => {
+        setSocialUrls({
+          facebook: data.facebook || 'https://facebook.com/sidmab',
+          instagram: data.instagram || 'https://instagram.com/sidmab',
+          twitter: data.twitter || 'https://twitter.com/sidmab',
+          linkedin: data.linkedin || 'https://linkedin.com/company/sidmab',
+          youtube: data.youtube || '',
+        })
+      })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -153,10 +161,18 @@ export default function Navbar() {
                           transition={{ duration: 0.3 }}
                           className="flex flex-col gap-2 overflow-hidden"
                         >
-                          {socialLinks.map((s) => (
+                          {([
+                            { icon: FaFacebook, key: 'facebook', label: 'Facebook', color: '#1877F2', id: '@sidmabevents' },
+                            { icon: InstagramIcon, key: 'instagram', label: 'Instagram', color: '#E4405F', id: '@sidmab_events' },
+                            { icon: FaXTwitter, key: 'twitter', label: 'X', color: '#000000', id: '@sidmab_ng' },
+                            { icon: FaLinkedinIn, key: 'linkedin', label: 'LinkedIn', color: '#0A66C2', id: 'SIDMAB Events' },
+                            { icon: FaYoutube, key: 'youtube', label: 'YouTube', color: '#FF0000', id: 'SIDMAB TV' },
+                          ] as const).map((s) => (
                             <a
                               key={s.label}
-                              href={s.href}
+                              href={socialUrls[s.key] || '#'}
+                              target="_blank"
+                              rel="noopener noreferrer"
                               className="relative flex items-center gap-2 text-xs text-gray-400 hover:text-black transition-colors group"
                             >
                               <span
