@@ -680,6 +680,8 @@ function PortfolioSection() {
 
 function PartnersSection() {
   const [partnerData, setPartnerData] = useState<Record<string, string>>({})
+  const partnerRef = useRef<HTMLDivElement>(null)
+  const [partnerIdx, setPartnerIdx] = useState(0)
 
   useEffect(() => {
     fetch('/api/settings?_=' + Date.now())
@@ -687,6 +689,18 @@ function PartnersSection() {
       .then((data) => { if (data && !data.error) setPartnerData(data) })
       .catch(() => {})
   }, [])
+
+  useEffect(() => {
+    const el = partnerRef.current
+    if (!el) return
+    const count = 6
+    const interval = setInterval(() => {
+      const next = (partnerIdx + 1) % count
+      el.scrollTo({ left: next * (el.scrollWidth / count), behavior: 'smooth' })
+      setPartnerIdx(next)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [partnerIdx])
 
   const partnerIcons = [FaLaptopCode, FaUniversity, FaPiggyBank, FaLeaf, FaTruck, FaPlay]
   const fallbackNames = ['TechBridge', 'Lagos Business School', 'AfriBank Plc', 'Greenfield Energy', 'Nexus Logistics', 'Prime Media']
@@ -704,14 +718,14 @@ function PartnersSection() {
           </div>
         </FadeIn>
 
-        {/* Mobile: horizontal scroll */}
-        <div className="flex md:hidden overflow-x-auto scrollbar-hide gap-6 -mx-6 px-6">
+        {/* Mobile: auto-scroll */}
+        <div ref={partnerRef} className="flex md:hidden overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-6 px-6">
           {[0, 1, 2, 3, 4, 5].map((i) => {
             const Icon = partnerIcons[i]
             const name = partnerData[`partner${i}_name`] || fallbackNames[i]
             const logo = partnerData[`partner${i}_logo`]
             return (
-              <div key={i} className="flex flex-col items-center gap-2 shrink-0">
+              <div key={i} className="flex flex-col items-center gap-2 shrink-0 w-full snap-center">
                 <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-sm">
                   {logo ? (
                     <Image src={logo} alt={name} width={28} height={28} className="object-contain" />
