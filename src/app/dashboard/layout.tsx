@@ -25,6 +25,7 @@ import {
   PanelRightOpen,
   Image,
   Film,
+  Send,
 } from 'lucide-react'
 
 const navItems = [
@@ -37,6 +38,7 @@ const navItems = [
   { label: 'Blog', href: '/dashboard/blog', icon: FileText },
   { label: 'Bookings', href: '/dashboard/bookings', icon: CalendarCheck },
   { label: 'Messages', href: '/dashboard/messages', icon: Mail },
+  { label: 'Newsletter', href: '/dashboard/newsletter', icon: Send },
   { label: 'Users', href: '/dashboard/users', icon: UserCircle },
   { label: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
   { label: 'SEO', href: '/dashboard/seo', icon: Search },

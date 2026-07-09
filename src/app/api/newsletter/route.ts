@@ -1,5 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { getAdminSession } from '@/lib/admin-auth'
+
+export async function GET() {
+  try {
+    const admin = await getAdminSession()
+    if (!admin || admin.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const subscribers = await prisma.newsletter.findMany({
+      orderBy: { createdAt: 'desc' },
+    })
+
+    return NextResponse.json(subscribers)
+  } catch (error) {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
