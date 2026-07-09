@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Mail, Trash2, X } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Mail, Trash2, Send, X } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 
 interface Subscriber {
@@ -16,6 +16,11 @@ export default function NewsletterPage() {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([])
   const [loading, setLoading] = useState(true)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const [showCompose, setShowCompose] = useState(false)
+  const [subject, setSubject] = useState('')
+  const [body, setBody] = useState('')
+  const [sending, setSending] = useState(false)
+  const [sendResult, setSendResult] = useState<{ sent?: number; failed?: number; total?: number; mailto?: string } | null>(null)
 
   useEffect(() => {
     fetch('/api/newsletter')
@@ -43,7 +48,31 @@ export default function NewsletterPage() {
     )
   }
 
-  const activeCount = subscribers.filter((s) => s.active).length
+  const handleSend = async () => {
+    if (!subject.trim() || !body.trim()) return
+    setSending(true)
+    setSendResult(null)
+    try {
+      const res = await fetch('/api/newsletter/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject, body }),
+      })
+      const data = await res.json()
+      if (data.mailto) {
+        window.location.href = data.mailto
+        setShowCompose(false)
+      } else {
+        setSendResult(data)
+      }
+    } catch {
+      setSendResult({ sent: 0, failed: 0, total: 0 })
+    }
+    setSending(false)
+  }
+
+  const activeEmails = subscribers.filter((s) => s.active).map((s) => s.email)
+  const activeCount = activeEmails.length
 
   if (loading) {
     return (
@@ -68,6 +97,14 @@ export default function NewsletterPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowCompose(true)}
+            className="btn btn-primary btn-sm text-white"
+            disabled={activeCount === 0}
+          >
+            <Send className="w-4 h-4" />
+            Send to All
+          </button>
           <button
             onClick={() => {
               const csv = 'email,date,status\n' +
@@ -150,47 +187,146 @@ export default function NewsletterPage() {
         )}
       </motion.div>
 
-      {deleteConfirm && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
-          onClick={() => setDeleteConfirm(null)}
-        >
+      <AnimatePresence>
+        {showCompose && (
           <motion.div
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.95 }}
-            onClick={(e) => e.stopPropagation()}
-            className="card bg-base-100 shadow-xl w-full max-w-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+            onClick={() => { if (!sending) setShowCompose(false) }}
           >
-            <div className="card-body p-6 text-center">
-              <div className="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center mx-auto mb-4">
-                <Trash2 className="w-6 h-6 text-error" />
+            <motion.div
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()}
+              className="card bg-base-100 shadow-xl w-full max-w-lg"
+            >
+              <div className="card-body p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-lg">Send to {activeCount} subscriber{activeCount !== 1 ? 's' : ''}</h3>
+                  <button
+                    onClick={() => { if (!sending) setShowCompose(false) }}
+                    className="btn btn-ghost btn-sm btn-square"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {sendResult ? (
+                  <div className="text-center py-6">
+                    {sendResult.mailto ? (
+                      <p className="text-sm text-base-content/60">
+                        Your email client will open to send to all subscribers (SMTP not configured).
+                      </p>
+                    ) : (
+                      <div>
+                        <div className="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-4">
+                          <Send className="w-6 h-6 text-success" />
+                        </div>
+                        <p className="font-medium">Sent!</p>
+                        <p className="text-sm text-base-content/60 mt-1">
+                          {sendResult.sent} of {sendResult.total} delivered
+                          {sendResult.failed ? ` (${sendResult.failed} failed)` : ''}
+                        </p>
+                      </div>
+                    )}
+                    <button
+                      onClick={() => { setShowCompose(false); setSendResult(null); setSubject(''); setBody('') }}
+                      className="btn btn-primary btn-sm text-white mt-4"
+                    >
+                      Done
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <input
+                      type="text"
+                      value={subject}
+                      onChange={(e) => setSubject(e.target.value)}
+                      placeholder="Subject"
+                      className="input input-bordered w-full text-sm"
+                    />
+                    <textarea
+                      value={body}
+                      onChange={(e) => setBody(e.target.value)}
+                      placeholder="Write your message..."
+                      rows={8}
+                      className="textarea textarea-bordered w-full text-sm"
+                    />
+                    <div className="flex gap-3 justify-end">
+                      <button
+                        onClick={() => setShowCompose(false)}
+                        className="btn btn-ghost"
+                        disabled={sending}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleSend}
+                        className="btn btn-primary text-white"
+                        disabled={sending || !subject.trim() || !body.trim()}
+                      >
+                        {sending ? (
+                          <>
+                            <span className="loading loading-spinner loading-xs" />
+                            Sending...
+                          </>
+                        ) : (
+                          'Send to All'
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
-              <h3 className="font-bold text-lg">Delete Subscriber?</h3>
-              <p className="text-sm text-base-content/60 mt-1">
-                This action cannot be undone.
-              </p>
-              <div className="flex gap-3 mt-6">
-                <button
-                  onClick={() => deleteConfirm && deleteSubscriber(deleteConfirm)}
-                  className="btn btn-error flex-1 text-white"
-                >
-                  Delete
-                </button>
-                <button
-                  onClick={() => setDeleteConfirm(null)}
-                  className="btn btn-ghost flex-1"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
+        )}
+
+        {deleteConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+            onClick={() => setDeleteConfirm(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()}
+              className="card bg-base-100 shadow-xl w-full max-w-sm"
+            >
+              <div className="card-body p-6 text-center">
+                <div className="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center mx-auto mb-4">
+                  <Trash2 className="w-6 h-6 text-error" />
+                </div>
+                <h3 className="font-bold text-lg">Delete Subscriber?</h3>
+                <p className="text-sm text-base-content/60 mt-1">
+                  This action cannot be undone.
+                </p>
+                <div className="flex gap-3 mt-6">
+                  <button
+                    onClick={() => deleteConfirm && deleteSubscriber(deleteConfirm)}
+                    className="btn btn-error flex-1 text-white"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    onClick={() => setDeleteConfirm(null)}
+                    className="btn btn-ghost flex-1"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
