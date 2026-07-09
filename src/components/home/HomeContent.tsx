@@ -259,7 +259,7 @@ function StatsSection() {
     <section className="py-16 bg-black relative overflow-hidden">
       <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, var(--site-primary) 0%, transparent 60%)' }} />
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 gap-2 md:gap-3">
             {[
               { icon: FaCalendarCheck, end: 1000, suffix: '+', label: 'Events Delivered' },
               { icon: FaUsers, end: 250, suffix: '+', label: 'Happy Clients' },
@@ -267,17 +267,17 @@ function StatsSection() {
               { icon: FaSmile, end: 98, suffix: '%', label: 'Satisfaction Rate' },
             ].map(({ icon: Icon, end, suffix, label }) => (
               <FadeIn key={label}>
-                <div className="relative group text-center p-6 md:p-8 rounded-2xl backdrop-blur-2xl border border-white/[0.12] shadow-xl overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl"
+                <div className="relative group text-center p-4 md:p-8 rounded-xl md:rounded-2xl backdrop-blur-2xl border border-white/[0.12] shadow-xl overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl"
                   style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03))' }}>
                   <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full opacity-20 blur-3xl transition-all duration-500 group-hover:opacity-30"
                     style={{ background: 'var(--site-primary)' }} />
-                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg bg-white">
-                    <Icon className="w-7 h-7" style={{ color: 'var(--site-primary)' }} />
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-5 shadow-lg bg-white">
+                    <Icon className="w-5 h-5 md:w-7 md:h-7" style={{ color: 'var(--site-primary)' }} />
                   </div>
-                  <p className="text-white text-4xl md:text-5xl font-bold tracking-tight relative z-10">
+                  <p className="text-white text-2xl md:text-5xl font-bold tracking-tight relative z-10">
                     <AnimatedCounter end={end} suffix={suffix} />
                   </p>
-                  <p className="text-white/40 text-sm mt-2 font-medium tracking-wide relative z-10">{label}</p>
+                  <p className="text-white/40 text-[11px] md:text-sm mt-1 md:mt-2 font-medium tracking-wide relative z-10">{label}</p>
                 </div>
               </FadeIn>
           ))}
