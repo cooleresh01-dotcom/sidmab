@@ -1187,8 +1187,6 @@ export default function SettingsPage() {
                   <span className="text-sm font-medium">Dark</span>
                 </button>
                     </div>
-                  </div>
-                </div>
 
                 <div className="divider" />
                 <div>
@@ -1198,8 +1196,8 @@ export default function SettingsPage() {
                     <textarea rows={2} className="textarea textarea-bordered" {...register('footerDescription')} />
                   </div>
                 </div>
-              </div>
-            </div>
+                  </div>
+                </div>
 
             <div className="card bg-base-100 shadow-sm border border-base-200">
             <div className="card-body p-6">

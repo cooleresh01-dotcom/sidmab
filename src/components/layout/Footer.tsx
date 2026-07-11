@@ -21,6 +21,7 @@ const defaultSettings = {
   siteName: 'SIDMAB',
   tagline: 'Events & Management',
   companyLogo: '',
+  footerDescription: '',
   email: 'info@sidmab.com',
   phone: '+234 800 000 0000',
   address: '123 Event Street, Lagos, Nigeria',
