@@ -9,6 +9,7 @@ import { motion, useInView } from 'framer-motion'
 import { HiBriefcase, HiLocationMarker, HiClock, HiUserGroup, HiAcademicCap, HiHeart, HiGlobe, HiCurrencyDollar, HiPaperAirplane } from 'react-icons/hi'
 import { careerOpenings } from '@/lib/data'
 import PageHero from '@/components/ui/PageHero'
+import BackButton from '@/components/ui/BackButton'
 
 const applicationSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -276,6 +277,7 @@ function ApplicationForm() {
 export default function CareersPage() {
   return (
     <>
+      <BackButton />
       <PageHero
         title="Careers at SIDMAB"
         subtitle="Come grow with us. Explore opportunities to be part of something extraordinary."

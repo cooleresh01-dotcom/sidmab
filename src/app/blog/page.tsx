@@ -8,6 +8,7 @@ import { HiArrowRight, HiCalendar, HiUser } from 'react-icons/hi'
 import { blogPosts } from '@/lib/data'
 import { formatDate } from '@/lib/utils'
 import PageHero from '@/components/ui/PageHero'
+import BackButton from '@/components/ui/BackButton'
 
 function BlogGrid() {
   const ref = useRef<HTMLDivElement>(null)
@@ -79,6 +80,7 @@ function BlogGrid() {
 export default function BlogPage() {
   return (
     <>
+      <BackButton />
       <PageHero
         title="Latest Insights & Stories"
         subtitle="Expert tips, trends, and inspiration for your next event."

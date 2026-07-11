@@ -219,34 +219,34 @@ export default function TeamPage() {
               layout
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="card bg-base-100 shadow-sm border border-base-200 group"
+              className="bg-base-100 shadow-sm border border-base-200 rounded-2xl overflow-hidden group"
             >
-              <figure className="relative pt-[100%] bg-base-200 overflow-hidden">
+              <div className="relative w-full aspect-square bg-base-200">
                 <img
                   src={member.image}
                   alt={member.name}
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="w-full h-full object-cover object-top"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="absolute top-2 right-2 flex gap-1">
-                    <button
-                      onClick={() => openEdit(member)}
-                      className="btn btn-sm btn-circle btn-ghost text-white bg-black/30 hover:bg-black/50"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => setDeleteConfirm(member.id)}
-                      className="btn btn-sm btn-circle btn-ghost text-error bg-black/30 hover:bg-black/50"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+                <div className="absolute top-2 right-2 flex gap-1 z-10">
+                  <button
+                    onClick={() => openEdit(member)}
+                    className="btn btn-sm btn-circle btn-ghost text-white bg-black/30 hover:bg-black/50"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setDeleteConfirm(member.id)}
+                    className="btn btn-sm btn-circle btn-ghost text-error bg-black/30 hover:bg-black/50"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
                 {!member.published && (
-                  <span className="absolute top-2 left-2 badge badge-ghost text-xs">Draft</span>
+                  <span className="absolute top-2 left-2 badge badge-ghost text-xs z-10">Draft</span>
                 )}
-              </figure>
-              <div className="card-body p-4">
+              </div>
+              <div className="p-4">
                 <h3 className="font-semibold">{member.name}</h3>
                 <p className="text-sm text-primary font-medium">{member.role}</p>
                 <p className="text-xs text-base-content/60 mt-1 line-clamp-2">{member.bio}</p>

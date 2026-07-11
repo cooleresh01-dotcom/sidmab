@@ -297,13 +297,19 @@ export default function ServicesPage() {
                 services.map((service) => (
                   <tr key={service.id}>
                     <td className="w-10">
-                      <Image
-                        src={service.image}
-                        alt={service.title}
-                        width={40}
-                        height={40}
-                        className="w-10 h-10 rounded-lg object-cover"
-                      />
+                      {service.image ? (
+                        <Image
+                          src={service.image}
+                          alt={service.title}
+                          width={40}
+                          height={40}
+                          className="w-10 h-10 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-base-200 flex items-center justify-center text-base-content/30 text-xs">
+                          {service.icon || '📷'}
+                        </div>
+                      )}
                     </td>
                     <td className="font-medium">
                       <span className="mr-2">{service.icon}</span>
@@ -488,9 +494,13 @@ export default function ServicesPage() {
                         value={form.image}
                         onChange={(e) => updateForm('image', e.target.value)}
                       />
-                      {form.image && (
+                      {form.image ? (
                         <div className="relative h-24 mt-2 rounded-lg overflow-hidden">
                           <Image src={form.image} alt="Preview" fill className="object-cover" />
+                        </div>
+                      ) : (
+                        <div className="h-24 mt-2 rounded-lg bg-base-200 flex items-center justify-center text-base-content/30 text-sm">
+                          No image
                         </div>
                       )}
                     </div>

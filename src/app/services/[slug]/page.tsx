@@ -5,9 +5,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useParams, notFound } from 'next/navigation'
 import { motion, useInView } from 'framer-motion'
-import { HiCheck, HiArrowRight } from 'react-icons/hi'
+import { HiCheck, HiArrowRight, HiChevronDown } from 'react-icons/hi'
 import { formatPrice } from '@/lib/utils'
 import PageHero from '@/components/ui/PageHero'
+import BackButton from '@/components/ui/BackButton'
 import { services as fallbackServices } from '@/lib/data'
 
 interface Package {
@@ -215,6 +216,12 @@ function PackagesSection({ packages }: { packages: Package[] }) {
 }
 
 function FAQsSection({ faqs }: { faqs: FAQ[] }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
+
+  const toggle = (i: number) => {
+    setOpenIndex((prev) => (prev === i ? null : i))
+  }
+
   return (
     <section className="section-padding bg-base-200/30">
       <div className="container mx-auto max-w-3xl">
@@ -230,23 +237,48 @@ function FAQsSection({ faqs }: { faqs: FAQ[] }) {
         </motion.div>
 
         {faqs.length > 0 && (
-          <div className="join join-vertical w-full">
-            {faqs.map((faq, i) => (
-              <motion.div
-                key={faq.id}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="collapse collapse-arrow join-item border border-base-300"
-              >
-                <input type="radio" name="service-faq" defaultChecked={i === 0} />
-                <div className="collapse-title font-semibold">{faq.question}</div>
-                <div className="collapse-content text-sm text-base-content/70">
-                  <p>{faq.answer}</p>
-                </div>
-              </motion.div>
-            ))}
+          <div className="space-y-2">
+            {faqs.map((faq, i) => {
+              const isOpen = openIndex === i
+              return (
+                <motion.div
+                  key={faq.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.08 }}
+                  className={`rounded-xl border transition-all duration-300 ${
+                    isOpen
+                      ? 'border-primary/20 bg-primary/[0.02] shadow-sm'
+                      : 'border-base-200 hover:border-base-300 bg-white'
+                  }`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggle(i)}
+                    className="w-full flex items-center justify-between gap-4 p-5 text-left"
+                  >
+                    <span className={`font-semibold text-[15px] leading-snug transition-colors duration-200 ${isOpen ? 'text-primary' : 'text-black'}`}>
+                      {faq.question}
+                    </span>
+                    <div className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center transition-all duration-300 ${
+                      isOpen ? 'bg-primary text-white rotate-180' : 'bg-base-200/60 text-base-content/40'
+                    }`}>
+                      <HiChevronDown className="w-4 h-4" />
+                    </div>
+                  </button>
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                      isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                    }`}
+                  >
+                    <div className="px-5 pb-5 text-sm text-base-content/60 leading-relaxed border-t border-base-200/60 pt-4">
+                      {faq.answer}
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })}
           </div>
         )}
       </div>
@@ -444,6 +476,7 @@ export default function ServiceDetailPage() {
 
   return (
     <>
+      <BackButton />
       <ServiceHero service={service} />
       <OverviewSection service={service} />
       <GallerySection images={service.gallery} />

@@ -88,6 +88,23 @@ const defaultSettings = {
   heroText_3: 'From concept to execution, our design team creates stunning environments that captivate and inspire.',
   heroFont_3: '',
   heroGradientFont_3: '',
+  aboutBadge: 'Our Story',
+  aboutTitle: 'About SIDMAB',
+  aboutSubtitle: "Nigeria's premier event planning company — crafting extraordinary experiences since 2010.",
+  aboutImage: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1920',
+  aboutMission: 'To create unforgettable experiences that exceed expectations, delivering exceptional event planning and management services with creativity, precision, and passion.',
+  aboutVision: "To be Africa's most sought-after event management company, setting the standard for excellence and innovation in the events industry.",
+  aboutValues: 'Excellence, creativity, integrity, and client satisfaction are at the heart of everything we do. We believe in building lasting relationships through exceptional service.',
+  aboutTimelineBadge: 'Our Journey',
+  aboutTimelineTitle: 'Company History',
+  aboutTimelineSubtitle: 'From humble beginnings to industry leadership — our story.',
+  aboutMissionBadge: 'Our Foundation',
+  aboutMissionTitle: 'Mission, Vision & Values',
+  aboutMissionSubtitle: 'The principles that guide everything we do.',
+  aboutTeamBadge: 'Our Team',
+  aboutTeamTitle: 'Meet the People Behind SIDMAB',
+  aboutTeamSubtitle: 'Dedicated professionals committed to making your event extraordinary.',
+  footerDescription: 'Premier event planning & management — crafting unforgettable weddings, corporate events, and celebrations across Nigeria.',
 }
 
 export async function GET() {
@@ -114,7 +131,9 @@ export async function PUT(req: NextRequest) {
 
     const body = await req.json()
 
-    for (const [key, value] of Object.entries(body)) {
+    const entries = Object.entries(body)
+
+    for (const [key, value] of entries) {
       await prisma.setting.upsert({
         where: { key },
         create: { key, value: String(value) },
@@ -122,14 +141,14 @@ export async function PUT(req: NextRequest) {
       })
     }
 
-    const rows = await prisma.setting.findMany()
-    const settings: Record<string, string> = { ...defaultSettings }
-    for (const row of rows) {
-      settings[row.key] = row.value
+    const saved: Record<string, string> = { ...defaultSettings }
+    for (const [key, value] of entries) {
+      saved[key] = String(value)
     }
 
-    return NextResponse.json(settings)
-  } catch {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json(saved)
+  } catch (e: any) {
+    console.error('Settings PUT error:', e?.message || e)
+    return NextResponse.json({ error: e?.message || 'Internal server error' }, { status: 500 })
   }
 }

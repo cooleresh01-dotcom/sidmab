@@ -11,6 +11,7 @@ import { motion, useInView } from 'framer-motion'
 import { HiPhone, HiMail, HiLocationMarker, HiClock, HiPaperAirplane } from 'react-icons/hi'
 import { FaWhatsapp } from 'react-icons/fa'
 import PageHero from '@/components/ui/PageHero'
+import BackButton from '@/components/ui/BackButton'
 
 const contactSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -343,6 +344,7 @@ export default function ContactPage() {
 
   return (
     <>
+      <BackButton />
       <PageHero
         title="Contact Us"
         subtitle="We would love to hear from you. Reach out and let us help plan your perfect event."

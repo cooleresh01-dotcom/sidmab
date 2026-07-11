@@ -3,13 +3,13 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { HiArrowRight, HiArrowUp } from 'react-icons/hi'
 import {
-  FaQuoteLeft, FaCalendarCheck, FaUsers, FaAward, FaSmile,
-  FaLaptopCode, FaUniversity, FaPiggyBank, FaLeaf, FaTruck, FaPlay, FaStar,
+  FaCalendarCheck, FaUsers, FaAward, FaSmile,
+  FaLaptopCode, FaUniversity, FaPiggyBank, FaLeaf, FaTruck, FaPlay,
 } from 'react-icons/fa'
-import { services, teamMembers } from '@/lib/data'
+import { teamMembers } from '@/lib/data'
 import TestimonialsMarquee from './TestimonialsMarquee'
 import { HiBadgeCheck, HiSparkles, HiSupport, HiLightBulb } from 'react-icons/hi'
 
@@ -80,14 +80,6 @@ function BackToTop() {
 
 const defaultSlides = [
   {
-    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1920',
-    label: 'Premier Event Management',
-    heading: ['We Create', 'Unforgettable', 'Moments'],
-    text: 'From intimate gatherings to grand celebrations, we bring your vision to life with exceptional planning and flawless execution.',
-    font: '',
-    gradientFont: '',
-  },
-  {
     image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1920',
     label: 'Corporate & Social Events',
     heading: ['Elevate Your', 'Next', 'Occasion'],
@@ -141,11 +133,12 @@ function HeroSection() {
   }, [])
 
   useEffect(() => {
+    if (slides.length === 0) return
     timerRef.current = window.setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length)
     }, 6000)
     return () => { if (timerRef.current) window.clearInterval(timerRef.current) }
-  }, [])
+  }, [slides.length])
 
   const goTo = (i: number) => {
     setCurrent(i)
@@ -185,7 +178,8 @@ function HeroSection() {
             transition={{ duration: 0.5, ease: 'easeOut' }}
             className="max-w-2xl"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/50 text-xs uppercase tracking-[0.15em] font-medium mb-5">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-white text-xs uppercase tracking-[0.15em] font-medium mb-5 shadow-lg backdrop-blur-xl border border-white/30 bg-white/10"
+              style={{ background: 'rgba(4,44,108,0.4)' }}>
               <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--site-primary)' }} />
               {slide.label}
             </div>
@@ -210,7 +204,7 @@ function HeroSection() {
                 Book a Consultation <HiArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
               <Link
-                href="/portfolio"
+              href="/portfolio"
                 className="group inline-flex items-center gap-2 px-8 py-3.5 text-white/80 font-medium rounded-xl transition-all duration-300 text-sm hover:text-white"
                 style={{ border: '1.5px solid rgba(255,255,255,0.15)' }}
                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--site-primary)'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
@@ -263,35 +257,34 @@ function StatsSection() {
   ]
 
   return (
-    <section className="py-8 md:py-16 bg-black relative overflow-hidden">
+    <section className="py-4 md:py-6 relative overflow-hidden"
+      style={{ background: 'linear-gradient(135deg, rgba(80,80,80,0.85), rgba(40,40,40,0.7))' }}>
+
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        {/* Mobile: flex row */}
-        <div className="flex md:hidden justify-between items-start gap-1">
+        <div className="flex md:hidden justify-between items-center gap-2">
           {stats.map(({ icon: Icon, end, suffix, label }) => (
-            <div key={label} className="flex flex-col items-center gap-0.5">
-              <Icon className="w-4 h-4" style={{ color: 'var(--site-primary)' }} />
-              <p className="text-white text-sm font-bold leading-tight">
-                <AnimatedCounter end={end} suffix={suffix} />
-              </p>
-              <p className="text-white/40 text-[10px] text-center leading-tight">{label}</p>
+            <div key={label} className="flex items-center gap-1.5">
+              <Icon className="w-3 h-3 shrink-0" style={{ color: 'var(--site-primary)' }} />
+              <div>
+                <p className="text-white text-xs font-bold leading-tight">
+                  <AnimatedCounter end={end} suffix={suffix} />
+                </p>
+                <p className="text-white/50 text-[9px] leading-tight">{label}</p>
+              </div>
             </div>
           ))}
         </div>
-        {/* Desktop: grid */}
-        <div className="hidden md:grid md:grid-cols-4 gap-3">
+        <div className="hidden md:flex items-center justify-between gap-4">
           {stats.map(({ icon: Icon, end, suffix, label }) => (
             <FadeIn key={label}>
-              <div className="relative group text-center p-8 rounded-2xl backdrop-blur-2xl border border-white/[0.12] shadow-xl overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl"
-                style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03))' }}>
-                <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full opacity-20 blur-3xl transition-all duration-500 group-hover:opacity-30"
-                  style={{ background: 'var(--site-primary)' }} />
-                <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg bg-white">
-                  <Icon className="w-7 h-7" style={{ color: 'var(--site-primary)' }} />
+              <div className="flex items-center gap-3">
+                <Icon className="w-5 h-5 shrink-0" style={{ color: 'var(--site-primary)' }} />
+                <div>
+                  <p className="text-white/90 text-3xl font-bold tracking-tight leading-none">
+                    <AnimatedCounter end={end} suffix={suffix} />
+                  </p>
+                  <p className="text-white/50 text-xs mt-0.5">{label}</p>
                 </div>
-                <p className="text-white text-5xl font-bold tracking-tight relative z-10">
-                  <AnimatedCounter end={end} suffix={suffix} />
-                </p>
-                <p className="text-white/40 text-sm mt-2 font-medium tracking-wide relative z-10">{label}</p>
               </div>
             </FadeIn>
           ))}
@@ -305,8 +298,16 @@ function ServicesSection() {
   const [badge, setBadge] = useState('What We Do')
   const [title, setTitle] = useState('Our Services')
   const [desc, setDesc] = useState('Comprehensive event planning and management solutions tailored to your needs.')
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const [activeIndex, setActiveIndex] = useState(0)
+  const [serviceList, setServiceList] = useState<Array<{ id: string; title: string; slug: string; tagline: string; description: string; icon: string; image: string; gallery: string[]; features: string[]; featured: boolean }>>([])
+  const [activeService, setActiveService] = useState(0)
+  const [galleryIndex, setGalleryIndex] = useState(0)
+
+  useEffect(() => {
+    fetch('/api/services')
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data)) setServiceList(data.filter((s) => s.published)) })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     fetch('/api/settings?_=' + Date.now())
@@ -322,144 +323,144 @@ function ServicesSection() {
   }, [])
 
   useEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
-    const interval = setInterval(() => {
-      const next = (activeIndex + 1) % services.slice(0, 4).length
-      el.scrollTo({ left: next * el.clientWidth, behavior: 'smooth' })
-      setActiveIndex(next)
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [activeIndex])
+    if (serviceList.length === 0) return
+    const timer = setInterval(() => {
+      const current = serviceList[activeService]
+      const images = (current.gallery && current.gallery.length > 0) ? current.gallery : [current.image]
+      if (galleryIndex < images.length - 1) {
+        setGalleryIndex((prev) => prev + 1)
+      } else {
+        setGalleryIndex(0)
+        setActiveService((prev) => (prev + 1) % serviceList.length)
+      }
+    }, 3000)
+    return () => clearInterval(timer)
+  }, [serviceList, activeService, galleryIndex])
 
-  const handleScroll = () => {
-    const el = scrollRef.current
-    if (!el) return
-    const idx = Math.round(el.scrollLeft / el.clientWidth)
-    setActiveIndex(idx)
-  }
+  if (serviceList.length === 0) return null
+
+  const current = serviceList[activeService]
+  const currentImages = (current.gallery && current.gallery.length > 0) ? current.gallery : [current.image]
+  const currentImage = currentImages[galleryIndex] || current.image
 
   return (
-    <section className="py-12 bg-white relative overflow-hidden">
+    <section className="pt-16 pb-12 bg-white relative overflow-hidden">
       <div className="absolute inset-0 opacity-[0.015] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 25% 75%, var(--site-primary) 0%, transparent 50%)' }} />
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <FadeIn>
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-black/40 text-xs uppercase tracking-[0.15em] font-medium mb-4">
+          <div className="mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-white text-xs uppercase tracking-[0.15em] font-medium mb-3 shadow-lg backdrop-blur-xl border border-white/30 bg-white/10"
+              style={{ background: 'rgba(4,44,108,0.4)' }}>
               {badge}
             </div>
-            <h2 className="text-4xl lg:text-6xl font-bold text-black tracking-tight">
+            <h2 className="text-3xl lg:text-5xl font-bold text-black tracking-tight">
               {title}
             </h2>
-            <p className="text-black/45 mt-4 max-w-xl mx-auto text-lg leading-relaxed">
+            <p className="text-black/45 mt-3 max-w-xl text-base leading-relaxed">
               {desc}
             </p>
           </div>
         </FadeIn>
 
-        {/* Mobile: auto-scroll carousel */}
-        <div ref={scrollRef} onScroll={handleScroll} className="flex sm:hidden overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-6 px-6">
-          {services.slice(0, 4).map((service) => (
-            <Link
-              key={service.id}
-              href={`/services/${service.slug}`}
-              className="group block w-full shrink-0 snap-center"
-            >
-              <div className="mx-1 rounded-2xl bg-white border border-black/[0.06] overflow-hidden">
-                <div className="relative h-52">
-                  <Image
-                    src={service.image}
-                    alt={service.title}
-                    fill
-                    className="object-cover"
-                    sizes="100vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-3 left-4 right-4 z-10">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-2xl drop-shadow-lg">{service.icon}</span>
-                      <h3 className="text-white font-bold text-base leading-tight">{service.title}</h3>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4 space-y-3">
-                  <p className="text-sm text-black/60 leading-relaxed line-clamp-2">{service.tagline}</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {service.features.slice(0, 3).map((f) => (
-                      <span key={f} className="text-[11px] px-2.5 py-1 rounded-full bg-black/[0.04] text-black/50 font-medium">{f}</span>
-                    ))}
-                  </div>
-                  <div className="pt-2">
-                    <span className="inline-flex items-center gap-1 text-sm font-semibold" style={{ color: 'var(--site-primary)' }}>
-                      Learn More <HiArrowRight className="w-3.5 h-3.5" />
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          {/* Left: service list */}
+          <div className="space-y-0.5">
+            {serviceList.map((s, i) => (
+              <button
+                key={s.id}
+                onClick={() => { setActiveService(i); setGalleryIndex(0) }}
+                className="w-full text-left group transition-all duration-300"
+              >
+                <div
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-300"
+                  style={{
+                    background: i === activeService ? 'var(--site-primary)' : 'transparent',
+                    color: i === activeService ? '#fff' : undefined,
+                  }}
+                  onMouseEnter={(e) => { if (i !== activeService) { e.currentTarget.style.background = 'rgba(0,0,0,0.03)' } }}
+                  onMouseLeave={(e) => { if (i !== activeService) { e.currentTarget.style.background = 'transparent' } }}
+                >
+                  <span
+                    className="text-xl shrink-0 transition-all duration-300"
+                    style={{ opacity: i === activeService ? 1 : 0.4 }}
+                  >
+                    {s.icon}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <span className={`block font-semibold text-xs sm:text-sm transition-all duration-300 ${i === activeService ? 'text-white' : 'text-black'}`}>
+                      {s.title}
+                    </span>
+                    <span className={`block text-xs sm:text-sm mt-0.5 transition-all duration-300 ${i === activeService ? 'text-white/70' : 'text-black/40'}`}>
+                      {s.tagline}
                     </span>
                   </div>
+                  <HiArrowRight
+                    className="w-4 h-4 shrink-0 transition-all duration-300"
+                    style={{
+                      opacity: i === activeService ? 1 : 0,
+                      transform: i === activeService ? 'translateX(0)' : 'translateX(-8px)',
+                      color: i === activeService ? '#fff' : undefined,
+                    }}
+                  />
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-        {/* Carousel dots */}
-        <div className="flex sm:hidden justify-center gap-1.5 mt-4">
-          {services.slice(0, 4).map((_, i) => (
-            <button
-              key={i}
-              onClick={() => {
-                const el = scrollRef.current
-                if (el) {
-                  el.scrollTo({ left: i * el.clientWidth, behavior: 'smooth' })
-                  setActiveIndex(i)
-                }
-              }}
-              className="rounded-full transition-all duration-300"
-              style={{
-                width: i === activeIndex ? '24px' : '6px',
-                height: '6px',
-                background: i === activeIndex ? 'var(--site-primary)' : 'rgba(0,0,0,0.15)',
-              }}
-            />
-          ))}
-        </div>
-        {/* Desktop: grid */}
-        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {services.slice(0, 4).map((service, i) => (
-            <FadeIn key={service.id} delay={i * 0.08}>
-              <Link href={`/services/${service.slug}`} className="group block h-full">
-                <div className="h-full rounded-2xl bg-white border border-black/[0.06] transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 hover:border-black/10">
-                  <div className="relative h-56 overflow-hidden rounded-t-2xl">
-                    <Image
-                      src={service.image}
-                      alt={service.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      sizes="(max-width: 1024px) 50vw, 25vw"
+              </button>
+            ))}
+          </div>
+
+          {/* Right: active service showcase */}
+          <div className="relative overflow-hidden rounded-2xl bg-black min-h-[300px] lg:min-h-[480px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${current.id}-${galleryIndex}`}
+                initial={{ opacity: 0, scale: 1.03 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.97 }}
+                transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                className="absolute inset-0"
+              >
+                <Image src={currentImage} alt={current.title} fill className="object-cover" sizes="50vw" />
+              </motion.div>
+            </AnimatePresence>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-5 lg:p-6">
+              <span className="inline-block px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/70 text-[10px] uppercase tracking-[0.15em] font-medium mb-3">
+                {current.title}
+              </span>
+              <p className="text-white/80 text-sm lg:text-base leading-relaxed max-w-md">
+                {current.description || current.tagline}
+              </p>
+              {current.features && current.features.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {current.features.slice(0, 3).map((f) => (
+                    <span key={f} className="text-[11px] px-2.5 py-1 rounded-full bg-white/10 border border-white/10 text-white/60 font-medium">
+                      {f}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {currentImages.length > 1 && (
+                <div className="flex gap-1.5 mt-3">
+                  {currentImages.map((_, gi) => (
+                    <button
+                      key={gi}
+                      onClick={() => setGalleryIndex(gi)}
+                      className="w-2 h-2 rounded-full transition-all duration-300"
+                      style={{
+                        background: gi === galleryIndex ? '#fff' : 'rgba(255,255,255,0.3)',
+                        transform: gi === galleryIndex ? 'scale(1.3)' : 'scale(1)',
+                      }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-3 left-4 right-4 z-10">
-                      <div className="flex items-center gap-2.5">
-                        <span className="text-2xl drop-shadow-lg">{service.icon}</span>
-                        <h3 className="text-white font-bold text-base leading-tight">{service.title}</h3>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-4 space-y-3">
-                    <p className="text-sm text-black/60 leading-relaxed line-clamp-2">{service.tagline}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {service.features.slice(0, 3).map((f) => (
-                        <span key={f} className="text-[11px] px-2.5 py-1 rounded-full bg-black/[0.04] text-black/50 font-medium">{f}</span>
-                      ))}
-                    </div>
-                    <div className="pt-2">
-                      <span className="inline-flex items-center gap-1 text-sm font-semibold transition-colors duration-200"
-                        style={{ color: 'var(--site-primary)' }}>
-                        Learn More <HiArrowRight className="w-3.5 h-3.5" />
-                      </span>
-                    </div>
-                  </div>
+                  ))}
                 </div>
+              )}
+              <Link
+                href={`/services/${current.slug}`}
+                className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-white/80 hover:text-white transition-colors"
+              >
+                Learn More <HiArrowRight className="w-3.5 h-3.5" />
               </Link>
-            </FadeIn>
-          ))}
+            </div>
+          </div>
         </div>
 
         <FadeIn>
@@ -483,9 +484,6 @@ function ServicesSection() {
 function WhyChooseUsSection() {
   const [why, setWhy] = useState<Record<string, string>>({})
   const [apiTeam, setApiTeam] = useState<Array<{ name: string; role: string; image: string }>>([])
-  const whyScrollRef = useRef<HTMLDivElement>(null)
-  const [whyIndex, setWhyIndex] = useState(0)
-
   useEffect(() => {
     fetch('/api/settings?_=' + Date.now())
       .then((r) => r.json())
@@ -496,17 +494,6 @@ function WhyChooseUsSection() {
       .then((data) => { if (Array.isArray(data)) setApiTeam(data) })
       .catch(() => {})
   }, [])
-
-  useEffect(() => {
-    const el = whyScrollRef.current
-    if (!el) return
-    const interval = setInterval(() => {
-      const next = (whyIndex + 1) % 4
-      el.scrollTo({ left: next * el.clientWidth, behavior: 'smooth' })
-      setWhyIndex(next)
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [whyIndex])
 
   const cards = [
     { icon: HiBadgeCheck, key: '0' },
@@ -522,8 +509,9 @@ function WhyChooseUsSection() {
       <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 75% 25%, var(--site-primary) 0%, transparent 50%)' }} />
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <FadeIn>
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/[0.03] border border-black/5 text-black/40 text-xs uppercase tracking-[0.15em] font-medium mb-4">
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-white text-xs uppercase tracking-[0.15em] font-medium mb-4 shadow-lg backdrop-blur-xl border border-white/30 bg-white/10"
+              style={{ background: 'rgba(4,44,108,0.4)' }}>
               {why.whyBadge || 'Why SIDMAB'}
             </div>
             <h2 className="text-4xl lg:text-6xl font-bold text-black tracking-tight">
@@ -535,51 +523,7 @@ function WhyChooseUsSection() {
           </div>
         </FadeIn>
 
-        {/* Mobile: auto-scroll carousel */}
-        <div ref={whyScrollRef} className="flex sm:hidden overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-6 px-6">
-          {cards.map(({ icon: Icon, key }, i) => (
-            <div key={key} className="w-full shrink-0 snap-center px-1">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4 }}
-                className="p-6 rounded-2xl bg-white border border-black/[0.06]"
-              >
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: 'color-mix(in srgb, var(--site-primary) 10%, white)' }}>
-                  <Icon className="w-5 h-5" style={{ color: 'var(--site-primary)' }} />
-                </div>
-                <h3 className="text-base font-bold text-black mb-2">{why[`whyCard${key}_title`] || ['Proven Expertise', 'Creative Excellence', 'End-to-End Service', 'Tailored Solutions'][i]}</h3>
-                <p className="text-sm text-black/50 leading-relaxed mb-3">{why[`whyCard${key}_desc`] || ['1000+ events delivered with excellence across Nigeria over 15 years.', 'Award-winning design team transforming ordinary spaces into extraordinary experiences.', 'From concept to cleanup, we handle every detail so you can enjoy your event.', 'Every event is unique. We craft custom packages that fit your vision and budget.'][i]}</p>
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--site-primary)' }} />
-                  <span className="text-xs font-semibold" style={{ color: 'var(--site-primary)' }}>{why[`whyCard${key}_stat`] || ['15+ Years', '50+ Awards', '100% Dedicated', 'Fully Custom'][i]}</span>
-                </div>
-              </motion.div>
-            </div>
-          ))}
-        </div>
-        {/* Mobile dots */}
-        <div className="flex sm:hidden justify-center gap-1.5 mt-4">
-          {cards.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => {
-                const el = whyScrollRef.current
-                if (el) { el.scrollTo({ left: i * el.clientWidth, behavior: 'smooth' }); setWhyIndex(i) }
-              }}
-              className="rounded-full transition-all duration-300"
-              style={{
-                width: i === whyIndex ? '24px' : '6px',
-                height: '6px',
-                background: i === whyIndex ? 'var(--site-primary)' : 'rgba(0,0,0,0.15)',
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Desktop: grid */}
-        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-14">
           {cards.map(({ icon: Icon, key }, i) => (
             <FadeIn key={key} delay={i * 0.08}>
               <div className="p-8 rounded-2xl bg-white border border-black/[0.06] hover:border-black/10 transition-all duration-500 hover:shadow-xl hover:-translate-y-1 group">
@@ -598,12 +542,12 @@ function WhyChooseUsSection() {
           ))}
         </div>
 
-        <div className="mt-10 grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+        <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
           {displayTeam.map((member, i) => (
             <FadeIn key={member.name} delay={i * 0.1}>
               <div className="flex items-center gap-4 p-4 rounded-xl bg-white border border-black/[0.06] hover:border-black/10 transition-all duration-300 hover:shadow-md">
                 <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-white shadow-sm">
-                  <Image src={member.image} alt={member.name} fill className="object-cover" sizes="48px" />
+                  <Image src={member.image} alt={member.name} fill className="object-cover object-top" sizes="48px" />
                 </div>
                 <div>
                   <p className="font-semibold text-black text-sm">{member.name}</p>
@@ -619,72 +563,117 @@ function WhyChooseUsSection() {
 }
 
 function PortfolioSection() {
-  const [items, setItems] = useState<Array<{ id: string; title: string; slug: string; category: string; images: string[] }>>([])
+  const [items, setItems] = useState<Array<{ id: string; title: string; category: string; image: string; type: string }>>([])
+  const [index, setIndex] = useState(0)
 
   useEffect(() => {
     fetch('/api/portfolio')
       .then((r) => r.json())
-      .then((data) => { if (Array.isArray(data)) setItems(data.slice(0, 4)) })
+      .then((data: Array<{ id: string; title: string; category: string; images?: string[] }>) => { if (Array.isArray(data) && data.length) setItems(data.map((g) => ({ id: g.id, title: g.title, category: g.category, image: g.images?.[0] || '', type: 'image' }))) })
       .catch(() => {})
   }, [])
 
+  useEffect(() => {
+    if (items.length < 2) return
+    const timer = setInterval(() => setIndex((i) => (i + 1) % items.length), 5000)
+    return () => clearInterval(timer)
+  }, [items.length])
+
+  if (items.length === 0) return null
+
+  const current = items[index]
+
   return (
-    <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
-        <FadeIn>
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/[0.03] border border-black/5 text-black/40 text-xs uppercase tracking-[0.15em] font-medium mb-4">
-              Our Work
-            </div>
-            <h2 className="text-4xl lg:text-6xl font-bold text-black tracking-tight">
-              Featured Events
-            </h2>
-            <p className="text-black/45 mt-4 max-w-xl mx-auto text-lg leading-relaxed">
-              A glimpse into the extraordinary experiences we have created.
-            </p>
-          </div>
-        </FadeIn>
+    <section className="relative h-[80vh] min-h-[500px] overflow-hidden bg-black">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={current.id}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+          className="absolute inset-0"
+        >
+          <Image src={current.image} alt="" fill className="object-cover" sizes="100vw" priority />
+        </motion.div>
+      </AnimatePresence>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {items.map((item, i) => (
-            <FadeIn key={item.id} delay={i * 0.08}>
-              <Link href={`/portfolio/${item.id}`} className="group block">
-                <div
-                  className="relative overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
-                >
-                  <div className="relative h-80">
-                    <Image
-                      src={item.images[0]}
-                      alt={item.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-700"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-6 group-hover:translate-y-0 transition-transform duration-500">
-                      <span className="text-white/50 text-[10px] uppercase tracking-[0.15em] font-medium">{item.category}</span>
-                      <h3 className="text-white font-bold text-lg mt-1">{item.title}</h3>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </FadeIn>
-          ))}
-        </div>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
 
-        <FadeIn>
-          <div className="text-center mt-8">
-            <Link
-              href="/portfolio"
-              className="group inline-flex items-center gap-2 px-7 py-3 font-semibold rounded-xl transition-all duration-300 text-sm hover:-translate-y-0.5"
-              style={{ border: '1.5px solid var(--site-primary)', color: 'var(--site-primary)' }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--site-primary)'; e.currentTarget.style.color = '#fff' }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--site-primary)' }}
-            >
-              View All Projects <HiArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+        <motion.span
+          key={`badge-${current.id}`}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-white text-xs uppercase tracking-[0.2em] font-medium mb-5 border border-white/20 backdrop-blur-sm"
+          style={{ background: 'rgba(4,44,108,0.35)' }}
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-white/70" />
+          Our Work
+        </motion.span>
+
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.35 }}
+          className="text-white text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight max-w-4xl leading-[1.1]"
+        >
+          Featured Events
+        </motion.h2>
+
+        <motion.h3
+          key={`title-${current.id}`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.45 }}
+          className="text-white/80 text-xl md:text-2xl font-medium mt-3"
+        >
+          {current.title}
+        </motion.h3>
+
+        <motion.p
+          key={`desc-${current.id}`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.55 }}
+          className="text-white/50 text-base md:text-lg max-w-xl mt-2"
+        >
+          A glimpse into the extraordinary experiences we have created.
+        </motion.p>
+
+        <motion.div
+          key={`cta-${current.id}`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.65 }}
+          className="mt-8 flex flex-wrap items-center justify-center gap-4"
+        >
+          <Link
+            href="/portfolio"
+            className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-white text-black font-semibold text-sm hover:bg-white/90 transition-all duration-300 hover:-translate-y-0.5"
+          >
+            View Portfolio <HiArrowRight className="w-4 h-4" />
+          </Link>
+        </motion.div>
+
+        {/* Dots */}
+        {items.length > 1 && (
+          <div className="absolute bottom-8 flex items-center gap-2">
+            {items.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setIndex(i)}
+                className="rounded-full transition-all duration-300"
+                style={{
+                  width: i === index ? '28px' : '6px',
+                  height: '6px',
+                  background: i === index ? '#fff' : 'rgba(255,255,255,0.35)',
+                }}
+              />
+            ))}
           </div>
-        </FadeIn>
+        )}
       </div>
     </section>
   )
@@ -694,8 +683,6 @@ function PortfolioSection() {
 
 function PartnersSection() {
   const [partnerData, setPartnerData] = useState<Record<string, string>>({})
-  const partnerRef = useRef<HTMLDivElement>(null)
-  const [partnerIdx, setPartnerIdx] = useState(0)
 
   useEffect(() => {
     fetch('/api/settings?_=' + Date.now())
@@ -704,26 +691,15 @@ function PartnersSection() {
       .catch(() => {})
   }, [])
 
-  useEffect(() => {
-    const el = partnerRef.current
-    if (!el) return
-    const count = 6
-    const interval = setInterval(() => {
-      const next = (partnerIdx + 1) % count
-      el.scrollTo({ left: next * (el.clientWidth / 2), behavior: 'smooth' })
-      setPartnerIdx(next)
-    }, 3000)
-    return () => clearInterval(interval)
-  }, [partnerIdx])
-
   const partnerIcons = [FaLaptopCode, FaUniversity, FaPiggyBank, FaLeaf, FaTruck, FaPlay]
   const fallbackNames = ['TechBridge', 'Lagos Business School', 'AfriBank Plc', 'Greenfield Energy', 'Nexus Logistics', 'Prime Media']
   return (
     <section className="py-8 md:py-16 bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <FadeIn>
-          <div className="text-center mb-6 md:mb-10">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/[0.03] border border-black/5 text-black/40 text-xs uppercase tracking-[0.15em] font-medium mb-4">
+          <div className="text-center mb-8 md:mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-white text-xs uppercase tracking-[0.15em] font-medium mb-4 shadow-lg backdrop-blur-xl border border-white/30 bg-white/10"
+              style={{ background: 'rgba(4,44,108,0.4)' }}>
               {partnerData.partnersBadge || 'Our Partners'}
             </div>
             <h2 className="text-2xl md:text-6xl font-bold text-black tracking-tight">
@@ -732,55 +708,41 @@ function PartnersSection() {
           </div>
         </FadeIn>
 
-        {/* Mobile: auto-scroll */}
-        <div ref={partnerRef} className="flex md:hidden overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-6 px-6">
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-8 md:gap-12 max-w-4xl mx-auto items-center">
           {[0, 1, 2, 3, 4, 5].map((i) => {
             const Icon = partnerIcons[i]
             const name = partnerData[`partner${i}_name`] || fallbackNames[i]
             const logo = partnerData[`partner${i}_logo`]
             return (
-              <div key={i} className="flex flex-col items-center gap-2 shrink-0 w-1/2 snap-center">
-                <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-sm">
+              <div key={i} className="flex flex-col items-center gap-3">
+                <div className="w-14 h-14 md:w-20 md:h-20 flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity duration-300">
                   {logo ? (
-                    <Image src={logo} alt={name} width={28} height={28} className="object-contain" />
+                    <Image src={logo} alt={name} width={60} height={60} className="object-contain" />
                   ) : (
-                    <Icon className="w-5 h-5 text-black/30" />
+                    <Icon className="w-8 h-8 md:w-10 md:h-10 text-black/40" />
                   )}
                 </div>
                 {name && (
-                  <span className="text-[10px] font-semibold text-black/50 text-center whitespace-nowrap">{name}</span>
+                  <span className="text-[11px] md:text-xs font-semibold text-black/30 text-center leading-tight">
+                    {name}
+                  </span>
                 )}
               </div>
             )
           })}
         </div>
 
-        {/* Desktop: grid */}
-        <div className="hidden md:grid md:grid-cols-6 gap-5 max-w-4xl mx-auto">
-          {[0, 1, 2, 3, 4, 5].map((i) => {
-            const Icon = partnerIcons[i]
-            const name = partnerData[`partner${i}_name`] || fallbackNames[i]
-            const logo = partnerData[`partner${i}_logo`]
-            return (
-              <FadeIn key={i} delay={i * 0.08}>
-                <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-black/[0.02] border border-black/[0.06] hover:border-black/10 hover:shadow-lg transition-all duration-300 group">
-                  <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shadow-sm group-hover:shadow-md transition-all group-hover:scale-110 duration-300">
-                    {logo ? (
-                      <Image src={logo} alt={name} width={40} height={40} className="object-contain" />
-                    ) : (
-                      <Icon className="w-7 h-7 text-black/30" />
-                    )}
-                  </div>
-                  {name && (
-                    <span className="text-xs font-semibold text-black/50 text-center leading-tight group-hover:text-black/70 transition-colors">
-                      {name}
-                    </span>
-                  )}
-                </div>
-              </FadeIn>
-            )
-          })}
-        </div>
+        <FadeIn>
+          <div className="text-center mt-10">
+            <Link
+              href="/about"
+              className="text-xs font-medium tracking-wider uppercase"
+              style={{ color: 'var(--site-primary)' }}
+            >
+              Become a Partner &rarr;
+            </Link>
+          </div>
+        </FadeIn>
       </div>
     </section>
   )

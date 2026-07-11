@@ -4,27 +4,27 @@ import { useRef } from 'react'
 import Image from 'next/image'
 import { motion, useInView } from 'framer-motion'
 import {
+  HiDocumentText,
+  HiUserGroup,
+  HiCash,
+  HiExclamationCircle,
   HiShieldCheck,
-  HiCollection,
-  HiAcademicCap,
-  HiLockClosed,
-  HiGlobe,
-  HiScale,
-  HiInformationCircle,
   HiRefresh,
   HiMail,
+  HiGlobe,
+  HiScale,
 } from 'react-icons/hi'
 import BackButton from '@/components/ui/BackButton'
 
 const sections = [
-  { id: 'introduction', label: 'Introduction', icon: HiShieldCheck },
-  { id: 'information', label: 'Information We Collect', icon: HiCollection },
-  { id: 'usage', label: 'How We Use Your Info', icon: HiAcademicCap },
-  { id: 'protection', label: 'Data Protection', icon: HiLockClosed },
-  { id: 'disclosure', label: 'Third-Party Disclosure', icon: HiGlobe },
-  { id: 'rights', label: 'Your Rights', icon: HiScale },
-  { id: 'cookies', label: 'Cookies', icon: HiInformationCircle },
-  { id: 'changes', label: 'Changes to Policy', icon: HiRefresh },
+  { id: 'acceptance', label: 'Acceptance of Terms', icon: HiDocumentText },
+  { id: 'services', label: 'Our Services', icon: HiUserGroup },
+  { id: 'bookings', label: 'Bookings & Payments', icon: HiCash },
+  { id: 'cancellation', label: 'Cancellation & Refunds', icon: HiExclamationCircle },
+  { id: 'liability', label: 'Limitation of Liability', icon: HiShieldCheck },
+  { id: 'ip', label: 'Intellectual Property', icon: HiGlobe },
+  { id: 'privacy', label: 'Privacy', icon: HiScale },
+  { id: 'changes', label: 'Changes to Terms', icon: HiRefresh },
   { id: 'contact', label: 'Contact Us', icon: HiMail },
 ]
 
@@ -62,7 +62,7 @@ function SectionCard({
   )
 }
 
-export default function PrivacyPolicy() {
+export default function TermsPage() {
   return (
     <>
       <BackButton />
@@ -70,8 +70,8 @@ export default function PrivacyPolicy() {
       <section className="relative pt-28 pb-16 overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=1920"
-            alt="Privacy Policy"
+            src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920"
+            alt="Terms of Service"
             fill
             className="object-cover"
           />
@@ -86,13 +86,13 @@ export default function PrivacyPolicy() {
             <span className="inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-sm font-medium mb-4 border border-white/20">
               Legal
             </span>
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Privacy Policy</h1>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">Terms of Service</h1>
             <p className="text-lg text-white/70 max-w-2xl mx-auto">
-              How we collect, use, and protect your information.
+              Please read these terms carefully before using our services.
             </p>
             <div className="flex items-center justify-center gap-2 mt-6 text-white/50 text-sm">
-              <HiShieldCheck className="w-4 h-4" />
-              <span>Last updated: July 5, 2026</span>
+              <HiDocumentText className="w-4 h-4" />
+              <span>Last updated: July 10, 2026</span>
             </div>
           </motion.div>
         </div>
@@ -125,7 +125,7 @@ export default function PrivacyPolicy() {
               <div className="bg-base-200/50 rounded-2xl p-5">
                 <p className="text-sm font-semibold mb-1">Need Help?</p>
                 <p className="text-xs text-base-content/50 mb-3">
-                  Have questions about our policy?
+                  Have questions about our terms?
                 </p>
                 <a
                   href="mailto:info@sidmab.com"
@@ -139,38 +139,37 @@ export default function PrivacyPolicy() {
 
           {/* Main Content */}
           <div className="flex-1 min-w-0 flex flex-col gap-8">
-            <SectionCard id="introduction" title="1. Introduction" icon={HiShieldCheck}>
+            <SectionCard id="acceptance" title="1. Acceptance of Terms" icon={HiDocumentText}>
               <p className="text-base-content/70 leading-relaxed">
-                SIDMAB Events & Management (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;)
-                is committed to protecting your privacy. This Privacy Policy explains how we collect,
-                use, disclose, and safeguard your information when you visit our website or use our
-                services. By accessing our platform, you consent to the practices described in this
-                policy.
+                By accessing or using the services provided by SIDMAB Events & Management
+                (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;), you agree to be
+                bound by these Terms of Service. If you do not agree to all of these terms, you
+                may not use our services. These terms apply to all visitors, clients, and users
+                of our website and services.
               </p>
             </SectionCard>
 
-            <SectionCard id="information" title="2. Information We Collect" icon={HiCollection}>
+            <SectionCard id="services" title="2. Our Services" icon={HiUserGroup}>
               <p className="text-base-content/70 leading-relaxed mb-5">
-                We may collect the following types of information when you interact with our website
-                or services:
+                We provide event planning and management services including but not limited to:
               </p>
               <div className="grid gap-3">
                 {[
                   {
-                    title: 'Personal Data',
-                    desc: 'Name, email address, phone number, and other contact details you provide through our contact forms or booking system.',
+                    title: 'Event Planning',
+                    desc: 'Full-service event planning for weddings, corporate events, birthdays, and special celebrations.',
                   },
                   {
-                    title: 'Event Details',
-                    desc: 'Information about your event preferences, dates, locations, and requirements.',
+                    title: 'Decoration & Design',
+                    desc: 'Creative event decoration, staging, and environmental design.',
                   },
                   {
-                    title: 'Usage Data',
-                    desc: 'Information about how you interact with our website, including pages visited and time spent.',
+                    title: 'Catering Coordination',
+                    desc: 'Coordination of catering services and menu planning.',
                   },
                   {
-                    title: 'Cookies',
-                    desc: 'We use cookies to enhance your browsing experience and analyze site traffic.',
+                    title: 'Equipment Rentals',
+                    desc: 'Rental of event equipment, furniture, and decor items.',
                   },
                 ].map((item) => (
                   <div
@@ -187,17 +186,17 @@ export default function PrivacyPolicy() {
               </div>
             </SectionCard>
 
-            <SectionCard id="usage" title="3. How We Use Your Information" icon={HiAcademicCap}>
+            <SectionCard id="bookings" title="3. Bookings & Payments" icon={HiCash}>
               <p className="text-base-content/70 leading-relaxed mb-5">
-                We use the collected information for the following purposes:
+                When you book our services, the following terms apply:
               </p>
               <ul className="space-y-3">
                 {[
-                  'To provide and manage our event planning and management services',
-                  'To communicate with you regarding inquiries, bookings, and updates',
-                  'To improve our website and services',
-                  'To send promotional materials (with your consent)',
-                  'To comply with legal obligations',
+                  'A deposit is required to confirm your booking. The deposit amount will be communicated during the booking process.',
+                  'Full payment terms and schedules will be outlined in your service agreement.',
+                  'Prices are subject to change without notice until a booking is confirmed with a deposit.',
+                  'Additional services or changes to the agreed scope may incur extra charges.',
+                  'All payments should be made using the agreed payment methods within the specified timeframes.',
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-sm text-base-content/70">
                     <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-2 shrink-0" />
@@ -207,74 +206,81 @@ export default function PrivacyPolicy() {
               </ul>
             </SectionCard>
 
-            <SectionCard id="protection" title="4. Data Protection" icon={HiLockClosed}>
-              <p className="text-base-content/70 leading-relaxed">
-                We implement appropriate security measures to protect your personal information from
-                unauthorized access, alteration, disclosure, or destruction. These include encryption,
-                secure servers, and strict access controls. However, no method of transmission over
-                the Internet is 100% secure, and we cannot guarantee absolute security.
-              </p>
-            </SectionCard>
-
-            <SectionCard id="disclosure" title="5. Third-Party Disclosure" icon={HiGlobe}>
-              <p className="text-base-content/70 leading-relaxed">
-                We do not sell, trade, or transfer your personal information to third parties without
-                your consent, except as necessary to provide our services or as required by law.
-                We may share data with trusted service providers who assist us in operating our website
-                and conducting our business, provided they agree to keep your information confidential.
-              </p>
-            </SectionCard>
-
-            <SectionCard id="rights" title="6. Your Rights" icon={HiScale}>
+            <SectionCard id="cancellation" title="4. Cancellation & Refunds" icon={HiExclamationCircle}>
               <p className="text-base-content/70 leading-relaxed mb-5">
-                Depending on your location, you may have the following rights regarding your personal
-                data:
+                Our cancellation policy is as follows:
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {[
-                  'The right to access your personal data',
-                  'The right to rectify inaccurate data',
-                  'The right to delete your data',
-                  'The right to restrict processing',
-                  'The right to data portability',
-                  'The right to withdraw consent',
-                ].map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-center gap-3 p-4 rounded-xl bg-base-200/30"
-                  >
-                    <span className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <span className="w-2 h-2 rounded-full bg-primary" />
-                    </span>
-                    <span className="text-sm text-base-content/70">{item}</span>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3 text-sm text-base-content/70">
+                  <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-2 shrink-0" />
+                  <div>
+                    <strong>30+ days before event:</strong> Full refund minus administrative fees.
                   </div>
-                ))}
-              </div>
+                </li>
+                <li className="flex items-start gap-3 text-sm text-base-content/70">
+                  <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-2 shrink-0" />
+                  <div>
+                    <strong>15-29 days before event:</strong> 50% refund of the deposit.
+                  </div>
+                </li>
+                <li className="flex items-start gap-3 text-sm text-base-content/70">
+                  <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-2 shrink-0" />
+                  <div>
+                    <strong>Less than 15 days before event:</strong> No refund. The deposit is non-refundable.
+                  </div>
+                </li>
+              </ul>
               <p className="text-base-content/70 leading-relaxed mt-5">
-                To exercise any of these rights, please contact us using the information below.
+                Cancellations must be made in writing via email. Refunds, if applicable, will be
+                processed within 14 business days.
               </p>
             </SectionCard>
 
-            <SectionCard id="cookies" title="7. Cookies" icon={HiInformationCircle}>
+            <SectionCard id="liability" title="5. Limitation of Liability" icon={HiShieldCheck}>
               <p className="text-base-content/70 leading-relaxed">
-                Our website uses cookies to improve your experience. You can choose to disable cookies
-                in your browser settings. However, disabling cookies may affect the functionality of
-                certain features on our website. We use both session cookies and persistent cookies
-                to enhance your browsing experience.
+                SIDMAB Events & Management shall not be held liable for any indirect, incidental,
+                special, or consequential damages arising from the use of our services. Our total
+                liability shall not exceed the amount paid by you for the specific service in
+                question. We are not responsible for events beyond our reasonable control, including
+                but not limited to natural disasters, pandemics, government restrictions, or force
+                majeure events.
               </p>
             </SectionCard>
 
-            <SectionCard id="changes" title="8. Changes to This Policy" icon={HiRefresh}>
+            <SectionCard id="ip" title="6. Intellectual Property" icon={HiGlobe}>
               <p className="text-base-content/70 leading-relaxed">
-                We may update this Privacy Policy from time to time. We will notify you of any changes
-                by posting the new policy on this page and updating the &ldquo;Last updated&rdquo;
-                date. We encourage you to review this policy periodically for any changes.
+                All content on this website, including text, images, logos, graphics, and designs,
+                is the property of SIDMAB Events & Management and is protected by copyright laws.
+                You may not reproduce, distribute, or create derivative works from our content
+                without written permission. Event photos taken by our team may be used for
+                marketing purposes unless you opt out in writing.
+              </p>
+            </SectionCard>
+
+            <SectionCard id="privacy" title="7. Privacy" icon={HiScale}>
+              <p className="text-base-content/70 leading-relaxed">
+                Your use of our services is also governed by our{' '}
+                <a href="/privacy-policy" className="text-primary hover:underline font-medium">
+                  Privacy Policy
+                </a>
+                . By using our services, you consent to the collection and use of your information
+                as described in the Privacy Policy. We are committed to protecting your personal
+                data and handling it with care.
+              </p>
+            </SectionCard>
+
+            <SectionCard id="changes" title="8. Changes to Terms" icon={HiRefresh}>
+              <p className="text-base-content/70 leading-relaxed">
+                We reserve the right to modify these Terms of Service at any time. Changes will
+                be effective immediately upon posting on this page. Your continued use of our
+                services after any changes constitutes your acceptance of the new terms. We
+                encourage you to review this page periodically.
               </p>
             </SectionCard>
 
             <SectionCard id="contact" title="9. Contact Us" icon={HiMail}>
               <p className="text-base-content/70 leading-relaxed mb-6">
-                If you have any questions about this Privacy Policy, please reach out to us:
+                If you have any questions about these Terms of Service, please reach out to us:
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[

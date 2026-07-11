@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { Save, Sun, Moon, Globe, Phone, Share2, User, Palette, AlertCircle, Mail } from 'lucide-react'
+import { Save, Sun, Moon, Globe, Phone, Share2, User, Palette, AlertCircle, Mail, BookOpen, Upload, X } from 'lucide-react'
 import { useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -63,6 +64,23 @@ const settingsSchema = z.object({
   heroImage_1: z.string(), heroLabel_1: z.string(), heroH1_1: z.string(), heroH2_1: z.string(), heroH3_1: z.string(), heroText_1: z.string(), heroFont_1: z.string(), heroGradientFont_1: z.string(),
   heroImage_2: z.string(), heroLabel_2: z.string(), heroH1_2: z.string(), heroH2_2: z.string(), heroH3_2: z.string(), heroText_2: z.string(), heroFont_2: z.string(), heroGradientFont_2: z.string(),
   heroImage_3: z.string(), heroLabel_3: z.string(), heroH1_3: z.string(), heroH2_3: z.string(), heroH3_3: z.string(), heroText_3: z.string(), heroFont_3: z.string(), heroGradientFont_3: z.string(),
+  aboutBadge: z.string(),
+  aboutTitle: z.string(),
+  aboutSubtitle: z.string(),
+  aboutImage: z.string(),
+  aboutMission: z.string(),
+  aboutVision: z.string(),
+  aboutValues: z.string(),
+  aboutTimelineBadge: z.string(),
+  aboutTimelineTitle: z.string(),
+  aboutTimelineSubtitle: z.string(),
+  aboutMissionBadge: z.string(),
+  aboutMissionTitle: z.string(),
+  aboutMissionSubtitle: z.string(),
+  aboutTeamBadge: z.string(),
+  aboutTeamTitle: z.string(),
+  aboutTeamSubtitle: z.string(),
+  footerDescription: z.string(),
 })
 
 type SettingsFormData = z.infer<typeof settingsSchema>
@@ -140,6 +158,86 @@ const defaultSettings: SettingsFormData = {
   heroH1_3: 'Transforming', heroH2_3: 'Spaces Into', heroH3_3: 'Art',
   heroText_3: 'From concept to execution, our design team creates stunning environments that captivate and inspire.',
   heroFont_3: '', heroGradientFont_3: '',
+  aboutBadge: 'Our Story',
+  aboutTitle: 'About SIDMAB',
+  aboutSubtitle: "Nigeria's premier event planning company — crafting extraordinary experiences since 2010.",
+  aboutImage: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1920',
+  aboutMission: 'To create unforgettable experiences that exceed expectations, delivering exceptional event planning and management services with creativity, precision, and passion.',
+  aboutVision: "To be Africa's most sought-after event management company, setting the standard for excellence and innovation in the events industry.",
+  aboutValues: 'Excellence, creativity, integrity, and client satisfaction are at the heart of everything we do. We believe in building lasting relationships through exceptional service.',
+  aboutTimelineBadge: 'Our Journey',
+  aboutTimelineTitle: 'Company History',
+  aboutTimelineSubtitle: 'From humble beginnings to industry leadership — our story.',
+  aboutMissionBadge: 'Our Foundation',
+  aboutMissionTitle: 'Mission, Vision & Values',
+  aboutMissionSubtitle: 'The principles that guide everything we do.',
+  aboutTeamBadge: 'Our Team',
+  aboutTeamTitle: 'Meet the People Behind SIDMAB',
+  aboutTeamSubtitle: 'Dedicated professionals committed to making your event extraordinary.',
+  footerDescription: 'Premier event planning & management — crafting unforgettable weddings, corporate events, and celebrations across Nigeria.',
+}
+
+function LogoUpload({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const handleUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    setError('')
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+      if (data.url) {
+        onChange(data.url)
+      } else {
+        setError(data.error || 'Upload failed')
+      }
+    } catch {
+      setError('Upload failed')
+    }
+    setUploading(false)
+  }, [onChange])
+
+  return (
+    <div className="space-y-3">
+      {value && (
+        <div className="relative w-40 h-40 rounded-xl overflow-hidden border border-base-300 bg-base-200">
+          <img src={value} alt="Logo" className="w-full h-full object-contain p-2" />
+          <button
+            type="button"
+            onClick={() => onChange('')}
+            className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition-colors"
+          >
+            <X className="w-3 h-3" />
+          </button>
+        </div>
+      )}
+      <div>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleUpload}
+        />
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={uploading}
+          className="btn btn-outline btn-sm gap-2"
+        >
+          <Upload className="w-4 h-4" />
+          {uploading ? 'Uploading...' : value ? 'Change Logo' : 'Upload Logo'}
+        </button>
+        {error && <p className="text-error text-xs mt-1">{error}</p>}
+      </div>
+    </div>
+  )
 }
 
 function ColorField({ label, name, control, setValue, register }: { label: string; name: 'primaryColor' | 'secondaryColor' | 'mobileColor'; control: any; setValue: any; register: any }) {
@@ -243,6 +341,8 @@ export default function SettingsPage() {
     defaultValues: defaultSettings,
   })
 
+  const logoValue = useWatch({ control, name: 'companyLogo' }) ?? ''
+
   useEffect(() => {
     fetch('/api/settings?_=' + Date.now())
       .then((res) => res.json())
@@ -263,10 +363,16 @@ export default function SettingsPage() {
     setSaving(true)
     setSaveError('')
     try {
+      const values = getValues()
+      const clean: Record<string, string> = {}
+      for (const [key, value] of Object.entries(values)) {
+        if (typeof value === 'string') clean[key] = value
+        else if (value != null) clean[key] = String(value)
+      }
       const res = await fetch('/api/settings?_=' + Date.now(), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(getValues()),
+        body: JSON.stringify(clean),
       })
       if (res.ok) {
         setSaved(true)
@@ -350,14 +456,9 @@ export default function SettingsPage() {
                   </div>
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text font-medium">Company Logo URL</span>
+                      <span className="label-text font-medium">Company Logo</span>
                     </label>
-                    <input
-                      type="url"
-                      placeholder="https://example.com/logo.png"
-                      className="input input-bordered"
-                      {...register('companyLogo')}
-                    />
+                    <LogoUpload value={logoValue} onChange={(url) => setValue('companyLogo', url)} />
                     <label className="label">
                       <span className="label-text-alt text-base-content/50">Shown in navbar & footer. Leave empty to show text logo.</span>
                     </label>
@@ -832,6 +933,104 @@ export default function SettingsPage() {
             <div className="card bg-base-100 shadow-sm border border-base-200">
               <div className="card-body p-6">
                 <div className="flex items-center gap-2 mb-6">
+                  <BookOpen className="w-5 h-5 text-primary" />
+                  <h2 className="card-title text-lg">About Page</h2>
+                </div>
+                <div className="space-y-6">
+                  <div>
+                    <p className="text-sm font-bold text-base-content mb-3">Hero Section</p>
+                    <div className="grid sm:grid-cols-3 gap-4">
+                      <div className="form-control">
+                        <label className="label"><span className="label-text font-medium">Badge Text</span></label>
+                        <input type="text" className="input input-bordered" {...register('aboutBadge')} />
+                      </div>
+                      <div className="form-control">
+                        <label className="label"><span className="label-text font-medium">Title</span></label>
+                        <input type="text" className="input input-bordered" {...register('aboutTitle')} />
+                      </div>
+                      <div className="form-control">
+                        <label className="label"><span className="label-text font-medium">Image URL</span></label>
+                        <input type="url" className="input input-bordered" {...register('aboutImage')} />
+                      </div>
+                    </div>
+                    <div className="form-control mt-4">
+                      <label className="label"><span className="label-text font-medium">Subtitle</span></label>
+                      <textarea rows={2} className="textarea textarea-bordered" {...register('aboutSubtitle')} />
+                    </div>
+                  </div>
+                  <div className="divider" />
+                  <div>
+                    <p className="text-sm font-bold text-base-content mb-3">Mission, Vision & Values</p>
+                    <div className="grid sm:grid-cols-3 gap-4">
+                      <div className="form-control">
+                        <label className="label"><span className="label-text font-medium">Badge</span></label>
+                        <input type="text" className="input input-bordered" {...register('aboutMissionBadge')} />
+                      </div>
+                      <div className="form-control">
+                        <label className="label"><span className="label-text font-medium">Title</span></label>
+                        <input type="text" className="input input-bordered" {...register('aboutMissionTitle')} />
+                      </div>
+                      <div className="form-control">
+                        <label className="label"><span className="label-text font-medium">Subtitle</span></label>
+                        <input type="text" className="input input-bordered" {...register('aboutMissionSubtitle')} />
+                      </div>
+                    </div>
+                    <div className="form-control mt-4">
+                      <label className="label"><span className="label-text font-medium">Mission Statement</span></label>
+                      <textarea rows={3} className="textarea textarea-bordered" {...register('aboutMission')} />
+                    </div>
+                    <div className="form-control mt-4">
+                      <label className="label"><span className="label-text font-medium">Vision Statement</span></label>
+                      <textarea rows={3} className="textarea textarea-bordered" {...register('aboutVision')} />
+                    </div>
+                    <div className="form-control mt-4">
+                      <label className="label"><span className="label-text font-medium">Core Values</span></label>
+                      <textarea rows={3} className="textarea textarea-bordered" {...register('aboutValues')} />
+                    </div>
+                  </div>
+                  <div className="divider" />
+                  <div>
+                    <p className="text-sm font-bold text-base-content mb-3">Timeline Section</p>
+                    <div className="grid sm:grid-cols-3 gap-4">
+                      <div className="form-control">
+                        <label className="label"><span className="label-text font-medium">Badge</span></label>
+                        <input type="text" className="input input-bordered" {...register('aboutTimelineBadge')} />
+                      </div>
+                      <div className="form-control">
+                        <label className="label"><span className="label-text font-medium">Title</span></label>
+                        <input type="text" className="input input-bordered" {...register('aboutTimelineTitle')} />
+                      </div>
+                      <div className="form-control">
+                        <label className="label"><span className="label-text font-medium">Subtitle</span></label>
+                        <input type="text" className="input input-bordered" {...register('aboutTimelineSubtitle')} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="divider" />
+                  <div>
+                    <p className="text-sm font-bold text-base-content mb-3">Team Section</p>
+                    <div className="grid sm:grid-cols-3 gap-4">
+                      <div className="form-control">
+                        <label className="label"><span className="label-text font-medium">Badge</span></label>
+                        <input type="text" className="input input-bordered" {...register('aboutTeamBadge')} />
+                      </div>
+                      <div className="form-control">
+                        <label className="label"><span className="label-text font-medium">Title</span></label>
+                        <input type="text" className="input input-bordered" {...register('aboutTeamTitle')} />
+                      </div>
+                      <div className="form-control">
+                        <label className="label"><span className="label-text font-medium">Subtitle</span></label>
+                        <input type="text" className="input input-bordered" {...register('aboutTeamSubtitle')} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="card bg-base-100 shadow-sm border border-base-200">
+              <div className="card-body p-6">
+                <div className="flex items-center gap-2 mb-6">
                   <Mail className="w-5 h-5 text-primary" />
                   <h2 className="card-title text-lg">Newsletter Email</h2>
                 </div>
@@ -987,13 +1186,22 @@ export default function SettingsPage() {
                   <Moon className="w-6 h-6" />
                   <span className="text-sm font-medium">Dark</span>
                 </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="divider" />
+                <div>
+                  <p className="text-sm font-bold text-base-content mb-3">Footer</p>
+                  <div className="form-control">
+                    <label className="label"><span className="label-text font-medium">Footer Description</span></label>
+                    <textarea rows={2} className="textarea textarea-bordered" {...register('footerDescription')} />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <ColorPreview control={control} />
-
-          <div className="card bg-base-100 shadow-sm border border-base-200">
+            <div className="card bg-base-100 shadow-sm border border-base-200">
             <div className="card-body p-6">
               <h2 className="card-title text-lg mb-4">Quick Info</h2>
               <div className="space-y-3 text-sm">

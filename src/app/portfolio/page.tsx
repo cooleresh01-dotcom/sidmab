@@ -7,6 +7,7 @@ import { motion, useInView } from 'framer-motion'
 import { HiSearch, HiPhotograph } from 'react-icons/hi'
 import { cn } from '@/lib/utils'
 import PageHero from '@/components/ui/PageHero'
+import BackButton from '@/components/ui/BackButton'
 
 interface PortfolioItem {
   id: string
@@ -126,6 +127,7 @@ function PortfolioGrid() {
 export default function PortfolioPage() {
   return (
     <>
+      <BackButton />
       <PageHero
         title="Our Portfolio"
         subtitle="A showcase of our finest events and celebrations."

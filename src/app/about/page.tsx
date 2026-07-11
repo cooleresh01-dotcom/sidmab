@@ -15,6 +15,7 @@ import { FaQuoteLeft } from 'react-icons/fa'
 import { teamMembers } from '@/lib/data'
 import { cn } from '@/lib/utils'
 import PageHero from '@/components/ui/PageHero'
+import BackButton from '@/components/ui/BackButton'
 
 function AnimatedCounter({
   end,
@@ -56,7 +57,7 @@ function AnimatedCounter({
 
 
 
-function TimelineSection() {
+function TimelineSection({ settings }: { settings: Record<string, string> }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
@@ -103,13 +104,13 @@ function TimelineSection() {
           className="text-center max-w-2xl mx-auto mb-16"
         >
           <span className="text-primary font-semibold text-sm uppercase tracking-wider">
-            Our Journey
+            {settings.aboutTimelineBadge || 'Our Journey'}
           </span>
           <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
-            Company History
+            {settings.aboutTimelineTitle || 'Company History'}
           </h2>
           <p className="text-base-content/70">
-            From humble beginnings to industry leadership — our story.
+            {settings.aboutTimelineSubtitle || 'From humble beginnings to industry leadership — our story.'}
           </p>
         </motion.div>
 
@@ -156,7 +157,7 @@ function TimelineSection() {
   )
 }
 
-function MissionVisionValues() {
+function MissionVisionValues({ settings }: { settings: Record<string, string> }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
@@ -164,19 +165,19 @@ function MissionVisionValues() {
     {
       icon: <HiStar className="w-8 h-8" />,
       title: 'Our Mission',
-      desc: 'To create unforgettable experiences that exceed expectations, delivering exceptional event planning and management services with creativity, precision, and passion.',
+      desc: settings.aboutMission || 'To create unforgettable experiences that exceed expectations, delivering exceptional event planning and management services with creativity, precision, and passion.',
       color: 'bg-primary/10 text-primary',
     },
     {
       icon: <HiEye className="w-8 h-8" />,
       title: 'Our Vision',
-      desc: 'To be Africa\'s most sought-after event management company, setting the standard for excellence and innovation in the events industry.',
+      desc: settings.aboutVision || "To be Africa's most sought-after event management company, setting the standard for excellence and innovation in the events industry.",
       color: 'bg-secondary/10 text-secondary',
     },
     {
       icon: <HiHeart className="w-8 h-8" />,
       title: 'Core Values',
-      desc: 'Excellence, creativity, integrity, and client satisfaction are at the heart of everything we do. We believe in building lasting relationships through exceptional service.',
+      desc: settings.aboutValues || 'Excellence, creativity, integrity, and client satisfaction are at the heart of everything we do. We believe in building lasting relationships through exceptional service.',
       color: 'bg-accent/10 text-accent',
     },
   ]
@@ -191,13 +192,13 @@ function MissionVisionValues() {
           className="text-center max-w-2xl mx-auto mb-12"
         >
           <span className="text-primary font-semibold text-sm uppercase tracking-wider">
-            Our Foundation
+            {settings.aboutMissionBadge || 'Our Foundation'}
           </span>
           <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
-            Mission, Vision & Values
+            {settings.aboutMissionTitle || 'Mission, Vision & Values'}
           </h2>
           <p className="text-base-content/70">
-            The principles that guide everything we do.
+            {settings.aboutMissionSubtitle || 'The principles that guide everything we do.'}
           </p>
         </motion.div>
 
@@ -250,7 +251,7 @@ function AchievementsSection() {
           fill
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-primary/90" />
+        <div className="absolute inset-0 bg-white/70" />
       </div>
 
       <div className="relative z-10 container mx-auto">
@@ -258,15 +259,15 @@ function AchievementsSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center max-w-2xl mx-auto mb-12 text-primary-content"
+          className="text-center max-w-2xl mx-auto mb-12"
         >
-          <span className="font-semibold text-sm uppercase tracking-wider opacity-80">
+          <span className="font-semibold text-sm uppercase tracking-wider text-black/40">
             Our Achievements
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4 text-black">
             By the Numbers
           </h2>
-          <p className="opacity-80">
+          <p className="text-black/50">
             Our track record speaks for itself.
           </p>
         </motion.div>
@@ -278,10 +279,10 @@ function AchievementsSection() {
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="text-center text-primary-content"
+              className="text-center"
             >
               <AnimatedCounter end={stat.value} suffix={stat.suffix} />
-              <p className="text-sm opacity-80 mt-1">{stat.label}</p>
+              <p className="text-sm text-black/50 mt-1">{stat.label}</p>
             </motion.div>
           ))}
         </div>
@@ -338,9 +339,19 @@ function PartnersSection() {
   )
 }
 
-function TeamPreviewSection() {
+function TeamPreviewSection({ settings }: { settings: Record<string, string> }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const [apiTeam, setApiTeam] = useState<Array<{ name: string; role: string; image: string; bio: string }>>([])
+
+  useEffect(() => {
+    fetch('/api/team')
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data)) setApiTeam(data) })
+      .catch(() => {})
+  }, [])
+
+  const displayTeam = apiTeam.length >= 4 ? apiTeam.slice(0, 4) : teamMembers.slice(0, 4)
 
   return (
     <section ref={ref} className="section-padding bg-base-200/30">
@@ -352,18 +363,18 @@ function TeamPreviewSection() {
           className="text-center max-w-2xl mx-auto mb-12"
         >
           <span className="text-primary font-semibold text-sm uppercase tracking-wider">
-            Our Team
+            {settings.aboutTeamBadge || 'Our Team'}
           </span>
           <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
-            Meet the People Behind SIDMAB
+            {settings.aboutTeamTitle || 'Meet the People Behind SIDMAB'}
           </h2>
           <p className="text-base-content/70">
-            Dedicated professionals committed to making your event extraordinary.
+            {settings.aboutTeamSubtitle || 'Dedicated professionals committed to making your event extraordinary.'}
           </p>
         </motion.div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {teamMembers.slice(0, 4).map((member, index) => (
+          {displayTeam.map((member, index) => (
             <motion.div
               key={member.name}
               initial={{ opacity: 0, y: 30 }}
@@ -377,7 +388,7 @@ function TeamPreviewSection() {
                   src={member.image}
                   alt={member.name}
                   fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="object-cover object-top transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </figure>
@@ -412,20 +423,30 @@ function TeamPreviewSection() {
 }
 
 export default function AboutPage() {
+  const [settings, setSettings] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    fetch('/api/settings?_=' + Date.now())
+      .then((r) => r.json())
+      .then((d) => { if (d && !d.error) setSettings(d) })
+      .catch(() => {})
+  }, [])
+
   return (
     <>
+      <BackButton />
       <PageHero
-        title="About SIDMAB"
-        subtitle="Nigeria's premier event planning company — crafting extraordinary experiences since 2010."
-        image="https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1920"
-        badge="Our Story"
+        title={settings.aboutTitle || 'About SIDMAB'}
+        subtitle={settings.aboutSubtitle || "Nigeria's premier event planning company — crafting extraordinary experiences since 2010."}
+        image={settings.aboutImage || 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1920'}
+        badge={settings.aboutBadge || 'Our Story'}
         height="full"
       />
-      <TimelineSection />
-      <MissionVisionValues />
+      <TimelineSection settings={settings} />
+      <MissionVisionValues settings={settings} />
       <AchievementsSection />
       <PartnersSection />
-      <TeamPreviewSection />
+      <TeamPreviewSection settings={settings} />
     </>
   )
 }

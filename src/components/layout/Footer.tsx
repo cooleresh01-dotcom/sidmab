@@ -49,17 +49,16 @@ export default function Footer() {
   }, [pathname])
 
   const socialLinks = [
-    { icon: FaFacebook, href: settings.facebook },
-    { icon: FaInstagram, href: settings.instagram },
-    { icon: FaLinkedin, href: settings.linkedin },
-    { icon: FaTwitter, href: settings.twitter },
+    { icon: FaFacebook, href: settings.facebook, color: '#1877F2' },
+    { icon: FaInstagram, href: settings.instagram, color: '#E4405F' },
+    { icon: FaLinkedin, href: settings.linkedin, color: '#0A66C2' },
+    { icon: FaTwitter, href: settings.twitter, color: '#1DA1F2' },
   ].filter((s) => s.href && s.href !== '#')
 
   const quickLinks = [
     { name: 'About Us', href: '/about' },
     { name: 'CEO & Founder', href: '/ceo' },
     { name: 'Portfolio', href: '/portfolio' },
-    { name: 'Gallery', href: '/gallery' },
     { name: 'Testimonials', href: '/testimonials' },
     { name: 'Blog', href: '/blog' },
     { name: 'Careers', href: '/careers' },
@@ -145,27 +144,22 @@ export default function Footer() {
                     {settings.siteName.charAt(0)}
                   </div>
                 )}
-                <div>
-                  <p className="text-xl font-bold text-white">{settings.siteName}</p>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">
-                    {settings.tagline}
-                  </p>
-                </div>
               </div>
-              <p className="text-sm leading-relaxed max-w-sm text-white/50">
-                Premier event planning and management services crafting unforgettable
-                experiences for weddings, corporate events, and special celebrations
-                across Nigeria.
-              </p>
+                <p className="text-sm leading-relaxed max-w-sm text-white/40">
+                  {settings.footerDescription || 'Premier event planning & management — crafting unforgettable weddings, corporate events, and celebrations across Nigeria.'}
+                </p>
               {socialLinks.length > 0 && (
                 <div className="flex gap-3 mt-6 md:mt-8">
-                  {socialLinks.map(({ icon: Icon, href }, i) => (
+                  {socialLinks.map(({ icon: Icon, href, color }, i) => (
                     <a
                       key={i}
                       href={href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/50 hover:bg-white hover:text-black transition-all"
+                      className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/50 transition-all duration-300 hover:text-white"
+                      style={{ '--hover-bg': color } as React.CSSProperties}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = color; e.currentTarget.style.color = '#fff' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = ''; e.currentTarget.style.color = '' }}
                     >
                       <Icon className="w-4 h-4" />
                     </a>

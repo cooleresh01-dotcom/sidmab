@@ -7,6 +7,7 @@ import { HiStar } from 'react-icons/hi'
 import { FaQuoteLeft, FaPlay } from 'react-icons/fa'
 import { cn } from '@/lib/utils'
 import PageHero from '@/components/ui/PageHero'
+import BackButton from '@/components/ui/BackButton'
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -215,6 +216,7 @@ function StatsSection() {
 export default function TestimonialsPage() {
   return (
     <>
+      <BackButton />
       <PageHero
         title="Testimonials"
         subtitle="Hear what our clients have to say about their SIDMAB experience."

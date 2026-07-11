@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation'
 import { motion, useInView, useScroll, useTransform } from 'framer-motion'
 import { FaQuoteLeft, FaLinkedinIn, FaTwitter } from 'react-icons/fa'
 import { HiArrowRight } from 'react-icons/hi'
+import BackButton from '@/components/ui/BackButton'
 
 const defaultSettings = {
   ceoName: 'Sarah Johnson',
@@ -420,6 +421,7 @@ export default function CeoPage() {
 
   return (
     <>
+      <BackButton />
       <HeroSection ceoName={settings.ceoName} ceoTitle={settings.ceoTitle} />
       <CeoProfile
         ceoName={settings.ceoName}

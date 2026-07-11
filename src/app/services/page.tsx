@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { HiArrowRight } from 'react-icons/hi'
 import PageHero from '@/components/ui/PageHero'
+import BackButton from '@/components/ui/BackButton'
 import { services as fallbackServices } from '@/lib/data'
 
 interface ServiceItem {
@@ -161,6 +162,7 @@ function CTASection() {
 export default function ServicesPage() {
   return (
     <>
+      <BackButton />
       <PageHero
         title="Our Services"
         subtitle="Comprehensive event solutions tailored to bring your vision to life."

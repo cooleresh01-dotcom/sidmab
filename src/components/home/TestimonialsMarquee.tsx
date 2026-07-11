@@ -82,7 +82,8 @@ export default function TestimonialsMarquee() {
     <section className="py-16 bg-black/[0.02] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/[0.03] border border-black/5 text-black/40 text-xs uppercase tracking-[0.15em] font-medium mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-white text-xs uppercase tracking-[0.15em] font-medium mb-4 shadow-lg backdrop-blur-xl border border-white/30 bg-white/10"
+            style={{ background: 'rgba(4,44,108,0.4)' }}>
             Testimonials
           </div>
           <h2 className="text-4xl lg:text-6xl font-bold text-black tracking-tight">

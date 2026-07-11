@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -20,7 +21,6 @@ const navItems = [
   { name: 'About', href: '/about' },
   { name: 'Services', href: '/services' },
   { name: 'Portfolio', href: '/portfolio' },
-  { name: 'Gallery', href: '/gallery' },
   { name: 'Blog', href: '/blog' },
   { name: 'Contact', href: '/contact' },
 ]
@@ -68,6 +68,17 @@ export default function Navbar() {
 
   return (
     <>
+      {/* Logo */}
+      <Link href="/" className="fixed top-6 left-6 z-50 flex items-center gap-3">
+        {companyLogo ? (
+          <img src={companyLogo} alt={companyName} className="h-14 w-auto" style={{ imageRendering: 'auto' }} />
+        ) : (
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl" style={{ background: 'var(--site-primary)' }}>
+            {companyName.charAt(0)}
+          </div>
+        )}
+      </Link>
+
       {/* Menu button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -293,10 +304,6 @@ export default function Navbar() {
                         {companyName.charAt(0)}
                       </div>
                     )}
-                    <div>
-                      <p className="text-xl font-bold text-white">{companyName}</p>
-                      <p className="text-[10px] uppercase tracking-[0.25em] text-white/40">Events & Management</p>
-                    </div>
                   </div>
 
                   <div className="space-y-8">

@@ -123,7 +123,7 @@
     "description": "Poolside birthday celebration with DJ, catering, and themed decorations.",
     "client": "David O.",
     "date": "2026-04-05T00:00:00.000Z",
-    "featured": false,
+    "featured": true,
     "published": true
   },
   {

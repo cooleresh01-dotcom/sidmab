@@ -92,10 +92,10 @@ function StepService({ register, errors, value }: { register: any; errors: any; 
       {services.map((service) => (
         <label
           key={service.id}
-          className={`card border-2 cursor-pointer transition-all p-4 ${
+          className={`relative flex flex-col p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
             value === service.id
-              ? 'border-primary bg-primary/5'
-              : 'border-base-200 hover:border-primary/30'
+              ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10 scale-[1.02]'
+              : 'border-base-200 hover:border-primary/30 hover:shadow-md'
           }`}
         >
           <input
@@ -104,9 +104,14 @@ function StepService({ register, errors, value }: { register: any; errors: any; 
             value={service.id}
             className="hidden"
           />
-          <div className="text-3xl mb-2">{service.icon}</div>
-          <h3 className="font-semibold">{service.title}</h3>
-          <p className="text-sm text-base-content/70 line-clamp-2">{service.tagline}</p>
+          {value === service.id && (
+            <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+              <HiCheck className="w-3.5 h-3.5 text-white" />
+            </div>
+          )}
+          <div className="text-3xl mb-3">{service.icon}</div>
+          <h3 className="font-bold text-base">{service.title}</h3>
+          <p className="text-sm text-base-content/50 mt-1 leading-relaxed line-clamp-2">{service.tagline}</p>
         </label>
       ))}
       {errors.service && (
@@ -511,7 +516,7 @@ export default function BookPage() {
               transition={{ duration: 0.3 }}
             >
               <h2 className="text-xl font-bold mb-1">{steps[currentStep - 1].title}</h2>
-              <p className="text-sm text-base-content/60 mb-6">{steps[currentStep - 1].description}</p>
+              <p className="text-sm text-base-content/50 mb-6">{steps[currentStep - 1].description}</p>
               <StepRenderer
                 step={currentStep}
                 register={register}

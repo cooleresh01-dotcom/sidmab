@@ -14,7 +14,6 @@ async function main() {
     create: { name: 'Admin', email: 'admin@sidmab.com', password: hashedPassword, role: 'admin' },
   })
 
-  await prisma.setting.deleteMany()
   await prisma.setting.createMany({
     data: [
       { key: 'site_name', value: 'SIDMAB Events' },
@@ -36,10 +35,6 @@ async function main() {
       { key: 'stat_satisfaction', value: '98' },
     ],
   })
-
-  await prisma.serviceFAQ.deleteMany()
-  await prisma.package.deleteMany()
-  await prisma.service.deleteMany()
 
   const services = [
     {
@@ -232,7 +227,11 @@ async function main() {
 
   for (const svc of services) {
     const { packages, faqs, ...serviceData } = svc
-    const created = await prisma.service.create({ data: serviceData })
+    const created = await prisma.service.upsert({
+      where: { slug: serviceData.slug },
+      update: serviceData,
+      create: serviceData,
+    })
 
     for (const pkg of packages) {
       await prisma.package.create({
@@ -247,7 +246,6 @@ async function main() {
     }
   }
 
-  await prisma.portfolio.deleteMany()
   await prisma.portfolio.createMany({
     data: [
       { title: 'Luxury Wedding', slug: 'luxury-wedding', category: 'wedding', images: ['https://images.unsplash.com/photo-1519741497674-611481863552?w=600', 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600'], description: 'A grand wedding celebration with 500 guests, featuring exquisite floral arrangements and live entertainment.', client: 'Chioma & Ade', date: new Date('2025-12-15'), featured: true, published: true },
@@ -261,7 +259,6 @@ async function main() {
     ],
   })
 
-  await prisma.gallery.deleteMany()
   await prisma.gallery.createMany({
     data: [
       { title: 'Wedding Ceremony Setup', type: 'image', url: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600', category: 'Wedding' },
@@ -277,7 +274,6 @@ async function main() {
     ],
   })
 
-  await prisma.team.deleteMany()
   await prisma.team.createMany({
     data: [
       { name: 'Sarah Johnson', role: 'CEO & Founder', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400', bio: 'With over 15 years of experience in event management, Sarah founded SIDMAB with a vision to transform the Nigerian events industry.', experience: 15, linkedin: 'https://linkedin.com/in/sarahjohnson', twitter: 'https://twitter.com/sarahjohnson', instagram: 'https://instagram.com/sarahjohnson', published: true, order: 1 },
@@ -287,7 +283,6 @@ async function main() {
     ],
   })
 
-  await prisma.testimonial.deleteMany()
   await prisma.testimonial.createMany({
     data: [
       { name: 'Chioma & Ade', role: 'Happy Couple', company: '', image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=200', content: 'SIDMAB made our wedding day absolutely perfect! Every detail was thoughtfully planned and executed beyond our expectations.', rating: 5, featured: true, published: true },
@@ -301,7 +296,6 @@ async function main() {
     ],
   })
 
-  await prisma.blog.deleteMany()
   await prisma.blog.createMany({
     data: [
       { title: '10 Tips for Planning the Perfect Wedding', slug: 'tips-for-perfect-wedding', excerpt: 'Planning a wedding can be overwhelming. Here are our top tips to make the process smooth and enjoyable.', content: '<h2>Start Early</h2><p>The key to a stress-free wedding is starting your planning well in advance. We recommend 12-18 months for a full wedding.</p><h2>Set a Budget</h2><p>Determine your budget early and stick to it. Be realistic about what you can afford and prioritize what matters most to you.</p><h2>Choose the Right Venue</h2><p>Your venue sets the tone for your entire wedding. Visit multiple options and consider factors like capacity, location, and ambiance.</p><h2>Hire Professionals</h2><p>Don\'t try to do everything yourself. Professional planners, photographers, and caterers bring expertise that makes a significant difference.</p>', image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600', author: 'Sarah Johnson', tags: ['Wedding', 'Planning'], featured: true, published: true },
@@ -310,7 +304,6 @@ async function main() {
     ],
   })
 
-  await prisma.fAQ.deleteMany()
   await prisma.fAQ.createMany({
     data: [
       { question: 'What services does SIDMAB offer?', answer: 'SIDMAB offers comprehensive event planning and management services including wedding planning, corporate events, birthday celebrations, decoration, event coordination, rentals, catering, and ushering services.', category: 'General', order: 1 },
