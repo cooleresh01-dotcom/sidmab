@@ -100,18 +100,12 @@
   --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
   --shadow-lg: 0 8px 30px rgba(0,0,0,0.06);
 
-  /* Chart colors (light) */
+  /* Chart colors */
   --chart-grid: oklch(0.9 0.01 240);
   --chart-axis: oklch(0.6 0.01 240);
   --chart-tooltip-bg: oklch(0.99 0 0);
   --chart-line: oklch(0.55 0.18 25);
   --chart-pie-colors: oklch(0.55 0.18 25),oklch(0.6 0.12 180),oklch(0.65 0.2 40),oklch(0.5 0.15 280),oklch(0.6 0.15 160);
-
-  /* Charts (Recharts) */
-  --chart-grid: oklch(0.9 0.01 240);
-  --chart-axis: oklch(0.6 0.01 240);
-  --chart-tooltip-bg: oklch(0.99 0 0);
-  --chart-line: oklch(0.55 0.18 25);
 }
 
 /* Dark mode overrides */
@@ -134,9 +128,10 @@ html {
   scroll-behavior: smooth;
 }
 
-input:focus, textarea:focus, select:focus {
-  outline: none !important;
-  box-shadow: none !important;
+input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 2px solid var(--site-primary);
+  outline-offset: 2px;
+  box-shadow: none;
 }
 
 .input, .textarea, .select {

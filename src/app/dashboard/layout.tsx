@@ -155,15 +155,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     setSidebarOpen(false)
   }, [pathname])
 
-  useEffect(() => {
-    fetch('/api/settings')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.siteName) setSiteName(data.siteName)
-      })
-      .catch(() => {})
-  }, [])
-
   if (adminLoading) {
     return (
       <div className="min-h-screen bg-base-200 flex items-center justify-center">

@@ -6,9 +6,10 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { HiMenu, HiX, HiPhone, HiMail, HiLocationMarker, HiClock, HiArrowRight } from 'react-icons/hi'
+import { HiMenu, HiX, HiPhone, HiMail } from 'react-icons/hi'
 import { FaFacebook, FaXTwitter, FaYoutube, FaLinkedinIn } from 'react-icons/fa6'
 import { cn } from '@/lib/utils'
+import { useSettings } from '@/hooks/useSettings'
 
 const InstagramIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -25,53 +26,118 @@ const navItems = [
   { name: 'Contact', href: '/contact' },
 ]
 
+function SocialPanel({ show, onClose, socialUrls }: { show: boolean; onClose: () => void; socialUrls: Record<string, string> }) {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose()
+    }
+    if (show) document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [show, onClose])
+
+  const socials = [
+    { icon: FaFacebook, key: 'facebook', label: 'Facebook', color: '#1877F2', id: '@sidmabevents' },
+    { icon: InstagramIcon, key: 'instagram', label: 'Instagram', color: '#E4405F', id: '@sidmab_events' },
+    { icon: FaXTwitter, key: 'twitter', label: 'X', color: '#000000', id: '@sidmab_ng' },
+    { icon: FaLinkedinIn, key: 'linkedin', label: 'LinkedIn', color: '#0A66C2', id: 'SIDMAB Events' },
+    { icon: FaYoutube, key: 'youtube', label: 'YouTube', color: '#FF0000', id: 'SIDMAB TV' },
+  ]
+
+  return (
+    <div ref={ref} className="flex flex-col items-start">
+      <div className="flex items-center gap-2 mb-4">
+        <button onClick={onClose} className="hover:opacity-80 transition-opacity shrink-0">
+          <motion.div
+            animate={{ rotate: show ? 90 : 180 }}
+            transition={{ type: 'spring', stiffness: 180, damping: 13 }}
+            className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-white to-gray-100 shadow-[0_4px_0_0_#cbd5e1,0_6px_12px_-4px_rgba(0,0,0,0.15)] active:shadow-[0_1px_0_0_#cbd5e1] active:translate-y-[3px]"
+          >
+            <svg viewBox="0 0 24 24" className="w-4 h-4 text-gray-700" fill="currentColor">
+              <path d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z" />
+            </svg>
+          </motion.div>
+        </button>
+        <AnimatePresence>
+          {show && (
+            <motion.p
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 'auto', opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="text-xs uppercase tracking-[0.3em] text-gray-700 overflow-hidden whitespace-nowrap"
+            >
+              Follow Us
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <AnimatePresence>
+        {show && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="flex flex-col gap-2 overflow-hidden"
+          >
+            {socials.map((s) => (
+              <a
+                key={s.label}
+                href={socialUrls[s.key] || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative flex items-center gap-2 text-xs text-gray-400 hover:text-black transition-colors group"
+              >
+                <span
+                  className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: s.color, color: '#fff' }}
+                >
+                  <s.icon className="w-4 h-4" />
+                </span>
+                <span className="text-sm whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[160px] transition-all duration-300">
+                  {s.id}
+                </span>
+              </a>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [showSocial, setShowSocial] = useState(true)
-  const [socialUrls, setSocialUrls] = useState<Record<string, string>>({})
-  const [companyLogo, setCompanyLogo] = useState('')
-  const [companyName, setCompanyName] = useState('SIDMAB')
   const { data: session } = useSession()
   const pathname = usePathname()
-  const socialRef = useRef<HTMLDivElement>(null)
+  const { settings } = useSettings()
+
+  const companyLogo = settings?.companyLogo || ''
+  const companyName = settings?.siteName || 'SIDMAB'
+  const socialUrls = {
+    facebook: settings?.facebook || 'https://facebook.com/sidmab',
+    instagram: settings?.instagram || 'https://instagram.com/sidmab',
+    twitter: settings?.twitter || 'https://twitter.com/sidmab',
+    linkedin: settings?.linkedin || 'https://linkedin.com/company/sidmab',
+    youtube: settings?.youtube || '',
+  }
+  const phone = settings?.phone || '+234 800 000 0000'
+  const email = settings?.email || 'info@sidmab.com'
 
   useEffect(() => {
     setIsOpen(false)
   }, [pathname])
-
-  useEffect(() => {
-    fetch('/api/settings')
-      .then(r => r.json())
-      .then(data => {
-        setCompanyLogo(data.companyLogo || '')
-        setCompanyName(data.siteName || 'SIDMAB')
-        setSocialUrls({
-          facebook: data.facebook || 'https://facebook.com/sidmab',
-          instagram: data.instagram || 'https://instagram.com/sidmab',
-          twitter: data.twitter || 'https://twitter.com/sidmab',
-          linkedin: data.linkedin || 'https://linkedin.com/company/sidmab',
-          youtube: data.youtube || '',
-        })
-      })
-      .catch(() => {})
-  }, [])
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (socialRef.current && !socialRef.current.contains(e.target as Node)) {
-        setShowSocial(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
 
   return (
     <>
       {/* Logo */}
       <Link href="/" className="fixed top-6 left-6 z-50 flex items-center gap-3">
         {companyLogo ? (
-          <img src={companyLogo} alt={companyName} className="h-14 w-auto" style={{ imageRendering: 'auto' }} />
+          <Image src={companyLogo} alt={companyName} width={56} height={56} className="h-14 w-auto" priority />
         ) : (
           <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl" style={{ background: 'var(--site-primary)' }}>
             {companyName.charAt(0)}
@@ -84,17 +150,13 @@ export default function Navbar() {
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           'fixed top-6 right-6 z-50 w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-500',
-          isOpen
-            ? 'bg-white text-black rotate-90'
-            : 'text-white'
+          isOpen ? 'bg-white text-black rotate-90' : 'text-white'
         )}
         style={!isOpen ? { background: 'var(--site-primary)' } : {}}
         aria-label="Toggle menu"
+        aria-expanded={isOpen}
       >
-        <motion.div
-          animate={{ rotate: isOpen ? 90 : 0 }}
-          transition={{ duration: 0.3 }}
-        >
+        <motion.div animate={{ rotate: isOpen ? 90 : 0 }} transition={{ duration: 0.3 }}>
           {isOpen ? <HiX className="w-5 h-5" /> : <HiMenu className="w-5 h-5" />}
         </motion.div>
       </button>
@@ -109,109 +171,17 @@ export default function Navbar() {
             transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
             className="fixed inset-0 z-40 bg-white"
           >
-            {/* Decorative dots pattern */}
-            <div
-              className="absolute inset-0 opacity-[0.015] pointer-events-none"
-              style={{
-                backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)',
-                backgroundSize: '24px 24px',
-              }}
-            />
+            <div className="absolute inset-0 opacity-[0.015] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
 
             <div className="relative h-full flex flex-col lg:flex-row">
-
-              {/* Left - Navigation */}
               <div className="flex-1 flex flex-col px-8 md:px-20 lg:px-28">
                 <div className="flex-1" />
 
                 <div className="flex gap-12 items-start">
-                  {/* Follow Us - left side */}
-                  <div ref={socialRef} className="flex flex-col items-start">
-                    {/* Invisible spacers to align with Services */}
-                    <div className="invisible">
-                      <div className="text-xs uppercase tracking-[0.3em] mb-6">—</div>
-                      <div className="py-2.5">
-                        <span className="text-2xl md:text-3xl lg:text-4xl font-bold">Home</span>
-                      </div>
-                      <div className="h-px bg-transparent" />
-                      <div className="py-2.5">
-                        <span className="text-2xl md:text-3xl lg:text-4xl font-bold">About</span>
-                      </div>
-                      <div className="h-px bg-transparent" />
-                    </div>
-                    <div className="flex items-center gap-2 mb-4">
-                      <button onClick={() => setShowSocial(!showSocial)} className="hover:opacity-80 transition-opacity shrink-0">
-                        <motion.div
-                          animate={{ rotate: showSocial ? 90 : 180 }}
-                          transition={{ type: 'spring', stiffness: 180, damping: 13 }}
-                          className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-white to-gray-100 shadow-[0_4px_0_0_#cbd5e1,0_6px_12px_-4px_rgba(0,0,0,0.15)] active:shadow-[0_1px_0_0_#cbd5e1] active:translate-y-[3px]"
-                        >
-                          <svg viewBox="0 0 24 24" className="w-4 h-4 text-gray-700" fill="currentColor">
-                            <path d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z" />
-                          </svg>
-                        </motion.div>
-                      </button>
-                      <AnimatePresence>
-                        {showSocial && (
-                          <motion.p
-                            initial={{ width: 0, opacity: 0 }}
-                            animate={{ width: 'auto', opacity: 1 }}
-                            exit={{ width: 0, opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="text-xs uppercase tracking-[0.3em] text-gray-700 overflow-hidden whitespace-nowrap"
-                          >
-                            Follow Us
-                          </motion.p>
-                        )}
-                      </AnimatePresence>
-                    </div>
-
-                    <AnimatePresence>
-                      {showSocial && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="flex flex-col gap-2 overflow-hidden"
-                        >
-                          {([
-                            { icon: FaFacebook, key: 'facebook', label: 'Facebook', color: '#1877F2', id: '@sidmabevents' },
-                            { icon: InstagramIcon, key: 'instagram', label: 'Instagram', color: '#E4405F', id: '@sidmab_events' },
-                            { icon: FaXTwitter, key: 'twitter', label: 'X', color: '#000000', id: '@sidmab_ng' },
-                            { icon: FaLinkedinIn, key: 'linkedin', label: 'LinkedIn', color: '#0A66C2', id: 'SIDMAB Events' },
-                            { icon: FaYoutube, key: 'youtube', label: 'YouTube', color: '#FF0000', id: 'SIDMAB TV' },
-                          ] as const).map((s) => (
-                            <a
-                              key={s.label}
-                              href={socialUrls[s.key] || '#'}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="relative flex items-center gap-2 text-xs text-gray-400 hover:text-black transition-colors group"
-                            >
-                              <span
-                              className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                              style={{ backgroundColor: s.color, color: '#fff' }}
-                            >
-                              <s.icon className="w-4 h-4" />
-                              </span>
-                              <span className="text-sm whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[160px] transition-all duration-300">
-                                {s.id}
-                              </span>
-                            </a>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+                  <SocialPanel show={showSocial} onClose={() => setShowSocial(!showSocial)} socialUrls={socialUrls} />
 
                   <div>
-                    <motion.p
-                      initial={{ y: 20, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.1 }}
-                      className="text-xs uppercase tracking-[0.3em] text-gray-300 mb-6"
-                    >
+                    <motion.p initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="text-xs uppercase tracking-[0.3em] text-gray-300 mb-6">
                       — Navigation
                     </motion.p>
 
@@ -219,26 +189,17 @@ export default function Navbar() {
                       {navItems.map((item, i) => {
                         const active = pathname === item.href
                         return (
-                          <motion.div
-                            key={item.name}
-                            initial={{ y: 30, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.12 + i * 0.05, duration: 0.4 }}
-                          >
+                          <motion.div key={item.name} initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.12 + i * 0.05, duration: 0.4 }}>
                             <Link
                               href={item.href}
                               onClick={() => setIsOpen(false)}
                               className={cn(
                                 'block py-2.5 px-3 -mx-3 rounded-xl transition-colors text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight',
-                                active
-                                  ? 'text-white'
-                                  : 'text-gray-700 hover:text-gray-900'
+                                active ? 'text-white' : 'text-gray-700 hover:text-gray-900'
                               )}
                               style={active ? { background: 'var(--site-primary)' } : {}}
                             >
-                              <span className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">
-                                {item.name}
-                              </span>
+                              {item.name}
                             </Link>
                             <div className="ml-0 h-px bg-gray-100 last:hidden" />
                           </motion.div>
@@ -247,19 +208,10 @@ export default function Navbar() {
                     </nav>
 
                     {session && (
-                      <motion.div
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.5 }}
-                        className="mt-6"
-                      >
+                      <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }} className="mt-6">
                         <p className="text-xs uppercase tracking-[0.3em] text-gray-300 mb-4">— Account</p>
-                        <Link
-                          href="/account"
-                          onClick={() => setIsOpen(false)}
-                          className="group relative flex items-center gap-5 py-2.5 px-3 -mx-3 rounded-xl transition-all duration-300 text-gray-700 hover:text-white"
-                        >
-                          <span className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">My Account</span>
+                        <Link href="/account" onClick={() => setIsOpen(false)} className="block py-2.5 px-3 -mx-3 rounded-xl text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-gray-700 hover:text-gray-900">
+                          My Account
                         </Link>
                       </motion.div>
                     )}
@@ -268,22 +220,15 @@ export default function Navbar() {
 
                 <div className="flex-1" />
 
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.75 }}
-                  className="mb-8 flex items-center justify-center gap-6"
-                >
+                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.75 }} className="mb-8 flex items-center justify-center gap-6">
                   <Link
                     href="/book"
                     onClick={() => setIsOpen(false)}
-                    className="inline-flex items-center gap-3 px-6 py-3.5 text-white text-sm font-medium rounded-xl transition-all shadow-lg"
+                    className="inline-flex items-center gap-3 px-6 py-3.5 text-white text-sm font-medium rounded-xl transition-all shadow-lg hover:brightness-110"
                     style={{ background: 'var(--site-primary)' }}
-                    onMouseEnter={(e) => e.currentTarget.style.filter = 'brightness(1.15)'}
-                    onMouseLeave={(e) => e.currentTarget.style.filter = 'brightness(1)'}
                   >
-                    <span>Book a Consultation</span>
-                    <HiArrowRight className="w-3.5 h-3.5" />
+                    Book a Consultation
+                    <HiMail className="w-3.5 h-3.5" />
                   </Link>
                 </motion.div>
               </div>
@@ -291,68 +236,43 @@ export default function Navbar() {
               {/* Right - Info panel */}
               <div className="lg:w-96 bg-black lg:bg-gray-950 relative overflow-hidden">
                 <div className="relative z-10 p-10 md:p-14 flex flex-col justify-center min-h-full">
-                  <motion.div
-                    initial={{ x: 40, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.35, duration: 0.5 }}
-                  >
-                  <div className="flex items-center gap-4 mb-12">
-                    {companyLogo ? (
-                      <img src={companyLogo} alt={companyName} className="h-10 w-auto" />
-                    ) : (
-                      <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-white font-bold text-base">
-                        {companyName.charAt(0)}
+                  <motion.div initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.35, duration: 0.5 }}>
+                    <div className="flex items-center gap-4 mb-12">
+                      {companyLogo ? (
+                        <Image src={companyLogo} alt={companyName} width={40} height={40} className="h-10 w-auto" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-white font-bold text-base">
+                          {companyName.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-8">
+                      <div>
+                        <p className="text-[10px] uppercase tracking-[0.25em] text-white/30 mb-3">Contact</p>
+                        <a href={`tel:${phone.replace(/\s/g, '')}`} className="flex items-center gap-4 text-sm text-white/70 hover:text-white transition-colors group">
+                          <span className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                            <HiPhone className="w-4 h-4" />
+                          </span>
+                          {phone}
+                        </a>
+                        <a href={`mailto:${email}`} className="flex items-center gap-4 text-sm text-white/70 hover:text-white transition-colors group mt-3">
+                          <span className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                            <HiMail className="w-4 h-4" />
+                          </span>
+                          {email}
+                        </a>
                       </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-8">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.25em] text-white/30 mb-3">Contact</p>
-                      <a href="tel:+2348000000000" className="flex items-center gap-4 text-sm text-white/70 hover:text-white transition-colors group">
-                        <span className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                          <HiPhone className="w-4 h-4" />
-                        </span>
-                        +234 800 000 0000
-                      </a>
-                      <a href="mailto:info@sidmab.com" className="flex items-center gap-4 text-sm text-white/70 hover:text-white transition-colors group mt-3">
-                        <span className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                          <HiMail className="w-4 h-4" />
-                        </span>
-                        info@sidmab.com
-                      </a>
                     </div>
 
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.25em] text-white/30 mb-3">Location</p>
-                      <p className="flex items-center gap-4 text-sm text-white/70">
-                        <span className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
-                          <HiLocationMarker className="w-4 h-4" />
-                        </span>
-                        123 Event Street, Lagos, Nigeria
+                    <div className="mt-12 pt-8 border-t border-white/10">
+                      <p className="text-xs text-white/40 leading-relaxed">
+                        Premier event planning and management services crafting unforgettable experiences across Nigeria.
                       </p>
                     </div>
-
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.25em] text-white/30 mb-3">Working Hours</p>
-                      <p className="flex items-center gap-4 text-sm text-white/70">
-                        <span className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
-                          <HiClock className="w-4 h-4" />
-                        </span>
-                        Mon - Sat: 8AM - 6PM
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-12 pt-8 border-t border-white/10">
-                    <p className="text-xs text-white/40 leading-relaxed">
-                      Premier event planning and management services crafting unforgettable experiences across Nigeria.
-                    </p>
-                  </div>
-                </motion.div>
+                  </motion.div>
                 </div>
 
-                {/* Decorative gradient */}
                 <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-white/5 rounded-full blur-3xl" />
                 <div className="absolute -top-20 -right-20 w-60 h-60 bg-white/[0.02] rounded-full blur-2xl" />
               </div>
@@ -361,31 +281,24 @@ export default function Navbar() {
         )}
       </AnimatePresence>
 
-
       {/* Side contact info (desktop) */}
       {!pathname.startsWith('/dashboard') && (
-      <div className="hidden lg:fixed lg:right-8 lg:top-1/2 lg:-translate-y-1/2 lg:flex lg:flex-col lg:items-center lg:gap-6 lg:z-30">
-        <div className="w-px h-24 bg-gradient-to-b from-transparent via-gray-300 to-transparent" />
-        <a href="tel:+2348000000000" className="relative group">
-          <div className="absolute inset-0 rounded-xl scale-0 group-hover:scale-100 transition-transform" style={{ background: 'color-mix(in srgb, var(--site-primary) 15%, transparent)' }} />
-          <div className="relative w-11 h-11 rounded-xl bg-white shadow-md flex items-center justify-center text-gray-500 group-hover:text-white transition-colors"
-            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--site-primary)'}
-            onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}
-          >
-            <HiPhone className="w-4 h-4" />
-          </div>
-        </a>
-        <a href="mailto:info@sidmab.com" className="relative group">
-          <div className="absolute inset-0 rounded-xl scale-0 group-hover:scale-100 transition-transform" style={{ background: 'color-mix(in srgb, var(--site-primary) 15%, transparent)' }} />
-          <div className="relative w-11 h-11 rounded-xl bg-white shadow-md flex items-center justify-center text-gray-500 group-hover:text-white transition-colors"
-            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--site-primary)'}
-            onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}
-          >
-            <HiMail className="w-4 h-4" />
-          </div>
-        </a>
-        <div className="w-px h-24 bg-gradient-to-b from-transparent via-gray-300 to-transparent" />
-      </div>
+        <div className="hidden lg:fixed lg:right-8 lg:top-1/2 lg:-translate-y-1/2 lg:flex lg:flex-col lg:items-center lg:gap-6 lg:z-30">
+          <div className="w-px h-24 bg-gradient-to-b from-transparent via-gray-300 to-transparent" />
+          <a href={`tel:${phone.replace(/\s/g, '')}`} className="relative group">
+            <div className="absolute inset-0 rounded-xl scale-0 group-hover:scale-100 transition-transform" style={{ background: 'color-mix(in srgb, var(--site-primary) 15%, transparent)' }} />
+            <div className="relative w-11 h-11 rounded-xl bg-white shadow-md flex items-center justify-center text-gray-500 group-hover:text-white group-hover:bg-[var(--site-primary)] transition-all">
+              <HiPhone className="w-4 h-4" />
+            </div>
+          </a>
+          <a href={`mailto:${email}`} className="relative group">
+            <div className="absolute inset-0 rounded-xl scale-0 group-hover:scale-100 transition-transform" style={{ background: 'color-mix(in srgb, var(--site-primary) 15%, transparent)' }} />
+            <div className="relative w-11 h-11 rounded-xl bg-white shadow-md flex items-center justify-center text-gray-500 group-hover:text-white group-hover:bg-[var(--site-primary)] transition-all">
+              <HiMail className="w-4 h-4" />
+            </div>
+          </a>
+          <div className="w-px h-24 bg-gradient-to-b from-transparent via-gray-300 to-transparent" />
+        </div>
       )}
     </>
   )

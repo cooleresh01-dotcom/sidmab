@@ -12,6 +12,7 @@ import { HiPhone, HiMail, HiLocationMarker, HiClock, HiPaperAirplane } from 'rea
 import { FaWhatsapp } from 'react-icons/fa'
 import PageHero from '@/components/ui/PageHero'
 import BackButton from '@/components/ui/BackButton'
+import { useSettings } from '@/hooks/useSettings'
 
 const contactSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -328,19 +329,24 @@ function FAQLink() {
 }
 
 export default function ContactPage() {
+  const { settings: siteSettings } = useSettings()
   const [settings, setSettings] = useState(defaultSettings)
-  const pathname = usePathname()
 
   useEffect(() => {
-    fetch('/api/settings')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && !data.error) {
-          setSettings((prev) => ({ ...prev, ...data }))
-        }
-      })
-      .catch(() => {})
-  }, [pathname])
+    if (!siteSettings) return
+    setSettings((prev) => ({
+      ...prev,
+      email: siteSettings.email || prev.email,
+      email2: siteSettings.email2 || prev.email2,
+      phone: siteSettings.phone || prev.phone,
+      phone2: siteSettings.phone2 || prev.phone2,
+      address: siteSettings.address || prev.address,
+      mapAddress: siteSettings.mapAddress || prev.mapAddress,
+      mapEmbedUrl: siteSettings.mapEmbedUrl || prev.mapEmbedUrl,
+      officeHours: siteSettings.officeHours || prev.officeHours,
+      whatsapp: siteSettings.whatsapp || prev.whatsapp,
+    }))
+  }, [siteSettings])
 
   return (
     <>

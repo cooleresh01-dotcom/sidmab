@@ -3,12 +3,14 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { signIn } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Eye, EyeOff, LogIn } from 'lucide-react'
+import { HiArrowRight } from 'react-icons/hi'
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -62,108 +64,129 @@ export default function LoginPage() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body p-8">
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4">
-                <LogIn className="w-8 h-8 text-primary-content" />
+        <div className="bg-base-100 rounded-2xl shadow-xl border border-base-300 overflow-hidden">
+          {/* Header */}
+          <div className="relative h-32 overflow-hidden" style={{ background: 'var(--gradient-brand)' }}>
+            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-center text-white">
+                <LogIn className="w-8 h-8 mx-auto mb-2" />
+                <h1 className="text-2xl font-bold">Welcome Back</h1>
               </div>
-              <h1 className="text-2xl font-bold">Welcome Back</h1>
-              <p className="text-base-content/60 mt-1">
-                Sign in to your SIDMAB account
-              </p>
             </div>
+          </div>
 
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="alert alert-error mb-4 text-sm"
-              >
-                <span>{error}</span>
-              </motion.div>
-            )}
+          <div className="p-8">
+            <p className="text-center text-base-content/50 mb-6">
+              Sign in to your SIDMAB account
+            </p>
+
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm text-center"
+                >
+                  {error}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">Email</span>
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-base-content">
+                  Email
                 </label>
                 <input
                   type="email"
                   placeholder="you@example.com"
-                  className={`input input-bordered w-full ${errors.email ? 'input-error' : ''}`}
+                  className={`w-full px-4 py-2.5 text-sm rounded-xl border bg-base-100 text-base-content placeholder:text-base-content/40 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--site-primary)]/20 focus:border-[var(--site-primary)] ${
+                    errors.email ? 'border-red-400' : 'border-base-300 hover:border-base-content/20'
+                  }`}
                   {...register('email')}
                 />
                 {errors.email && (
-                  <label className="label">
-                    <span className="label-text-alt text-error">{errors.email.message}</span>
-                  </label>
+                  <p className="text-xs text-red-500">{errors.email.message}</p>
                 )}
               </div>
 
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">Password</span>
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-base-content">
+                  Password
                 </label>
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
-                    className={`input input-bordered w-full pr-10 ${errors.password ? 'input-error' : ''}`}
+                    className={`w-full px-4 py-2.5 pr-10 text-sm rounded-xl border bg-base-100 text-base-content placeholder:text-base-content/40 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--site-primary)]/20 focus:border-[var(--site-primary)] ${
+                      errors.password ? 'border-red-400' : 'border-base-300 hover:border-base-content/20'
+                    }`}
                     {...register('password')}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
                 {errors.password && (
-                  <label className="label">
-                    <span className="label-text-alt text-error">{errors.password.message}</span>
-                  </label>
+                  <p className="text-xs text-red-500">{errors.password.message}</p>
                 )}
               </div>
 
               <div className="flex justify-end">
-                <Link href="/forgot-password" className="text-sm text-base-content/50 hover:text-primary transition-colors">
+                <Link href="/forgot-password" className="text-sm hover:underline" style={{ color: 'var(--site-primary)' }}>
                   Forgot Password?
                 </Link>
               </div>
 
               <button
                 type="submit"
-                className={`btn btn-primary w-full text-white ${loading ? 'btn-disabled' : ''}`}
                 disabled={loading}
+                className="w-full flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-white rounded-xl transition-all hover:brightness-110 disabled:opacity-50"
+                style={{ background: 'var(--site-primary)' }}
               >
                 {loading ? (
                   <>
-                    <span className="loading loading-spinner loading-sm" />
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     Signing in...
                   </>
                 ) : (
-                  'Sign In'
+                  <>
+                    Sign In
+                    <HiArrowRight className="w-4 h-4" />
+                  </>
                 )}
               </button>
             </form>
 
-            <div className="divider text-xs text-base-content/40">OR</div>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-base-300" />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="px-2 bg-base-100 text-base-content/40">OR</span>
+              </div>
+            </div>
 
-            <p className="text-center text-sm text-base-content/60">
-              Don&apos;t have an account?{' '}
-              <Link href="/register" className="text-primary font-medium hover:underline">
-                Create an account
-              </Link>
-            </p>
-            <p className="text-center text-sm text-base-content/60 mt-2">
-              Staff?{' '}
-              <Link href="/admin-login" className="text-primary font-medium hover:underline">
-                Admin login
-              </Link>
-            </p>
+            <div className="space-y-3 text-center">
+              <p className="text-sm text-base-content/60">
+                Don&apos;t have an account?{' '}
+                <Link href="/register" className="font-medium hover:underline" style={{ color: 'var(--site-primary)' }}>
+                  Create an account
+                </Link>
+              </p>
+              <p className="text-sm text-base-content/60">
+                Staff?{' '}
+                <Link href="/admin-login" className="font-medium hover:underline" style={{ color: 'var(--site-primary)' }}>
+                  Admin login
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </motion.div>
