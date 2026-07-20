@@ -136,7 +136,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > (window.innerWidth < 768 ? window.innerHeight * 0.5 : window.innerHeight))
+      setScrolled(window.scrollY > (window.innerWidth < 768 ? 150 : 300))
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
