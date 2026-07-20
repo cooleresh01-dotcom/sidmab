@@ -119,6 +119,18 @@ const tabs: TabDef[] = [
     ],
   },
   {
+    id: 'gallery',
+    label: 'Gallery',
+    icon: <Image className="w-4 h-4" />,
+    fields: [
+      { type: 'section', title: 'Hero Section' },
+      { key: 'galleryPageBadge', label: 'Badge' },
+      { key: 'galleryPageTitle', label: 'Title' },
+      { key: 'galleryPageSubtitle', label: 'Subtitle', type: 'textarea' },
+      { key: 'galleryPageImage', label: 'Image URL' },
+    ],
+  },
+  {
     id: 'team',
     label: 'Team',
     icon: <Users className="w-4 h-4" />,

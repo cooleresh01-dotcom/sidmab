@@ -74,6 +74,8 @@ const searchableItems: SearchResult[] = [
   { label: 'Bookings', section: 'Management', href: '/dashboard/bookings' },
   { label: 'Services', section: 'Management', href: '/dashboard/services' },
   { label: 'Portfolio', section: 'Management', href: '/dashboard/portfolio' },
+  { label: 'Gallery', section: 'Content', href: '/dashboard/content?tab=gallery' },
+  { label: 'Gallery Items', section: 'Management', href: '/dashboard/gallery' },
   { label: 'Team Members', section: 'Management', href: '/dashboard/team' },
   { label: 'Blog Posts', section: 'Management', href: '/dashboard/blog' },
   { label: 'Testimonials', section: 'Management', href: '/dashboard/testimonials' },
