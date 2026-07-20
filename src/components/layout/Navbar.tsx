@@ -145,27 +145,25 @@ export default function Navbar() {
   return (
     <>
       {/* Floating logo + menu (hero area) */}
-      {!scrolled && (
-        <>
-          <Link href="/" className="fixed top-6 left-6 z-50 flex items-center gap-3">
-            <CompanyLogo className="h-14 w-auto" width={56} height={56} />
-          </Link>
+      <Link href="/" className="fixed top-6 left-6 z-50 flex items-center gap-3">
+        <CompanyLogo className="h-14 w-auto" width={56} height={56} />
+      </Link>
 
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className={cn(
-              'fixed top-6 right-6 z-50 w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-500',
-              isOpen ? 'bg-white text-black rotate-90' : 'text-white'
-            )}
-            style={!isOpen ? { background: 'var(--site-primary)' } : {}}
-        aria-label="Toggle menu"
-        aria-expanded={isOpen}
-      >
-        <motion.div animate={{ rotate: isOpen ? 90 : 0 }} transition={{ duration: 0.3 }}>
-          {isOpen ? <HiX className="w-5 h-5" /> : <HiMenu className="w-5 h-5" />}
-        </motion.div>
-      </button>
-        </>
+      {!scrolled && (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={cn(
+            'fixed top-6 right-6 z-50 w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-500',
+            isOpen ? 'bg-white text-black rotate-90' : 'text-white'
+          )}
+          style={!isOpen ? { background: 'var(--site-primary)' } : {}}
+          aria-label="Toggle menu"
+          aria-expanded={isOpen}
+        >
+          <motion.div animate={{ rotate: isOpen ? 90 : 0 }} transition={{ duration: 0.3 }}>
+            {isOpen ? <HiX className="w-5 h-5" /> : <HiMenu className="w-5 h-5" />}
+          </motion.div>
+        </button>
       )}
 
       {/* Sticky navbar after scrolling past hero */}
@@ -176,14 +174,9 @@ export default function Navbar() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -100, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-md shadow-sm border-b border-white/10"
+            className="fixed top-0 left-0 right-0 z-40 bg-black/95 backdrop-blur-md shadow-sm border-b border-white/10"
           >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-              <Link href="/" className="flex items-center gap-3">
-                <CompanyLogo className="h-14 w-auto" width={56} height={56} />
-                {!companyLogo && <span className="text-white text-lg font-bold">{companyName}</span>}
-              </Link>
-
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-end">
               <div className="flex items-center gap-4">
                 <a href={`tel:${phone.replace(/\s/g, '')}`} className="hidden sm:flex items-center gap-2 text-white/70 hover:text-white transition-colors">
                   <HiPhone className="w-4 h-4" />
