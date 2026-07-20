@@ -182,7 +182,7 @@ function TiltImage({ src, alt }: { src: string; alt: string }) {
         transition={{ type: 'spring', stiffness: 200, damping: 20 }}
         style={{ transformStyle: 'preserve-3d' }}
       >
-        <Image src={src} alt={alt} fill className="object-cover" />
+        <Image src={src} alt={alt} fill unoptimized className="object-cover" />
         {/* Watermark */}
         <div className="absolute bottom-3 right-3 pointer-events-none select-none">
           <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-lg px-3 py-1.5 shadow-lg">
@@ -413,7 +413,14 @@ export default function CeoPage() {
       .then((res) => res.json())
       .then((data) => {
         if (data && !data.error) {
-          setSettings((prev) => ({ ...prev, ...data }))
+          const v = Date.now()
+          const busted = { ...data }
+          for (const key of ['ceoImage', 'ceoSignature']) {
+            if (busted[key] && !busted[key].startsWith('http') && !busted[key].includes('?v=')) {
+              busted[key] = busted[key] + '?v=' + v
+            }
+          }
+          setSettings((prev) => ({ ...prev, ...busted }))
         }
       })
       .catch(() => {})

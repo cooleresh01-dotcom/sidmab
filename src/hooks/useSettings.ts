@@ -40,20 +40,26 @@ let cachedSettings: SiteSettings | null = null
 let cacheTimestamp = 0
 const CACHE_DURATION = 5 * 60 * 1000
 
+let settingsVersion = Date.now()
+
 export function clearSettingsCache() {
   cachedSettings = null
   cacheTimestamp = 0
+  settingsVersion = Date.now()
 }
 
 export function useSettings() {
-  const [settings, setSettings] = useState<SiteSettings | null>(cachedSettings)
+  const [settings, setSettings] = useState<SiteSettings | null>(() => {
+    if (cachedSettings) return addCacheBust(cachedSettings)
+    return null
+  })
   const [loading, setLoading] = useState(!cachedSettings)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const now = Date.now()
     if (cachedSettings && now - cacheTimestamp < CACHE_DURATION) {
-      setSettings(cachedSettings)
+      setSettings(addCacheBust(cachedSettings))
       setLoading(false)
       return
     }
@@ -66,7 +72,8 @@ export function useSettings() {
         if (data && !data.error) {
           cachedSettings = data
           cacheTimestamp = Date.now()
-          setSettings(data)
+          settingsVersion = Date.now()
+          setSettings(addCacheBust(data))
         }
       })
       .catch((err) => {
@@ -80,4 +87,24 @@ export function useSettings() {
   }, [])
 
   return { settings, loading, error }
+}
+
+const imageKeys = new Set([
+  'companyLogo', 'logo', 'favicon', 'ceoImage', 'ceoSignature',
+  'aboutImage', 'servicesPageImage', 'portfolioPageImage', 'teamPageImage',
+  'blogPageImage', 'testimonialsPageImage', 'faqPageImage', 'contactPageImage',
+  'careersPageImage',
+  'heroImage_0', 'heroImage_1', 'heroImage_2', 'heroImage_3',
+  'partner0_logo', 'partner1_logo', 'partner2_logo', 'partner3_logo', 'partner4_logo', 'partner5_logo',
+])
+
+function addCacheBust(data: SiteSettings) {
+  const result = { ...data }
+  for (const key of imageKeys) {
+    const val = result[key]
+    if (val && !val.startsWith('http') && !val.includes('?v=')) {
+      result[key] = val + '?v=' + settingsVersion
+    }
+  }
+  return result
 }
