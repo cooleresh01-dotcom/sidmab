@@ -113,6 +113,7 @@ function SocialPanel({ show, onClose, socialUrls }: { show: boolean; onClose: ()
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [showSocial, setShowSocial] = useState(true)
+  const [scrolled, setScrolled] = useState(false)
   const { data: session } = useSession()
   const pathname = usePathname()
   const { settings } = useSettings()
@@ -133,14 +134,21 @@ export default function Navbar() {
     setIsOpen(false)
   }, [pathname])
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > window.innerHeight * 0.5)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   return (
     <>
-      {/* Logo */}
+      {/* Floating logo + menu (hero area) */}
       <Link href="/" className="fixed top-6 left-6 z-50 flex items-center gap-3">
         <CompanyLogo className="h-14 w-auto" width={56} height={56} />
       </Link>
 
-      {/* Menu button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
@@ -155,6 +163,74 @@ export default function Navbar() {
           {isOpen ? <HiX className="w-5 h-5" /> : <HiMenu className="w-5 h-5" />}
         </motion.div>
       </button>
+
+      {/* Sticky navbar after scrolling past hero */}
+      <AnimatePresence>
+        {scrolled && (
+          <motion.div
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -100, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-black/5"
+          >
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+              <Link href="/" className="flex items-center gap-3">
+                <CompanyLogo className="h-10 w-auto" width={40} height={40} />
+                <span className="text-sm font-bold text-black hidden sm:block">{companyName}</span>
+              </Link>
+
+              <nav className="hidden lg:flex items-center gap-1">
+                {navItems.map((item) => {
+                  const active = pathname === item.href
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className={cn(
+                        'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
+                        active ? 'text-white' : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                      )}
+                      style={active ? { background: 'var(--site-primary)' } : {}}
+                    >
+                      {item.name}
+                    </Link>
+                  )
+                })}
+                {session && (
+                  <Link href="/account" className={cn(
+                    'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
+                    pathname.startsWith('/account') ? 'text-white' : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                  )}
+                  style={pathname.startsWith('/account') ? { background: 'var(--site-primary)' } : {}}
+                  >
+                    Account
+                  </Link>
+                )}
+              </nav>
+
+              <div className="flex items-center gap-3">
+                <a href={`tel:${phone.replace(/\s/g, '')}`} className="hidden sm:flex w-9 h-9 rounded-lg items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-black transition-colors">
+                  <HiPhone className="w-4 h-4" />
+                </a>
+                <Link
+                  href="/book"
+                  className="hidden sm:inline-flex items-center gap-2 px-5 py-2 text-white text-sm font-medium rounded-lg transition-all hover:brightness-110"
+                  style={{ background: 'var(--site-primary)' }}
+                >
+                  Book Now
+                </Link>
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="lg:hidden w-10 h-10 rounded-xl flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                  <HiMenu className="w-5 h-5 text-black" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Full page menu overlay */}
       <AnimatePresence>
