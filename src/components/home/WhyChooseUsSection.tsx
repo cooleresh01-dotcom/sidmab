@@ -47,7 +47,7 @@ export default function WhyChooseUsSection() {
           </div>
         </FadeIn>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-14">
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-14">
           {cards.map(({ icon: Icon, key }, i) => (
             <FadeIn key={key} delay={i * 0.08}>
               <div className="p-8 rounded-2xl bg-white border border-black/[0.06] hover:border-black/10 transition-all duration-500 hover:shadow-xl hover:-translate-y-1 group">
@@ -70,6 +70,31 @@ export default function WhyChooseUsSection() {
               </div>
             </FadeIn>
           ))}
+        </div>
+
+        <div className="sm:hidden overflow-hidden mb-14 -mx-6">
+          <div className="flex animate-marquee" style={{ width: 'max-content' }}>
+            {[...cards, ...cards].map(({ icon: Icon, key }, i) => (
+              <div key={`${key}-${i}`} className="flex-shrink-0 w-72 p-6 mx-3 rounded-2xl bg-white border border-black/[0.06]">
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
+                  style={{ background: 'color-mix(in srgb, var(--site-primary) 10%, white)' }}>
+                  <Icon className="w-5 h-5" style={{ color: 'var(--site-primary)' }} />
+                </div>
+                <h3 className="text-base font-bold text-black mb-2">
+                  {settings?.[`whyCard${key}_title`] || ['Proven Expertise', 'Creative Excellence', 'End-to-End Service', 'Tailored Solutions'][parseInt(key)]}
+                </h3>
+                <p className="text-xs text-black/50 leading-relaxed mb-3">
+                  {settings?.[`whyCard${key}_desc`] || ['1000+ events delivered with excellence across Nigeria over 15 years.', 'Award-winning design team transforming ordinary spaces into extraordinary experiences.', 'From concept to cleanup, we handle every detail so you can enjoy your event.', 'Every event is unique. We craft custom packages that fit your vision and budget.'][parseInt(key)]}
+                </p>
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--site-primary)' }} />
+                  <span className="text-xs font-semibold" style={{ color: 'var(--site-primary)' }}>
+                    {settings?.[`whyCard${key}_stat`] || ['15+ Years', '50+ Awards', '100% Dedicated', 'Fully Custom'][parseInt(key)]}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
