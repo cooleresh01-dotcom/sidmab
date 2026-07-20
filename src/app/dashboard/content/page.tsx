@@ -18,6 +18,7 @@ import {
   Briefcase,
   FileText,
   UserCheck,
+  Phone,
 } from 'lucide-react'
 
 type SettingsData = Record<string, string>
@@ -182,7 +183,7 @@ const tabs: TabDef[] = [
   },
   {
     id: 'faq-contact',
-    label: 'FAQ & Contact',
+    label: 'FAQ',
     icon: <HelpCircle className="w-4 h-4" />,
     fields: [
       { type: 'section', title: 'FAQ Hero' },
@@ -193,12 +194,30 @@ const tabs: TabDef[] = [
       { type: 'section', title: 'FAQ CTA' },
       { key: 'faqCtaTitle', label: 'Title' },
       { key: 'faqCtaDesc', label: 'Description', type: 'textarea' },
-      { type: 'section', title: 'Contact Hero' },
+    ],
+  },
+  {
+    id: 'contact',
+    label: 'Contact',
+    icon: <Phone className="w-4 h-4" />,
+    fields: [
+      { type: 'section', title: 'Hero Section' },
       { key: 'contactPageBadge', label: 'Badge' },
       { key: 'contactPageTitle', label: 'Title' },
       { key: 'contactPageSubtitle', label: 'Subtitle', type: 'textarea' },
       { key: 'contactPageImage', label: 'Image URL' },
-      { type: 'section', title: 'Contact FAQ Section' },
+      { type: 'section', title: 'Contact Info' },
+      { key: 'email', label: 'Email' },
+      { key: 'email2', label: 'Email 2' },
+      { key: 'phone', label: 'Phone' },
+      { key: 'phone2', label: 'Phone 2' },
+      { key: 'address', label: 'Address', type: 'textarea' },
+      { key: 'officeHours', label: 'Office Hours', type: 'textarea' },
+      { key: 'whatsapp', label: 'WhatsApp Number' },
+      { type: 'section', title: 'Map' },
+      { key: 'mapAddress', label: 'Map Address' },
+      { key: 'mapEmbedUrl', label: 'Google Maps Embed URL' },
+      { type: 'section', title: 'FAQ Link Section' },
       { key: 'contactFaqTitle', label: 'Title' },
       { key: 'contactFaqDesc', label: 'Description', type: 'textarea' },
     ],
