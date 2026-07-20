@@ -40,6 +40,11 @@ let cachedSettings: SiteSettings | null = null
 let cacheTimestamp = 0
 const CACHE_DURATION = 5 * 60 * 1000
 
+export function clearSettingsCache() {
+  cachedSettings = null
+  cacheTimestamp = 0
+}
+
 export function useSettings() {
   const [settings, setSettings] = useState<SiteSettings | null>(cachedSettings)
   const [loading, setLoading] = useState(!cachedSettings)

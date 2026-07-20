@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Save, Sun, Moon, Globe, Phone, Share2, User, Palette, AlertCircle, Mail, BookOpen, Upload, X } from 'lucide-react'
+import { clearSettingsCache } from '@/hooks/useSettings'
 import { useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -193,7 +194,7 @@ function LogoUpload({ value, onChange }: { value: string; onChange: (url: string
       const res = await fetch('/api/upload', { method: 'POST', body: formData })
       const data = await res.json()
       if (data.url) {
-        onChange(data.url)
+        onChange(data.url + '?t=' + Date.now())
       } else {
         setError(data.error || 'Upload failed')
       }
@@ -375,6 +376,7 @@ export default function SettingsPage() {
         body: JSON.stringify(clean),
       })
       if (res.ok) {
+        clearSettingsCache()
         setSaved(true)
         setTimeout(() => setSaved(false), 2000)
       } else {
