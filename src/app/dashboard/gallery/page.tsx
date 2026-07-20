@@ -230,12 +230,36 @@ export default function GalleryPage() {
                   className="card bg-base-100 shadow-sm border border-base-200 overflow-hidden group"
                 >
                   <figure className="relative aspect-video bg-base-200 overflow-hidden">
-                    <img
-                      src={item.thumbnail || item.url}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
-                      onClick={() => setPreview(item)}
-                    />
+                    {item.type === 'before-after' && item.before && item.after ? (
+                      <div
+                        className="grid grid-cols-2 w-full h-full cursor-pointer"
+                        onClick={() => setPreview(item)}
+                      >
+                        <div className="relative overflow-hidden">
+                          <img
+                            src={item.before}
+                            alt={`${item.title} - Before`}
+                            className="w-full h-full object-cover"
+                          />
+                          <span className="absolute bottom-1 left-1 text-[10px] font-bold text-white bg-black/60 px-1.5 py-0.5 rounded">Before</span>
+                        </div>
+                        <div className="relative overflow-hidden">
+                          <img
+                            src={item.after}
+                            alt={`${item.title} - After`}
+                            className="w-full h-full object-cover"
+                          />
+                          <span className="absolute bottom-1 right-1 text-[10px] font-bold text-white bg-black/60 px-1.5 py-0.5 rounded">After</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <img
+                        src={item.thumbnail || item.url}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+                        onClick={() => setPreview(item)}
+                      />
+                    )}
                     <div className="absolute top-2 left-2">
                       <TypeBadge type={item.type} />
                     </div>
