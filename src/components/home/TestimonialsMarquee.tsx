@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaQuoteLeft, FaStar } from 'react-icons/fa'
+import { useSettings } from '@/hooks/useSettings'
 
 function TestimonialCard({ name, role, company, image, content, rating }: {
   name: string; role: string; company: string; image: string; content: string; rating: number
@@ -36,6 +37,7 @@ function TestimonialCard({ name, role, company, image, content, rating }: {
 }
 
 export default function TestimonialsMarquee() {
+  const { settings } = useSettings()
   const [current, setCurrent] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
   const [items, setItems] = useState<{ name: string; role: string; company: string; image: string; content: string; rating: number }[]>([])
@@ -84,13 +86,13 @@ export default function TestimonialsMarquee() {
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-white text-xs uppercase tracking-[0.15em] font-medium mb-4 shadow-lg backdrop-blur-xl border border-white/30 bg-white/10"
             style={{ background: 'rgba(4,44,108,0.4)' }}>
-            Testimonials
+            {settings?.homeTestimonialsBadge || 'Testimonials'}
           </div>
           <h2 className="text-4xl lg:text-6xl font-bold text-black tracking-tight">
-            What Our Clients Say
+            {settings?.homeTestimonialsTitle || 'What Our Clients Say'}
           </h2>
           <p className="text-black/45 mt-4 max-w-xl mx-auto text-lg leading-relaxed">
-            Don&apos;t take our word for it &mdash; hear from those we&apos;ve served.
+            {settings?.homeTestimonialsDesc || "Don\u2019t take our word for it \u2014 hear from those we\u2019ve served."}
           </p>
         </div>
       </div>

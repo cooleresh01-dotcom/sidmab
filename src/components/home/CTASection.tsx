@@ -13,7 +13,7 @@ export default function CTASection() {
     <section className="relative py-12 md:py-20 bg-black overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=1920"
+          src={settings?.homeCtaImage || "https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=1920"}
           alt=""
           fill
           className="object-cover opacity-70"

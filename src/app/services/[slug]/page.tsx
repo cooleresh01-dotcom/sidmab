@@ -64,7 +64,7 @@ function ServiceHero({ service }: { service: ServiceData }) {
   )
 }
 
-function OverviewSection({ service }: { service: ServiceData }) {
+function OverviewSection({ service, settings }: { service: ServiceData; settings: Record<string, string> | null }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
   const features = service.features?.length > 0
@@ -80,8 +80,8 @@ function OverviewSection({ service }: { service: ServiceData }) {
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6 }}
           >
-            <span className="text-primary font-semibold text-sm uppercase tracking-wider">Overview</span>
-            <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-6">About This Service</h2>
+            <span className="text-primary font-semibold text-sm uppercase tracking-wider">{settings?.serviceDetailOverviewBadge || 'Overview'}</span>
+            <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-6">{settings?.serviceDetailOverviewTitle || 'About This Service'}</h2>
             <p className="text-base-content/70 leading-relaxed mb-8">{service.description}</p>
             <div className="space-y-3">
               {features.map((feature) => (
@@ -106,7 +106,7 @@ function OverviewSection({ service }: { service: ServiceData }) {
   )
 }
 
-function GallerySection({ images }: { images: string[] }) {
+function GallerySection({ images, settings }: { images: string[]; settings: Record<string, string> | null }) {
   const gallery = images.length > 0 ? images : [
     'https://images.unsplash.com/photo-1519741497674-611481863552?w=600',
     'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600',
@@ -124,9 +124,9 @@ function GallerySection({ images }: { images: string[] }) {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-12"
         >
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider">Gallery</span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">Our Work</h2>
-          <p className="text-base-content/70">A glimpse of what we have delivered for our clients.</p>
+          <span className="text-primary font-semibold text-sm uppercase tracking-wider">{settings?.serviceDetailGalleryBadge || 'Gallery'}</span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">{settings?.serviceDetailGalleryTitle || 'Our Work'}</h2>
+          <p className="text-base-content/70">{settings?.serviceDetailGalleryDesc || 'A glimpse of what we have delivered for our clients.'}</p>
         </motion.div>
 
         {gallery.length > 0 && (
@@ -150,7 +150,7 @@ function GallerySection({ images }: { images: string[] }) {
   )
 }
 
-function PackagesSection({ packages }: { packages: Package[] }) {
+function PackagesSection({ packages, settings }: { packages: Package[]; settings: Record<string, string> | null }) {
   return (
     <section className="section-padding">
       <div className="container mx-auto">
@@ -161,9 +161,9 @@ function PackagesSection({ packages }: { packages: Package[] }) {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-12"
         >
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider">Packages</span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">Our Packages</h2>
-          <p className="text-base-content/70">Choose the package that best fits your needs.</p>
+          <span className="text-primary font-semibold text-sm uppercase tracking-wider">{settings?.serviceDetailPackagesBadge || 'Packages'}</span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">{settings?.serviceDetailPackagesTitle || 'Our Packages'}</h2>
+          <p className="text-base-content/70">{settings?.serviceDetailPackagesDesc || 'Choose the package that best fits your needs.'}</p>
         </motion.div>
 
         {packages.length > 0 && (
@@ -183,7 +183,7 @@ function PackagesSection({ packages }: { packages: Package[] }) {
                 >
                   {popular && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-content text-xs font-bold px-4 py-1 rounded-full">
-                      Most Popular
+                      {settings?.serviceDetailPackagesPopularLabel || 'Most Popular'}
                     </div>
                   )}
                   <div className="card-body p-6">
@@ -202,7 +202,7 @@ function PackagesSection({ packages }: { packages: Package[] }) {
                       href="/book"
                       className={`btn mt-6 w-full ${popular ? 'btn-primary text-white' : 'btn-outline'}`}
                     >
-                      Get Started
+                      {settings?.serviceDetailPackagesBtnText || 'Get Started'}
                     </Link>
                   </div>
                 </motion.div>
@@ -215,7 +215,7 @@ function PackagesSection({ packages }: { packages: Package[] }) {
   )
 }
 
-function FAQsSection({ faqs }: { faqs: FAQ[] }) {
+function FAQsSection({ faqs, settings }: { faqs: FAQ[]; settings: Record<string, string> | null }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   const toggle = (i: number) => {
@@ -232,8 +232,8 @@ function FAQsSection({ faqs }: { faqs: FAQ[] }) {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-10"
         >
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider">FAQs</span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">Frequently Asked Questions</h2>
+          <span className="text-primary font-semibold text-sm uppercase tracking-wider">{settings?.serviceDetailFaqBadge || 'FAQs'}</span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">{settings?.serviceDetailFaqTitle || 'Frequently Asked Questions'}</h2>
         </motion.div>
 
         {faqs.length > 0 && (
@@ -286,12 +286,12 @@ function FAQsSection({ faqs }: { faqs: FAQ[] }) {
   )
 }
 
-function BookingCTA() {
+function BookingCTA({ settings }: { settings: Record<string, string> | null }) {
   return (
     <section className="relative py-20 overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=1920"
+          src={settings?.serviceDetailCtaImage || 'https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=1920'}
           alt="Book"
           fill
           className="object-cover"
@@ -305,12 +305,12 @@ function BookingCTA() {
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{settings?.serviceDetailCtaTitle || 'Ready to Get Started?'}</h2>
           <p className="text-lg text-white/70 max-w-xl mx-auto mb-8">
-            Let us bring your vision to life. Book a free consultation with our team today.
+            {settings?.serviceDetailCtaDesc || 'Let us bring your vision to life. Book a free consultation with our team today.'}
           </p>
           <Link href="/book" className="btn btn-primary btn-lg text-white rounded-full">
-            Book a Consultation <HiArrowRight className="w-5 h-5" />
+            {settings?.serviceDetailCtaBtn || 'Book a Consultation'} <HiArrowRight className="w-5 h-5" />
           </Link>
         </motion.div>
       </div>
@@ -318,7 +318,7 @@ function BookingCTA() {
   )
 }
 
-function RelatedServices({ currentSlug }: { currentSlug: string }) {
+function RelatedServices({ currentSlug, settings }: { currentSlug: string; settings: Record<string, string> | null }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
   const [related, setRelated] = useState<ServiceData[]>([])
@@ -344,9 +344,9 @@ function RelatedServices({ currentSlug }: { currentSlug: string }) {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-12"
         >
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider">Related</span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">Other Services</h2>
-          <p className="text-base-content/70">Explore more of what we offer.</p>
+          <span className="text-primary font-semibold text-sm uppercase tracking-wider">{settings?.serviceDetailRelatedBadge || 'Related'}</span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">{settings?.serviceDetailRelatedTitle || 'Other Services'}</h2>
+          <p className="text-base-content/70">{settings?.serviceDetailRelatedDesc || 'Explore more of what we offer.'}</p>
         </motion.div>
 
         {related.length > 0 && (
@@ -395,6 +395,14 @@ export default function ServiceDetailPage() {
   const slug = params.slug as string
   const [service, setService] = useState<ServiceData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [settings, setSettings] = useState<Record<string, string> | null>(null)
+
+  useEffect(() => {
+    fetch('/api/settings?_=' + Date.now())
+      .then((r) => r.json())
+      .then((d) => { if (d && !d.error) setSettings(d) })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     fetch('/api/services')
@@ -477,12 +485,12 @@ export default function ServiceDetailPage() {
   return (
     <>
       <ServiceHero service={service} />
-      <OverviewSection service={service} />
-      <GallerySection images={service.gallery} />
-      <PackagesSection packages={service.packages} />
-      <FAQsSection faqs={service.faqs} />
-      <BookingCTA />
-      <RelatedServices currentSlug={slug} />
+      <OverviewSection service={service} settings={settings} />
+      <GallerySection images={service.gallery} settings={settings} />
+      <PackagesSection packages={service.packages} settings={settings} />
+      <FAQsSection faqs={service.faqs} settings={settings} />
+      <BookingCTA settings={settings} />
+      <RelatedServices currentSlug={slug} settings={settings} />
     </>
   )
 }

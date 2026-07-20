@@ -31,17 +31,14 @@ const benefits = [
   { icon: HiClock, title: 'Paid Time Off', desc: 'Generous leave policies' },
 ]
 
-const cultureImages = [
-  'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600',
-  'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600',
-  'https://images.unsplash.com/photo-1552664730-d307ca884978?w=600',
-]
-
-
-
 function CultureSection({ settings }: { settings: any }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const cultureImages: string[] = settings?.careersCultureImages ? JSON.parse(settings.careersCultureImages) : [
+    'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600',
+    'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600',
+    'https://images.unsplash.com/photo-1552664730-d307ca884978?w=600',
+  ]
 
   return (
     <section ref={ref} className="section-padding">
@@ -205,6 +202,7 @@ function OpenPositions({ settings, jobsData: propJobs }: { settings: any; jobsDa
 function ApplicationForm({ jobsData }: { jobsData: any[] }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true })
+  const { settings } = useSettings()
   const {
     register,
     handleSubmit,
@@ -228,7 +226,7 @@ function ApplicationForm({ jobsData }: { jobsData: any[] }) {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">Submit Your Application</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">{settings?.careersApplicationTitle || 'Submit Your Application'}</h2>
 
           {isSubmitSuccessful ? (
             <div className="card bg-base-100 shadow-sm border border-base-200 p-8 text-center">

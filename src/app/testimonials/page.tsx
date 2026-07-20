@@ -121,15 +121,15 @@ function TestimonialsGrid({ settings }: { settings?: Record<string, any> | null 
             </div>
             <div className="relative h-full min-h-[250px]">
               <Image
-                src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600"
+                src={settings?.testimonialsVideoImage || 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600'}
                 alt="Video testimonial"
                 fill
                 className="object-cover"
               />
             </div>
             <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent">
-              <p className="text-white font-medium">Watch Video Testimonial</p>
-              <p className="text-white/70 text-sm">Hear from our happy clients</p>
+              <p className="text-white font-medium">{settings?.testimonialsVideoTitle || 'Watch Video Testimonial'}</p>
+              <p className="text-white/70 text-sm">{settings?.testimonialsVideoDesc || 'Hear from our happy clients'}</p>
             </div>
           </motion.div>
         </div>

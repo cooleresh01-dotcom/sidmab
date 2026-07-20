@@ -62,6 +62,7 @@ export default function DashboardCareers() {
   const [positionsTitle, setPositionsTitle] = useState('Join Our Team')
   const [positionsDesc, setPositionsDesc] = useState('Explore current opportunities and find your dream role.')
   const [jobs, setJobs] = useState<Job[]>(defaultJobs)
+  const [applicationTitle, setApplicationTitle] = useState('Submit Your Application')
 
   useEffect(() => {
     fetch('/api/settings?_=' + Date.now())
@@ -84,9 +85,15 @@ export default function DashboardCareers() {
           try {
             const parsed = JSON.parse(data.careerContent)
             if (parsed.jobs) setJobs(parsed.jobs)
-            if (parsed.cultureImages) setCultureImages(parsed.cultureImages)
           } catch {}
         }
+        if (data.careersCultureImages) {
+          try {
+            const parsed = JSON.parse(data.careersCultureImages)
+            if (Array.isArray(parsed)) setCultureImages(parsed)
+          } catch {}
+        }
+        if (data.careersApplicationTitle) setApplicationTitle(data.careersApplicationTitle)
         if (data.careerBenefits) {
           try {
             const parsed = JSON.parse(data.careerBenefits)
@@ -128,8 +135,10 @@ export default function DashboardCareers() {
           careersPositionsBadge: positionsBadge,
           careersPositionsTitle: positionsTitle,
           careersPositionsDesc: positionsDesc,
-          careerContent: JSON.stringify({ jobs, cultureImages }),
+          careerContent: JSON.stringify({ jobs }),
+          careersCultureImages: JSON.stringify(cultureImages),
           careerBenefits: JSON.stringify({ items: benefits }),
+          careersApplicationTitle: applicationTitle,
         }),
       })
       setSaved(true)
@@ -240,6 +249,12 @@ export default function DashboardCareers() {
           ))}
           <button onClick={addJob} className="btn btn-outline btn-sm gap-1"><Plus className="w-3 h-3" /> Add Job</button>
         </div>
+      </div>
+
+      {/* Application Form */}
+      <div className="bg-base-200/50 rounded-2xl p-5 space-y-3">
+        <h2 className="font-semibold text-sm uppercase tracking-wider text-base-content/50">Application Form</h2>
+        <input value={applicationTitle} onChange={(e) => setApplicationTitle(e.target.value)} className="input input-bordered input-sm" placeholder="Form Title" />
       </div>
     </div>
   )

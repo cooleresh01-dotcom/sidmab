@@ -125,7 +125,7 @@ function CTASection({ settings }: { settings: Record<string, string> | null }) {
     <section className="relative py-20 overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=1920"
+          src={settings?.servicesCtaImage || 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=1920'}
           alt="Contact"
           fill
           className="object-cover"

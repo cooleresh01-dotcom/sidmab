@@ -256,7 +256,7 @@ function AchievementsSection({ settings }: { settings: Record<string, string> })
     <section ref={ref} className="section-padding relative overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=1920"
+          src={settings?.aboutAchievementImage || 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=1920'}
           alt="Achievements"
           fill
           className="object-cover"

@@ -5,8 +5,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { HiArrowRight } from 'react-icons/hi'
+import { useSettings } from '@/hooks/useSettings'
 
 export default function PortfolioSection() {
+  const { settings } = useSettings()
   const [items, setItems] = useState<Array<{ id: string; title: string; category: string; image: string }>>([])
   const [index, setIndex] = useState(0)
 
@@ -57,7 +59,7 @@ export default function PortfolioSection() {
           className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-white text-xs uppercase tracking-[0.2em] font-medium mb-5 border border-white/20 backdrop-blur-sm bg-black/30"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-white/70" />
-          Our Work
+          {settings?.homePortfolioBadge || 'Our Work'}
         </motion.span>
 
         <motion.h2
@@ -66,7 +68,7 @@ export default function PortfolioSection() {
           transition={{ duration: 0.5, delay: 0.35 }}
           className="text-white text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight max-w-4xl leading-[1.1]"
         >
-          Featured Events
+          {settings?.homePortfolioTitle || 'Featured Events'}
         </motion.h2>
 
         <motion.h3
@@ -86,7 +88,7 @@ export default function PortfolioSection() {
           transition={{ duration: 0.5, delay: 0.55 }}
           className="text-white/50 text-base md:text-lg max-w-xl mt-2"
         >
-          A glimpse into the extraordinary experiences we have created.
+          {settings?.homePortfolioDesc || 'A glimpse into the extraordinary experiences we have created.'}
         </motion.p>
 
         <motion.div

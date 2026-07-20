@@ -7,6 +7,7 @@ import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 import { HiArrowLeft, HiBriefcase, HiMail, HiArrowRight, HiHeart, HiStar, HiCheckCircle } from 'react-icons/hi'
 import { FaLinkedinIn, FaXTwitter, FaInstagram, FaFacebook } from 'react-icons/fa6'
+import { useSettings } from '@/hooks/useSettings'
 
 interface TeamMember {
   id: string
@@ -52,6 +53,7 @@ export default function TeamMemberPage({ params }: { params: Promise<{ id: strin
   const [loading, setLoading] = useState(true)
   const [id, setId] = useState('')
   const [otherMembers, setOtherMembers] = useState<TeamMember[]>([])
+  const { settings } = useSettings()
 
   useEffect(() => {
     params.then((p) => setId(p.id))
@@ -121,7 +123,7 @@ export default function TeamMemberPage({ params }: { params: Promise<{ id: strin
               className="flex flex-col justify-center"
             >
               <span className="inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white/60 text-xs uppercase tracking-[0.2em] font-medium mb-4 border border-white/10 w-fit">
-                Meet Our Team
+                {settings?.teamDetailBadge || 'Meet Our Team'}
               </span>
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-3 tracking-tight">{member.name}</h1>
               <p className="text-xl md:text-2xl mb-5" style={{ color: 'var(--site-primary)' }}>{member.role}</p>
@@ -173,19 +175,19 @@ export default function TeamMemberPage({ params }: { params: Promise<{ id: strin
                 <p className="text-3xl font-bold" style={{ color: 'var(--site-primary)' }}>
                   <AnimatedCounter target={member.experience} suffix="+" />
                 </p>
-                <p className="text-xs text-black/40 mt-1 uppercase tracking-wider font-medium">Years Experience</p>
+                <p className="text-xs text-black/40 mt-1 uppercase tracking-wider font-medium">{settings?.teamDetailStatsYearsLabel || 'Years Experience'}</p>
               </div>
               <div className="bg-white rounded-2xl p-5 text-center shadow-lg border border-black/[0.04]">
                 <p className="text-3xl font-bold" style={{ color: 'var(--site-primary)' }}>
                   <AnimatedCounter target={member.experience * 20} suffix="+" />
                 </p>
-                <p className="text-xs text-black/40 mt-1 uppercase tracking-wider font-medium">Projects Done</p>
+                <p className="text-xs text-black/40 mt-1 uppercase tracking-wider font-medium">{settings?.teamDetailStatsProjectsLabel || 'Projects Done'}</p>
               </div>
               <div className="bg-white rounded-2xl p-5 text-center shadow-lg border border-black/[0.04]">
                 <p className="text-3xl font-bold" style={{ color: 'var(--site-primary)' }}>
                   <AnimatedCounter target={100} suffix="%" />
                 </p>
-                <p className="text-xs text-black/40 mt-1 uppercase tracking-wider font-medium">Client Satisfaction</p>
+                <p className="text-xs text-black/40 mt-1 uppercase tracking-wider font-medium">{settings?.teamDetailStatsSatisfactionLabel || 'Client Satisfaction'}</p>
               </div>
             </motion.div>
           </div>
@@ -226,7 +228,7 @@ export default function TeamMemberPage({ params }: { params: Promise<{ id: strin
               <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
                 <HiHeart className="w-5 h-5 text-secondary" />
               </div>
-              <h2 className="text-2xl font-bold">What I Bring</h2>
+              <h2 className="text-2xl font-bold">{settings?.teamDetailWhatIBringTitle || 'What I Bring'}</h2>
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
               {[
@@ -255,7 +257,7 @@ export default function TeamMemberPage({ params }: { params: Promise<{ id: strin
             className="luxury-card p-8 md:p-10 text-center"
           >
             <h3 className="text-xl font-bold mb-2">Want to work with {firstName}?</h3>
-            <p className="text-base-content/50 text-sm mb-6">Get in touch to discuss your next event.</p>
+            <p className="text-base-content/50 text-sm mb-6">{settings?.teamDetailContactDesc || 'Get in touch to discuss your next event.'}</p>
             <Link
               href="/contact"
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-white font-medium text-sm transition-all hover:brightness-110 shadow-lg"

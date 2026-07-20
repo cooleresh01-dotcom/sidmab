@@ -231,6 +231,86 @@ const defaultSettings = {
   // CEO Page
   ceoCtaTitle: 'Want to Work With Us?',
   ceoCtaDesc: "Let's create something extraordinary together. Reach out and tell us about your vision.",
+  ceoHeroImage: '',
+  ceoHeroBadge: 'Leadership',
+  ceoHeroTitle: 'Meet Our',
+  ceoHeroDesc: '',
+  ceoProfileLabel: 'Our Leader',
+
+  // Homepage - Portfolio Section
+  homePortfolioBadge: 'Our Work',
+  homePortfolioTitle: 'Featured Events',
+  homePortfolioDesc: 'A glimpse into the extraordinary experiences we have created.',
+
+  // Homepage - Testimonials Section
+  homeTestimonialsBadge: 'Testimonials',
+  homeTestimonialsTitle: 'What Our Clients Say',
+  homeTestimonialsDesc: "Don't take our word for it — hear from those we've served.",
+
+  // Homepage - CTA
+  homeCtaImage: '',
+
+  // About Page
+  aboutAchievementImage: '',
+
+  // Services Page
+  servicesCtaImage: '',
+
+  // Service Detail
+  serviceDetailOverviewBadge: 'Overview',
+  serviceDetailOverviewTitle: 'About This Service',
+  serviceDetailGalleryBadge: 'Gallery',
+  serviceDetailGalleryTitle: 'Our Work',
+  serviceDetailGalleryDesc: 'A glimpse of what we have delivered for our clients.',
+  serviceDetailPackagesBadge: 'Packages',
+  serviceDetailPackagesTitle: 'Our Packages',
+  serviceDetailPackagesDesc: 'Choose the package that best fits your needs.',
+  serviceDetailPackagesPopularLabel: 'Most Popular',
+  serviceDetailPackagesBtnText: 'Get Started',
+  serviceDetailFaqBadge: 'FAQs',
+  serviceDetailFaqTitle: 'Frequently Asked Questions',
+  serviceDetailCtaImage: '',
+  serviceDetailCtaTitle: 'Ready to Get Started?',
+  serviceDetailCtaDesc: 'Let us bring your vision to life. Book a free consultation with our team today.',
+  serviceDetailCtaBtn: 'Book a Consultation',
+  serviceDetailRelatedBadge: 'Related',
+  serviceDetailRelatedTitle: 'Other Services',
+  serviceDetailRelatedDesc: 'Explore more of what we offer.',
+
+  // Portfolio Detail
+  portfolioDetailOverviewBadge: 'Project Overview',
+  portfolioDetailHighlightsBadge: 'Event Highlights',
+  portfolioDetailHighlightsTitle: 'Key Details',
+  portfolioDetailGalleryBadge: 'Gallery',
+  portfolioDetailGalleryTitle: 'Event Moments',
+  portfolioDetailGalleryDesc: 'A visual journey through the event experience.',
+  portfolioDetailRelatedBadge: 'Explore More',
+  portfolioDetailRelatedTitle: 'Related Events',
+  portfolioDetailRelatedDesc: 'Discover more of our featured work.',
+  portfolioDetailCtaImage: '',
+  portfolioDetailCtaTitle: 'Let Us Create Your Dream Event',
+  portfolioDetailCtaDesc: 'Tell us your vision and we will bring it to life with the same passion and precision.',
+
+  // Team Member Detail
+  teamDetailBadge: 'Meet Our Team',
+  teamDetailStatsYearsLabel: 'Years Experience',
+  teamDetailStatsProjectsLabel: 'Projects Done',
+  teamDetailStatsSatisfactionLabel: 'Client Satisfaction',
+  teamDetailWhatIBringTitle: 'What I Bring',
+  teamDetailContactDesc: 'Get in touch to discuss your next event.',
+
+  // Blog Post Detail
+  blogRelatedTitle: 'Related Articles',
+  blogRelatedDesc: 'Continue reading more insights from our team.',
+
+  // Testimonials
+  testimonialsVideoImage: '',
+  testimonialsVideoTitle: 'Watch Video Testimonial',
+  testimonialsVideoDesc: 'Hear from our happy clients',
+
+  // Careers
+  careersCultureImages: '',
+  careersApplicationTitle: 'Submit Your Application',
 }
 
 export async function GET() {

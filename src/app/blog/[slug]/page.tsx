@@ -7,6 +7,7 @@ import { useParams, notFound } from 'next/navigation'
 import { motion, useInView } from 'framer-motion'
 import { HiCalendar, HiUser, HiArrowLeft } from 'react-icons/hi'
 import { formatDate } from '@/lib/utils'
+import { useSettings } from '@/hooks/useSettings'
 
 interface BlogPost {
   id: string
@@ -99,6 +100,7 @@ function RelatedPosts({ currentSlug }: { currentSlug: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
   const [related, setRelated] = useState<BlogPost[]>([])
+  const { settings } = useSettings()
 
   useEffect(() => {
     fetch('/api/blog')
@@ -122,8 +124,8 @@ function RelatedPosts({ currentSlug }: { currentSlug: string }) {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-12"
         >
-          <h2 className="text-3xl font-bold">Related Articles</h2>
-          <p className="text-base-content/70 mt-2">Continue reading more insights from our team.</p>
+          <h2 className="text-3xl font-bold">{settings?.blogRelatedTitle || 'Related Articles'}</h2>
+          <p className="text-base-content/70 mt-2">{settings?.blogRelatedDesc || 'Continue reading more insights from our team.'}</p>
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">

@@ -7,6 +7,7 @@ import { useParams, notFound } from 'next/navigation'
 import { motion, useInView } from 'framer-motion'
 import { HiArrowLeft, HiArrowRight, HiStar, HiCalendar, HiUserGroup, HiLocationMarker } from 'react-icons/hi'
 import PageHero from '@/components/ui/PageHero'
+import { useSettings } from '@/hooks/useSettings'
 
 interface PortfolioItem {
   id: string
@@ -56,6 +57,7 @@ export default function PortfolioDetailPage() {
   const [fullscreen, setFullscreen] = useState(false)
   const [isLandscape, setIsLandscape] = useState(true)
   const [testimonials, setTestimonials] = useState<any[]>([])
+  const { settings } = useSettings()
   const id = params.id as string
 
   useEffect(() => {
@@ -176,7 +178,7 @@ export default function PortfolioDetailPage() {
             <FadeIn delay={0.15}>
               <div>
                 <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/[0.03] border border-black/5 text-black/40 text-xs uppercase tracking-[0.15em] font-medium mb-4">
-                  Project Overview
+                  {settings?.portfolioDetailOverviewBadge || 'Project Overview'}
                 </span>
                 <h1 className="text-4xl lg:text-5xl font-bold text-black tracking-tight leading-[1.05] mb-6">
                   {item.title}
@@ -213,10 +215,10 @@ export default function PortfolioDetailPage() {
           <FadeIn>
             <div className="text-center mb-10">
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/[0.03] border border-black/5 text-black/40 text-xs uppercase tracking-[0.15em] font-medium mb-3">
-                Event Highlights
+                {settings?.portfolioDetailHighlightsBadge || 'Event Highlights'}
               </span>
               <h2 className="text-3xl lg:text-5xl font-bold text-black tracking-tight">
-                Key Details
+                {settings?.portfolioDetailHighlightsTitle || 'Key Details'}
               </h2>
             </div>
           </FadeIn>
@@ -244,13 +246,13 @@ export default function PortfolioDetailPage() {
           <FadeIn>
             <div className="text-center mb-10">
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/[0.03] border border-black/5 text-black/40 text-xs uppercase tracking-[0.15em] font-medium mb-3">
-                Gallery
+                {settings?.portfolioDetailGalleryBadge || 'Gallery'}
               </span>
               <h2 className="text-3xl lg:text-5xl font-bold text-black tracking-tight">
-                Event Moments
+                {settings?.portfolioDetailGalleryTitle || 'Event Moments'}
               </h2>
               <p className="text-black/45 mt-3 max-w-lg mx-auto">
-                A visual journey through the event experience.
+                {settings?.portfolioDetailGalleryDesc || 'A visual journey through the event experience.'}
               </p>
             </div>
           </FadeIn>
@@ -296,13 +298,13 @@ export default function PortfolioDetailPage() {
           <FadeIn>
             <div className="text-center mb-10">
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/[0.03] border border-black/5 text-black/40 text-xs uppercase tracking-[0.15em] font-medium mb-3">
-                Explore More
+                {settings?.portfolioDetailRelatedBadge || 'Explore More'}
               </span>
               <h2 className="text-3xl lg:text-5xl font-bold text-black tracking-tight">
-                Related Events
+                {settings?.portfolioDetailRelatedTitle || 'Related Events'}
               </h2>
               <p className="text-black/45 mt-3 max-w-lg mx-auto">
-                Discover more of our featured work.
+                {settings?.portfolioDetailRelatedDesc || 'Discover more of our featured work.'}
               </p>
             </div>
           </FadeIn>
@@ -330,7 +332,7 @@ export default function PortfolioDetailPage() {
       <section className="relative py-16 overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=1920"
+            src={settings?.portfolioDetailCtaImage || 'https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=1920'}
             alt=""
             fill
             className="object-cover opacity-30"
@@ -340,10 +342,10 @@ export default function PortfolioDetailPage() {
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
           <FadeIn>
             <h2 className="text-3xl lg:text-5xl font-bold text-white tracking-tight">
-              Let Us Create Your Dream Event
+              {settings?.portfolioDetailCtaTitle || 'Let Us Create Your Dream Event'}
             </h2>
             <p className="text-white/50 mt-4 text-lg max-w-xl mx-auto">
-              Tell us your vision and we will bring it to life with the same passion and precision.
+              {settings?.portfolioDetailCtaDesc || 'Tell us your vision and we will bring it to life with the same passion and precision.'}
             </p>
             <div className="flex flex-wrap justify-center gap-4 mt-8">
               <Link

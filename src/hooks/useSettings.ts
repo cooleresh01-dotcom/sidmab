@@ -90,10 +90,16 @@ export function useSettings() {
 }
 
 const imageKeys = new Set([
-  'companyLogo', 'logo', 'favicon', 'ceoImage', 'ceoSignature',
-  'aboutImage', 'servicesPageImage', 'portfolioPageImage', 'teamPageImage',
-  'blogPageImage', 'testimonialsPageImage', 'faqPageImage', 'contactPageImage',
-  'careersPageImage',
+  'companyLogo', 'logo', 'favicon', 'ceoImage', 'ceoSignature', 'ceoHeroImage',
+  'aboutImage', 'aboutAchievementImage',
+  'servicesPageImage', 'servicesCtaImage', 'serviceDetailCtaImage',
+  'portfolioPageImage', 'portfolioDetailCtaImage',
+  'teamPageImage',
+  'blogPageImage',
+  'testimonialsPageImage', 'testimonialsVideoImage',
+  'faqPageImage', 'contactPageImage',
+  'careersPageImage', 'careersCultureImages',
+  'homeCtaImage',
   'heroImage_0', 'heroImage_1', 'heroImage_2', 'heroImage_3',
   'partner0_logo', 'partner1_logo', 'partner2_logo', 'partner3_logo', 'partner4_logo', 'partner5_logo',
 ])
@@ -102,8 +108,9 @@ function addCacheBust(data: SiteSettings) {
   const result = { ...data }
   for (const key of imageKeys) {
     const val = result[key]
-    if (val && !val.startsWith('http') && !val.includes('?v=')) {
-      result[key] = val + '?v=' + settingsVersion
+    if (val && !val.includes('?v=')) {
+      const separator = val.includes('?') ? '&' : '?'
+      result[key] = val + separator + 'v=' + settingsVersion
     }
   }
   return result
