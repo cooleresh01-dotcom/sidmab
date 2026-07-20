@@ -145,17 +145,19 @@ export default function Navbar() {
   return (
     <>
       {/* Floating logo + menu (hero area) */}
-      <Link href="/" className={cn("fixed top-6 left-6 z-50 flex items-center gap-3 transition-opacity duration-300", scrolled && "opacity-0 pointer-events-none")}>
-        <CompanyLogo className="h-14 w-auto" width={56} height={56} />
-      </Link>
+      {!scrolled && (
+        <>
+          <Link href="/" className="fixed top-6 left-6 z-50 flex items-center gap-3">
+            <CompanyLogo className="h-14 w-auto" width={56} height={56} />
+          </Link>
 
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={cn(
-          'fixed top-6 right-6 z-50 w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-500',
-          isOpen ? 'bg-white text-black rotate-90' : scrolled ? 'opacity-0 pointer-events-none' : 'text-white'
-        )}
-        style={!isOpen && !scrolled ? { background: 'var(--site-primary)' } : {}}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className={cn(
+              'fixed top-6 right-6 z-50 w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-500',
+              isOpen ? 'bg-white text-black rotate-90' : 'text-white'
+            )}
+            style={!isOpen ? { background: 'var(--site-primary)' } : {}}
         aria-label="Toggle menu"
         aria-expanded={isOpen}
       >
@@ -163,6 +165,8 @@ export default function Navbar() {
           {isOpen ? <HiX className="w-5 h-5" /> : <HiMenu className="w-5 h-5" />}
         </motion.div>
       </button>
+        </>
+      )}
 
       {/* Sticky navbar after scrolling past hero */}
       <AnimatePresence>
