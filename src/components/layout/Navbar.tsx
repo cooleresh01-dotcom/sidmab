@@ -136,7 +136,7 @@ export default function Navbar() {
   return (
     <>
       {/* Logo */}
-      <Link href="/" className="fixed top-6 left-6 z-50 hidden md:flex items-center gap-3">
+      <Link href="/" className="fixed top-6 left-6 z-50 flex items-center gap-3">
         <CompanyLogo className="h-14 w-auto" width={56} height={56} />
       </Link>
 
