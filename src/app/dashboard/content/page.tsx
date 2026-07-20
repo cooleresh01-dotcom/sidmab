@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Save,
@@ -392,7 +393,9 @@ function Field({
 }
 
 export default function ContentPage() {
-  const [activeTab, setActiveTab] = useState('home')
+  const searchParams = useSearchParams()
+  const tabParam = searchParams.get('tab')
+  const [activeTab, setActiveTab] = useState(tabParam && tabs.some(t => t.id === tabParam) ? tabParam : 'home')
   const [settings, setSettings] = useState<SettingsData>({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
