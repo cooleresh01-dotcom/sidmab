@@ -28,28 +28,75 @@ export default function PartnersSection() {
           </div>
         </FadeIn>
 
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-8 md:gap-12 max-w-4xl mx-auto items-center">
+        <div className="hidden md:grid grid-cols-6 gap-12 max-w-4xl mx-auto items-center">
           {[0, 1, 2, 3, 4, 5].map((i) => {
             const Icon = partnerIcons[i]
             const name = settings?.[`partner${i}_name`] || fallbackNames[i]
             const logo = settings?.[`partner${i}_logo`]
             return (
               <div key={i} className="flex flex-col items-center gap-3">
-                <div className="w-14 h-14 md:w-20 md:h-20 flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity duration-300">
+                <div className="w-20 h-20 flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity duration-300">
                   {logo ? (
-                    <Image src={logo} alt={name} width={60} height={60} className="object-contain" />
+                    <Image src={logo} alt={name} width={60} height={60} unoptimized className="object-contain" />
                   ) : (
-                    <Icon className="w-8 h-8 md:w-10 md:h-10 text-black/40" />
+                    <Icon className="w-10 h-10 text-black/40" />
                   )}
                 </div>
                 {name && (
-                  <span className="text-[11px] md:text-xs font-semibold text-black/30 text-center leading-tight">
+                  <span className="text-xs font-semibold text-black/30 text-center leading-tight">
                     {name}
                   </span>
                 )}
               </div>
             )
           })}
+        </div>
+
+        <div className="md:hidden overflow-hidden">
+          <div className="flex animate-marquee">
+            {[0, 1, 2, 3, 4, 5].map((i) => {
+              const Icon = partnerIcons[i]
+              const name = settings?.[`partner${i}_name`] || fallbackNames[i]
+              const logo = settings?.[`partner${i}_logo`]
+              return (
+                <div key={i} className="flex-shrink-0 w-32 flex flex-col items-center gap-2 mx-4">
+                  <div className="w-14 h-14 flex items-center justify-center opacity-60">
+                    {logo ? (
+                      <Image src={logo} alt={name} width={60} height={60} unoptimized className="object-contain" />
+                    ) : (
+                      <Icon className="w-8 h-8 text-black/40" />
+                    )}
+                  </div>
+                  {name && (
+                    <span className="text-[11px] font-semibold text-black/30 text-center leading-tight">
+                      {name}
+                    </span>
+                  )}
+                </div>
+              )
+            })}
+            {[0, 1, 2, 3, 4, 5].map((i) => {
+              const Icon = partnerIcons[i]
+              const name = settings?.[`partner${i}_name`] || fallbackNames[i]
+              const logo = settings?.[`partner${i}_logo`]
+              return (
+                <div key={`dup-${i}`} className="flex-shrink-0 w-32 flex flex-col items-center gap-2 mx-4">
+                  <div className="w-14 h-14 flex items-center justify-center opacity-60">
+                    {logo ? (
+                      <Image src={logo} alt={name} width={60} height={60} unoptimized className="object-contain" />
+                    ) : (
+                      <Icon className="w-8 h-8 text-black/40" />
+                    )}
+                  </div>
+                  {name && (
+                    <span className="text-[11px] font-semibold text-black/30 text-center leading-tight">
+                      {name}
+                    </span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
         </div>
 
         <FadeIn>
