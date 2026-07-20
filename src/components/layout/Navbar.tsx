@@ -176,8 +176,37 @@ export default function Navbar() {
             transition={{ duration: 0.3 }}
             className="fixed top-0 left-0 right-0 z-40 bg-black/95 backdrop-blur-md shadow-sm border-b border-white/10"
           >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-end">
-              <div className="flex items-center gap-4">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-end gap-2">
+              <nav className="hidden lg:flex items-center gap-1">
+                {navItems.map((item) => {
+                  const active = pathname === item.href
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className={cn(
+                        'px-3 py-1.5 text-sm font-medium rounded-lg transition-colors',
+                        active ? 'text-white' : 'text-white/50 hover:text-white hover:bg-white/10'
+                      )}
+                      style={active ? { background: 'var(--site-primary)' } : {}}
+                    >
+                      {item.name}
+                    </Link>
+                  )
+                })}
+                {session && (
+                  <Link href="/account" className={cn(
+                    'px-3 py-1.5 text-sm font-medium rounded-lg transition-colors',
+                    pathname.startsWith('/account') ? 'text-white' : 'text-white/50 hover:text-white hover:bg-white/10'
+                  )}
+                  style={pathname.startsWith('/account') ? { background: 'var(--site-primary)' } : {}}
+                  >
+                    Account
+                  </Link>
+                )}
+              </nav>
+
+              <div className="flex items-center gap-3 ml-2">
                 <a href={`tel:${phone.replace(/\s/g, '')}`} className="hidden sm:flex items-center gap-2 text-white/70 hover:text-white transition-colors">
                   <HiPhone className="w-4 h-4" />
                   <span className="text-sm">{phone}</span>
