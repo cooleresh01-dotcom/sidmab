@@ -174,17 +174,27 @@ export default function Navbar() {
             transition={{ duration: 0.3 }}
             className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-md shadow-sm border-b border-white/10"
           >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
               <Link href="/" className="flex items-center gap-3">
-                <CompanyLogo className="h-10 w-auto" width={40} height={40} />
+                <CompanyLogo className="h-14 w-auto" width={56} height={56} />
               </Link>
 
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors"
-              >
-                <HiMenu className="w-5 h-5 text-white" />
-              </button>
+              <div className="flex items-center gap-4">
+                <a href={`tel:${phone.replace(/\s/g, '')}`} className="hidden sm:flex items-center gap-2 text-white/70 hover:text-white transition-colors">
+                  <HiPhone className="w-4 h-4" />
+                  <span className="text-sm">{phone}</span>
+                </a>
+                <a href={`mailto:${email}`} className="hidden md:flex items-center gap-2 text-white/70 hover:text-white transition-colors">
+                  <HiMail className="w-4 h-4" />
+                  <span className="text-sm">{email}</span>
+                </a>
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="w-12 h-12 rounded-xl flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors"
+                >
+                  <HiMenu className="w-6 h-6 text-white" />
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
