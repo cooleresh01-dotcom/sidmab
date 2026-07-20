@@ -6,7 +6,8 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { HiArrowRight } from 'react-icons/hi'
 import PageHero from '@/components/ui/PageHero'
-import BackButton from '@/components/ui/BackButton'
+import { useSettings } from '@/hooks/useSettings'
+
 import { services as fallbackServices } from '@/lib/data'
 
 interface ServiceItem {
@@ -20,7 +21,7 @@ interface ServiceItem {
   features: string[]
 }
 
-function ServicesGrid() {
+function ServicesGrid({ settings }: { settings: Record<string, string> | null }) {
   const [services, setServices] = useState<ServiceItem[]>([])
 
   useEffect(() => {
@@ -66,14 +67,13 @@ function ServicesGrid() {
           className="text-center max-w-2xl mx-auto mb-12"
         >
           <span className="text-primary font-semibold text-sm uppercase tracking-wider">
-            What We Offer
+            {settings?.servicesGridBadge || 'What We Offer'}
           </span>
           <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
-            End-to-End Event Solutions
+            {settings?.servicesGridTitle || 'End-to-End Event Solutions'}
           </h2>
           <p className="text-base-content/70">
-            From intimate gatherings to grand celebrations, we handle every
-            detail with precision and creativity.
+            {settings?.servicesGridDesc || 'From intimate gatherings to grand celebrations, we handle every detail with precision and creativity.'}
           </p>
         </motion.div>
 
@@ -120,7 +120,7 @@ function ServicesGrid() {
   )
 }
 
-function CTASection() {
+function CTASection({ settings }: { settings: Record<string, string> | null }) {
   return (
     <section className="relative py-20 overflow-hidden">
       <div className="absolute inset-0">
@@ -140,17 +140,16 @@ function CTASection() {
           viewport={{ once: true }}
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Not Sure What You Need?
+            {settings?.servicesCtaTitle || 'Not Sure What You Need?'}
           </h2>
           <p className="text-lg opacity-80 max-w-2xl mx-auto mb-8">
-            Let&apos;s discuss your event and create a custom package that fits
-            your vision and budget.
+            {settings?.servicesCtaDesc || "Let's discuss your event and create a custom package that fits your vision and budget."}
           </p>
           <Link
             href="/book"
             className="btn btn-lg bg-white text-primary hover:bg-white/90 rounded-full px-8 border-none"
           >
-            Book a Free Consultation
+            {settings?.servicesCtaBtn || 'Book a Free Consultation'}
             <HiArrowRight className="w-5 h-5" />
           </Link>
         </motion.div>
@@ -160,17 +159,17 @@ function CTASection() {
 }
 
 export default function ServicesPage() {
+  const { settings } = useSettings()
   return (
     <>
-      <BackButton />
       <PageHero
-        title="Our Services"
-        subtitle="Comprehensive event solutions tailored to bring your vision to life."
-        image="https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=1920"
-        badge="What We Offer"
+        title={settings?.servicesPageTitle || 'Our Services'}
+        subtitle={settings?.servicesPageSubtitle || 'Comprehensive event solutions tailored to bring your vision to life.'}
+        image={settings?.servicesPageImage || 'https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=1920'}
+        badge={settings?.servicesPageBadge || 'What We Offer'}
       />
-      <ServicesGrid />
-      <CTASection />
+      <ServicesGrid settings={settings} />
+      <CTASection settings={settings} />
     </>
   )
 }

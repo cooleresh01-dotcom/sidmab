@@ -11,7 +11,7 @@ import { motion, useInView } from 'framer-motion'
 import { HiPhone, HiMail, HiLocationMarker, HiClock, HiPaperAirplane } from 'react-icons/hi'
 import { FaWhatsapp } from 'react-icons/fa'
 import PageHero from '@/components/ui/PageHero'
-import BackButton from '@/components/ui/BackButton'
+
 import { useSettings } from '@/hooks/useSettings'
 
 const contactSchema = z.object({
@@ -305,7 +305,7 @@ function WhatsAppButton({ whatsapp }: { whatsapp: string }) {
   )
 }
 
-function FAQLink() {
+function FAQLink({ settings }: { settings?: Record<string, any> | null }) {
   return (
     <section className="section-padding bg-base-200/30">
       <div className="container mx-auto text-center">
@@ -315,9 +315,9 @@ function FAQLink() {
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">Quick Answers</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">{settings?.contactFaqTitle || 'Quick Answers'}</h2>
           <p className="text-base-content/70 mb-6">
-            Many common questions are answered in our FAQ section.
+            {settings?.contactFaqDesc || 'Many common questions are answered in our FAQ section.'}
           </p>
           <Link href="/faq" className="btn btn-outline rounded-full">
             View FAQs
@@ -350,12 +350,11 @@ export default function ContactPage() {
 
   return (
     <>
-      <BackButton />
       <PageHero
-        title="Contact Us"
-        subtitle="We would love to hear from you. Reach out and let us help plan your perfect event."
-        image="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1920"
-        badge="Get in Touch"
+        title={siteSettings?.contactPageTitle || 'Contact Us'}
+        subtitle={siteSettings?.contactPageSubtitle || 'We would love to hear from you. Reach out and let us help plan your perfect event.'}
+        image={siteSettings?.contactPageImage || 'https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1920'}
+        badge={siteSettings?.contactPageBadge || 'Get in Touch'}
       />
       <section className="section-padding">
         <div className="container mx-auto">
@@ -371,7 +370,7 @@ export default function ContactPage() {
           <WhatsAppButton whatsapp={settings.whatsapp} />
         </div>
       </section>
-      <FAQLink />
+      <FAQLink settings={siteSettings} />
     </>
   )
 }

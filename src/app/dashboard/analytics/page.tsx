@@ -16,44 +16,23 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts'
 
-type DateRange = 'this-month' | 'this-year' | 'all'
-
-const monthlyBookings = [
-  { month: 'Jan', bookings: 12 },
-  { month: 'Feb', bookings: 18 },
-  { month: 'Mar', bookings: 15 },
-  { month: 'Apr', bookings: 22 },
-  { month: 'May', bookings: 28 },
-  { month: 'Jun', bookings: 24 },
-  { month: 'Jul', bookings: 30 },
-  { month: 'Aug', bookings: 26 },
-  { month: 'Sep', bookings: 32 },
-  { month: 'Oct', bookings: 38 },
-  { month: 'Nov', bookings: 35 },
-  { month: 'Dec', bookings: 42 },
-]
-
-const revenueByService = [
-  { service: 'Wedding', revenue: 1250000 },
-  { service: 'Corporate', revenue: 980000 },
-  { service: 'Birthday', revenue: 450000 },
-  { service: 'Decoration', revenue: 620000 },
-  { service: 'Catering', revenue: 380000 },
-  { service: 'Rentals', revenue: 280000 },
-]
-
-const eventsByCategory = [
-  { category: 'Wedding', value: 35 },
-  { category: 'Corporate', value: 25 },
-  { category: 'Birthday', value: 20 },
-  { category: 'Decoration', value: 12 },
-  { category: 'Other', value: 8 },
-]
+interface AnalyticsData {
+  totalBookings: number
+  totalRevenue: number
+  activeClients: number
+  monthlyBookings: { month: string; bookings: number }[]
+  revenueByService: { service: string; revenue: number }[]
+  eventsByCategory: { category: string; value: number }[]
+  avgBookingValue: number
+  mostPopular: { category: string; value: number } | null
+  busiestMonth: { month: string; bookings: number } | null
+}
 
 const COLORS = ['oklch(0.55 0.18 25)', 'oklch(0.6 0.12 180)', 'oklch(0.65 0.2 40)', 'oklch(0.5 0.15 280)', 'oklch(0.6 0.15 160)']
+
+type DateRange = 'this-month' | 'this-year' | 'all'
 
 const ranges = [
   { value: 'this-month', label: 'This Month' },
@@ -63,6 +42,7 @@ const ranges = [
 
 export default function AnalyticsPage() {
   const [range, setRange] = useState<DateRange>('this-year')
+  const [data, setData] = useState<AnalyticsData | null>(null)
   const [chartColors, setChartColors] = useState({
     grid: 'oklch(0.9 0.01 240)',
     axis: 'oklch(0.6 0.01 240)',
@@ -89,35 +69,48 @@ export default function AnalyticsPage() {
     if (p) setPieColors(p.split(','))
   }, [])
 
+  useEffect(() => {
+    fetch('/api/dashboard/analytics')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d && !d.error) setData(d)
+      })
+      .catch(() => {})
+  }, [])
+
+  const growthRate = data && data.totalBookings > 0
+    ? ((data.totalBookings / 12) * 100 / data.totalBookings).toFixed(1)
+    : '0'
+
   const statsCards = [
     {
       label: 'Total Bookings',
-      value: '245',
-      change: '+18%',
+      value: String(data?.totalBookings || 0),
+      change: '',
       icon: CalendarCheck,
       color: 'text-primary',
       bg: 'bg-primary/10',
     },
     {
       label: 'Total Revenue',
-      value: '₦3.96M',
-      change: '+24%',
+      value: `₦${((data?.totalRevenue || 0) / 1000000).toFixed(2)}M`,
+      change: '',
       icon: DollarSign,
       color: 'text-success',
       bg: 'bg-success/10',
     },
     {
       label: 'Active Clients',
-      value: '89',
-      change: '+12%',
+      value: String(data?.activeClients || 0),
+      change: '',
       icon: Users,
       color: 'text-info',
       bg: 'bg-info/10',
     },
     {
-      label: 'Growth Rate',
-      value: '22.5%',
-      change: '+5.2%',
+      label: 'Avg Booking Value',
+      value: `₦${(data?.avgBookingValue || 0).toLocaleString()}`,
+      change: '',
       icon: TrendingUp,
       color: 'text-warning',
       bg: 'bg-warning/10',
@@ -168,9 +161,11 @@ export default function AnalyticsPage() {
                   <div className={`w-10 h-10 rounded-lg ${stat.bg} flex items-center justify-center ${stat.color}`}>
                     <Icon className="w-5 h-5" />
                   </div>
-                  <span className="text-xs font-medium text-success bg-success/10 px-2 py-0.5 rounded-full">
-                    {stat.change}
-                  </span>
+                  {stat.change && (
+                    <span className="text-xs font-medium text-success bg-success/10 px-2 py-0.5 rounded-full">
+                      {stat.change}
+                    </span>
+                  )}
                 </div>
                 <p className="text-2xl font-bold mt-3">{stat.value}</p>
                 <p className="text-sm text-base-content/60">{stat.label}</p>
@@ -191,7 +186,7 @@ export default function AnalyticsPage() {
             <h2 className="card-title text-lg mb-4">Monthly Bookings</h2>
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={monthlyBookings}>
+                <LineChart data={data?.monthlyBookings || []}>
                   <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
                   <XAxis dataKey="month" tick={{ fontSize: 12 }} stroke={chartColors.axis} />
                   <YAxis tick={{ fontSize: 12 }} stroke={chartColors.axis} />
@@ -226,7 +221,7 @@ export default function AnalyticsPage() {
             <h2 className="card-title text-lg mb-4">Revenue by Service</h2>
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={revenueByService}>
+                <BarChart data={data?.revenueByService || []}>
                   <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
                   <XAxis dataKey="service" tick={{ fontSize: 12 }} stroke={chartColors.axis} />
                   <YAxis tick={{ fontSize: 12 }} stroke={chartColors.axis} />
@@ -258,7 +253,7 @@ export default function AnalyticsPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={eventsByCategory}
+                    data={data?.eventsByCategory || []}
                     cx="50%"
                     cy="50%"
                     innerRadius={60}
@@ -270,7 +265,7 @@ export default function AnalyticsPage() {
                       `${entry.category} ${(entry.percent * 100).toFixed(0)}%`
                     }
                   >
-                    {eventsByCategory.map((_, index) => (
+                    {(data?.eventsByCategory || []).map((_, index) => (
                       <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
                     ))}
                   </Pie>
@@ -298,23 +293,23 @@ export default function AnalyticsPage() {
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="bg-base-200 rounded-xl p-4">
                 <p className="text-sm text-base-content/60">Most Popular Service</p>
-                <p className="text-xl font-bold mt-1">Wedding Planning</p>
-                <p className="text-xs text-base-content/40 mt-1">35% of total bookings</p>
+                <p className="text-xl font-bold mt-1">{data?.mostPopular?.category || 'N/A'}</p>
+                <p className="text-xs text-base-content/40 mt-1">{data?.mostPopular ? `${data.mostPopular.value} bookings` : 'No data yet'}</p>
               </div>
               <div className="bg-base-200 rounded-xl p-4">
                 <p className="text-sm text-base-content/60">Busiest Month</p>
-                <p className="text-xl font-bold mt-1">December</p>
-                <p className="text-xs text-base-content/40 mt-1">42 bookings recorded</p>
+                <p className="text-xl font-bold mt-1">{data?.busiestMonth?.month || 'N/A'}</p>
+                <p className="text-xs text-base-content/40 mt-1">{data?.busiestMonth ? `${data.busiestMonth.bookings} bookings recorded` : 'No data yet'}</p>
               </div>
               <div className="bg-base-200 rounded-xl p-4">
                 <p className="text-sm text-base-content/60">Average Booking Value</p>
-                <p className="text-xl font-bold mt-1">₦385,000</p>
+                <p className="text-xl font-bold mt-1">₦{(data?.avgBookingValue || 0).toLocaleString()}</p>
                 <p className="text-xs text-base-content/40 mt-1">Across all services</p>
               </div>
               <div className="bg-base-200 rounded-xl p-4">
-                <p className="text-sm text-base-content/60">Conversion Rate</p>
-                <p className="text-xl font-bold mt-1">68%</p>
-                <p className="text-xs text-base-content/40 mt-1">Inquiry to booking</p>
+                <p className="text-sm text-base-content/60">Total Revenue</p>
+                <p className="text-xl font-bold mt-1">₦{((data?.totalRevenue || 0) / 1000000).toFixed(2)}M</p>
+                <p className="text-xs text-base-content/40 mt-1">All time</p>
               </div>
             </div>
           </div>

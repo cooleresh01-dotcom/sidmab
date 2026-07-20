@@ -7,7 +7,8 @@ import { HiStar } from 'react-icons/hi'
 import { FaQuoteLeft, FaPlay } from 'react-icons/fa'
 import { cn } from '@/lib/utils'
 import PageHero from '@/components/ui/PageHero'
-import BackButton from '@/components/ui/BackButton'
+import { useSettings } from '@/hooks/useSettings'
+
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -25,7 +26,7 @@ function StarRating({ rating }: { rating: number }) {
   )
 }
 
-function TestimonialsGrid() {
+function TestimonialsGrid({ settings }: { settings?: Record<string, any> | null }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
   const [testimonials, setTestimonials] = useState<typeof import('@/lib/data').testimonials>([])
@@ -62,14 +63,13 @@ function TestimonialsGrid() {
           className="text-center max-w-2xl mx-auto mb-12"
         >
           <span className="text-primary font-semibold text-sm uppercase tracking-wider">
-            Client Feedback
+            {settings?.testimonialsGridBadge || 'Client Feedback'}
           </span>
           <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
-            What Our Clients Say
+            {settings?.testimonialsGridTitle || 'What Our Clients Say'}
           </h2>
           <p className="text-base-content/70">
-            Don&apos;t take our word for it — hear from the people we&apos;ve
-            worked with.
+            {settings?.testimonialsGridDesc || "Don&apos;t take our word for it — hear from the people we&apos;ve worked with."}
           </p>
         </motion.div>
 
@@ -178,15 +178,15 @@ function TestimonialsGrid() {
   )
 }
 
-function StatsSection() {
+function StatsSection({ settings }: { settings?: Record<string, any> | null }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true })
 
   const stats = [
-    { value: '98%', label: 'Client Satisfaction' },
-    { value: '1000+', label: 'Events Delivered' },
-    { value: '250+', label: 'Repeat Clients' },
-    { value: '4.9/5', label: 'Average Rating' },
+    { value: settings?.testimonialsStat0_value || '98%', label: settings?.testimonialsStat0_label || 'Client Satisfaction' },
+    { value: settings?.testimonialsStat1_value || '1000+', label: settings?.testimonialsStat1_label || 'Events Delivered' },
+    { value: settings?.testimonialsStat2_value || '250+', label: settings?.testimonialsStat2_label || 'Repeat Clients' },
+    { value: settings?.testimonialsStat3_value || '4.9/5', label: settings?.testimonialsStat3_label || 'Average Rating' },
   ]
 
   return (
@@ -214,16 +214,17 @@ function StatsSection() {
 }
 
 export default function TestimonialsPage() {
+  const { settings } = useSettings()
   return (
     <>
-      <BackButton />
       <PageHero
-        title="Testimonials"
-        subtitle="Hear what our clients have to say about their SIDMAB experience."
-        image="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920"
-        badge="Client Stories"
+        title={settings?.testimonialsPageTitle || 'Testimonials'}
+        subtitle={settings?.testimonialsPageSubtitle || 'Hear what our clients have to say about their SIDMAB experience.'}
+        image={settings?.testimonialsPageImage || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920'}
+        badge={settings?.testimonialsPageBadge || 'Client Stories'}
       />
-      <TestimonialsGrid />
+      <TestimonialsGrid settings={settings} />
+      <StatsSection settings={settings} />
     </>
   )
 }

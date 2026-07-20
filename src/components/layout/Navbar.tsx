@@ -10,6 +10,7 @@ import { HiMenu, HiX, HiPhone, HiMail } from 'react-icons/hi'
 import { FaFacebook, FaXTwitter, FaYoutube, FaLinkedinIn } from 'react-icons/fa6'
 import { cn } from '@/lib/utils'
 import { useSettings } from '@/hooks/useSettings'
+import CompanyLogo from '@/components/ui/CompanyLogo'
 
 const InstagramIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -135,14 +136,8 @@ export default function Navbar() {
   return (
     <>
       {/* Logo */}
-      <Link href="/" className="fixed top-6 left-6 z-50 flex items-center gap-3">
-        {companyLogo ? (
-          <Image src={companyLogo} alt={companyName} width={56} height={56} className="h-14 w-auto" priority />
-        ) : (
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl" style={{ background: 'var(--site-primary)' }}>
-            {companyName.charAt(0)}
-          </div>
-        )}
+      <Link href="/" className="fixed top-6 left-6 z-50 hidden md:flex items-center gap-3">
+        <CompanyLogo className="h-14 w-auto" width={56} height={56} />
       </Link>
 
       {/* Menu button */}
@@ -178,7 +173,9 @@ export default function Navbar() {
                 <div className="flex-1" />
 
                 <div className="flex gap-12 items-start">
-                  <SocialPanel show={showSocial} onClose={() => setShowSocial(!showSocial)} socialUrls={socialUrls} />
+                  <div className="relative mt-[132px]">
+                    <SocialPanel show={showSocial} onClose={() => setShowSocial(!showSocial)} socialUrls={socialUrls} />
+                  </div>
 
                   <div>
                     <motion.p initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="text-xs uppercase tracking-[0.3em] text-gray-300 mb-6">
@@ -238,13 +235,7 @@ export default function Navbar() {
                 <div className="relative z-10 p-10 md:p-14 flex flex-col justify-center min-h-full">
                   <motion.div initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.35, duration: 0.5 }}>
                     <div className="flex items-center gap-4 mb-12">
-                      {companyLogo ? (
-                        <Image src={companyLogo} alt={companyName} width={40} height={40} className="h-10 w-auto" />
-                      ) : (
-                        <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-white font-bold text-base">
-                          {companyName.charAt(0)}
-                        </div>
-                      )}
+                      <CompanyLogo className="h-10 w-auto" width={40} height={40} />
                     </div>
 
                     <div className="space-y-8">

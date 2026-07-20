@@ -94,7 +94,7 @@ export default function HeroSection() {
             transition={{ duration: 0.5, ease: 'easeOut' }}
             className="max-w-2xl"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-white text-xs uppercase tracking-[0.15em] font-medium mb-5 shadow-lg backdrop-blur-xl border border-white/30 bg-white/10">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-white text-xs uppercase tracking-[0.15em] font-medium mt-4 mb-5 shadow-lg backdrop-blur-xl border border-white/30 bg-white/10">
               <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--site-primary)' }} />
               {slide.label}
             </div>

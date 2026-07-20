@@ -8,7 +8,7 @@ import { motion, useInView } from 'framer-motion'
 import { HiCheck, HiArrowRight, HiChevronDown } from 'react-icons/hi'
 import { formatPrice } from '@/lib/utils'
 import PageHero from '@/components/ui/PageHero'
-import BackButton from '@/components/ui/BackButton'
+
 import { services as fallbackServices } from '@/lib/data'
 
 interface Package {
@@ -476,7 +476,6 @@ export default function ServiceDetailPage() {
 
   return (
     <>
-      <BackButton />
       <ServiceHero service={service} />
       <OverviewSection service={service} />
       <GallerySection images={service.gallery} />

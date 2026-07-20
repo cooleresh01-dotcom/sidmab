@@ -3,13 +3,15 @@
 import { FaCalendarCheck, FaUsers, FaAward, FaSmile } from 'react-icons/fa'
 import FadeIn from './FadeIn'
 import AnimatedCounter from './AnimatedCounter'
+import { useSettings } from '@/hooks/useSettings'
 
 export default function StatsSection() {
+  const { settings } = useSettings()
   const stats = [
-    { icon: FaCalendarCheck, end: 1000, suffix: '+', label: 'Events Delivered' },
-    { icon: FaUsers, end: 250, suffix: '+', label: 'Happy Clients' },
-    { icon: FaAward, end: 15, suffix: '+', label: 'Years Experience' },
-    { icon: FaSmile, end: 98, suffix: '%', label: 'Satisfaction Rate' },
+    { icon: FaCalendarCheck, end: parseInt(settings?.homeStat0_value || '1000'), suffix: settings?.homeStat0_suffix || '+', label: settings?.homeStat0_label || 'Events Delivered' },
+    { icon: FaUsers, end: parseInt(settings?.homeStat1_value || '250'), suffix: settings?.homeStat1_suffix || '+', label: settings?.homeStat1_label || 'Happy Clients' },
+    { icon: FaAward, end: parseInt(settings?.homeStat2_value || '15'), suffix: settings?.homeStat2_suffix || '+', label: settings?.homeStat2_label || 'Years Experience' },
+    { icon: FaSmile, end: parseInt(settings?.homeStat3_value || '98'), suffix: settings?.homeStat3_suffix || '%', label: settings?.homeStat3_label || 'Satisfaction Rate' },
   ]
 
   return (

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -9,7 +9,8 @@ import { motion, useInView } from 'framer-motion'
 import { HiBriefcase, HiLocationMarker, HiClock, HiUserGroup, HiAcademicCap, HiHeart, HiGlobe, HiCurrencyDollar, HiPaperAirplane } from 'react-icons/hi'
 import { careerOpenings } from '@/lib/data'
 import PageHero from '@/components/ui/PageHero'
-import BackButton from '@/components/ui/BackButton'
+import { useSettings } from '@/hooks/useSettings'
+
 
 const applicationSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -38,7 +39,7 @@ const cultureImages = [
 
 
 
-function CultureSection() {
+function CultureSection({ settings }: { settings: any }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
@@ -51,10 +52,10 @@ function CultureSection() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-12"
         >
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider">Our Culture</span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">Life at SIDMAB</h2>
+          <span className="text-primary font-semibold text-sm uppercase tracking-wider">{settings?.careersCultureBadge || 'Our Culture'}</span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">{settings?.careersCultureTitle || 'Life at SIDMAB'}</h2>
           <p className="text-base-content/70">
-            We believe in fostering creativity, collaboration, and growth. Our team is our greatest asset.
+            {settings?.careersCultureDesc || 'We believe in fostering creativity, collaboration, and growth. Our team is our greatest asset.'}
           </p>
         </motion.div>
 
@@ -76,9 +77,21 @@ function CultureSection() {
   )
 }
 
-function BenefitsSection() {
+function BenefitsSection({ settings }: { settings: any }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const [benefitsData, setBenefitsData] = useState(benefits)
+
+  useEffect(() => {
+    fetch('/api/settings').then(r => r.json()).then(data => {
+      if (data.careerBenefits) {
+        try {
+          const parsed = JSON.parse(data.careerBenefits)
+          if (parsed.items) setBenefitsData(parsed.items)
+        } catch {}
+      }
+    })
+  }, [])
 
   return (
     <section ref={ref} className="section-padding bg-base-200/30">
@@ -89,13 +102,13 @@ function BenefitsSection() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-12"
         >
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider">Benefits</span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">Why Join Us</h2>
-          <p className="text-base-content/70">We take care of our team with great benefits and a positive work environment.</p>
+          <span className="text-primary font-semibold text-sm uppercase tracking-wider">{settings?.careersBenefitsBadge || 'Benefits'}</span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">{settings?.careersBenefitsTitle || 'Why Join Us'}</h2>
+          <p className="text-base-content/70">{settings?.careersBenefitsDesc || 'We take care of our team with great benefits and a positive work environment.'}</p>
         </motion.div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {benefits.map((benefit, index) => {
+          {benefitsData.map((benefit: any, index: number) => {
             const Icon = benefit.icon
             return (
               <motion.div
@@ -119,7 +132,7 @@ function BenefitsSection() {
   )
 }
 
-function OpenPositions() {
+function OpenPositions({ settings, jobsData: propJobs }: { settings: any; jobsData: any[] }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
@@ -132,13 +145,13 @@ function OpenPositions() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-12"
         >
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider">Open Positions</span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">Join Our Team</h2>
-          <p className="text-base-content/70">Explore current opportunities and find your dream role.</p>
+          <span className="text-primary font-semibold text-sm uppercase tracking-wider">{settings?.careersPositionsBadge || 'Open Positions'}</span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">{settings?.careersPositionsTitle || 'Join Our Team'}</h2>
+          <p className="text-base-content/70">{settings?.careersPositionsDesc || 'Explore current opportunities and find your dream role.'}</p>
         </motion.div>
 
         <div className="space-y-6">
-          {careerOpenings.map((job, index) => (
+          {propJobs.map((job: any, index: number) => (
             <motion.div
               key={`${job.title}-${index}`}
               initial={{ opacity: 0, y: 20 }}
@@ -189,7 +202,7 @@ function OpenPositions() {
   )
 }
 
-function ApplicationForm() {
+function ApplicationForm({ jobsData }: { jobsData: any[] }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true })
   const {
@@ -250,7 +263,7 @@ function ApplicationForm() {
                   <label className="label"><span className="label-text font-medium">Position *</span></label>
                   <select {...register('position')} className="select select-bordered w-full">
                     <option value="">Select a position</option>
-                    {careerOpenings.map((job) => (
+                    {jobsData.map((job: any) => (
                       <option key={job.title} value={job.title}>{job.title}</option>
                     ))}
                   </select>
@@ -275,19 +288,32 @@ function ApplicationForm() {
 }
 
 export default function CareersPage() {
+  const { settings } = useSettings()
+  const [jobsData, setJobsData] = useState(careerOpenings)
+
+  useEffect(() => {
+    fetch('/api/settings').then(r => r.json()).then(data => {
+      if (data.careerContent) {
+        try {
+          const parsed = JSON.parse(data.careerContent)
+          if (parsed.jobs) setJobsData(parsed.jobs)
+        } catch {}
+      }
+    })
+  }, [])
+
   return (
     <>
-      <BackButton />
       <PageHero
-        title="Careers at SIDMAB"
-        subtitle="Come grow with us. Explore opportunities to be part of something extraordinary."
-        image="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920"
-        badge="Join Our Team"
+        title={settings?.careersPageTitle || 'Careers at SIDMAB'}
+        subtitle={settings?.careersPageSubtitle || 'Come grow with us. Explore opportunities to be part of something extraordinary.'}
+        image={settings?.careersPageImage || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920'}
+        badge={settings?.careersPageBadge || 'Join Our Team'}
       />
-      <CultureSection />
-      <BenefitsSection />
-      <OpenPositions />
-      <ApplicationForm />
+      <CultureSection settings={settings} />
+      <BenefitsSection settings={settings} />
+      <OpenPositions settings={settings} jobsData={jobsData} />
+      <ApplicationForm jobsData={jobsData} />
     </>
   )
 }

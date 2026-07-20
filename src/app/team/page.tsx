@@ -7,7 +7,8 @@ import { HiArrowRight, HiMail } from 'react-icons/hi'
 import { FaLinkedinIn, FaTwitter, FaInstagram } from 'react-icons/fa'
 import { teamMembers } from '@/lib/data'
 import PageHero from '@/components/ui/PageHero'
-import BackButton from '@/components/ui/BackButton'
+import { useSettings } from '@/hooks/useSettings'
+
 
 function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -24,7 +25,7 @@ function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
   )
 }
 
-function TeamGrid() {
+function TeamGrid({ settings }: { settings: Record<string, string> | null }) {
   const [apiTeam, setApiTeam] = useState<Array<typeof teamMembers[0] & { id: number }>>([])
 
   useEffect(() => {
@@ -43,14 +44,13 @@ function TeamGrid() {
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-white text-xs uppercase tracking-[0.15em] font-medium mb-4 shadow-lg backdrop-blur-xl border border-white/30 bg-white/10"
               style={{ background: 'rgba(4,44,108,0.4)' }}>
-              Who We Are
+              {settings?.teamGridBadge || 'Who We Are'}
             </span>
             <h2 className="text-4xl md:text-5xl font-bold text-black tracking-tight">
-              Dedicated to Excellence
+              {settings?.teamGridTitle || 'Dedicated to Excellence'}
             </h2>
             <p className="text-black/50 mt-4 text-lg leading-relaxed">
-              Every member of our team brings unique expertise and passion to
-              create extraordinary events.
+              {settings?.teamGridDesc || 'Every member of our team brings unique expertise and passion to create extraordinary events.'}
             </p>
           </div>
         </FadeIn>
@@ -159,7 +159,7 @@ function TeamGrid() {
   )
 }
 
-function JoinTeamSection() {
+function JoinTeamSection({ settings }: { settings: Record<string, string> | null }) {
   return (
     <section className="relative py-20 md:py-28 overflow-hidden bg-black/[0.02]">
       <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, var(--site-primary) 0%, transparent 50%)' }} />
@@ -168,17 +168,16 @@ function JoinTeamSection() {
         <FadeIn>
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-white text-xs uppercase tracking-[0.15em] font-medium mb-4 shadow-lg backdrop-blur-xl border border-white/30 bg-white/10"
             style={{ background: 'rgba(4,44,108,0.4)' }}>
-            Join The Team
+            {settings?.teamJoinBadge || 'Join The Team'}
           </span>
           <h2 className="text-3xl md:text-5xl font-bold text-black tracking-tight mb-4">
-            Join Our Team
+            {settings?.teamJoinTitle || 'Join Our Team'}
           </h2>
           <p className="text-black/50 text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
-            Passionate about events? We&apos;re always looking for talented
-            individuals to join the SIDMAB family.
+            {settings?.teamJoinDesc || "Passionate about events? We're always looking for talented individuals to join the SIDMAB family."}
           </p>
           <a
-            href="mailto:careers@sidmab.com"
+            href={`mailto:${settings?.teamJoinEmail || 'careers@sidmab.com'}`}
             className="group inline-flex items-center gap-2 px-7 py-3 rounded-xl font-semibold text-sm transition-all duration-300 hover:-translate-y-0.5"
             style={{ border: '1.5px solid var(--site-primary)', color: 'var(--site-primary)' }}
             onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--site-primary)'; e.currentTarget.style.color = '#fff' }}
@@ -195,18 +194,18 @@ function JoinTeamSection() {
 }
 
 export default function TeamPage() {
+  const { settings } = useSettings()
   return (
     <>
-      <BackButton />
       <PageHero
-        title="Our Team"
-        subtitle="Meet the passionate professionals behind SIDMAB Events & Management."
-        image="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920"
-        badge="Who We Are"
+        title={settings?.teamPageTitle || 'Our Team'}
+        subtitle={settings?.teamPageSubtitle || 'Meet the passionate professionals behind SIDMAB Events & Management.'}
+        image={settings?.teamPageImage || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920'}
+        badge={settings?.teamPageBadge || 'Who We Are'}
         height="tall"
       />
-      <TeamGrid />
-      <JoinTeamSection />
+      <TeamGrid settings={settings} />
+      <JoinTeamSection settings={settings} />
     </>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import Image from 'next/image'
 import { motion, useInView } from 'framer-motion'
 import {
@@ -14,19 +14,64 @@ import {
   HiGlobe,
   HiScale,
 } from 'react-icons/hi'
-import BackButton from '@/components/ui/BackButton'
 
-const sections = [
-  { id: 'acceptance', label: 'Acceptance of Terms', icon: HiDocumentText },
-  { id: 'services', label: 'Our Services', icon: HiUserGroup },
-  { id: 'bookings', label: 'Bookings & Payments', icon: HiCash },
-  { id: 'cancellation', label: 'Cancellation & Refunds', icon: HiExclamationCircle },
-  { id: 'liability', label: 'Limitation of Liability', icon: HiShieldCheck },
-  { id: 'ip', label: 'Intellectual Property', icon: HiGlobe },
-  { id: 'privacy', label: 'Privacy', icon: HiScale },
-  { id: 'changes', label: 'Changes to Terms', icon: HiRefresh },
-  { id: 'contact', label: 'Contact Us', icon: HiMail },
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  acceptance: HiDocumentText,
+  services: HiUserGroup,
+  bookings: HiCash,
+  cancellation: HiExclamationCircle,
+  liability: HiShieldCheck,
+  ip: HiGlobe,
+  privacy: HiScale,
+  changes: HiRefresh,
+  contact: HiMail,
+}
+
+interface Section {
+  id: string
+  title: string
+  content: string
+}
+
+const defaultSections: Section[] = [
+  { id: 'acceptance', title: '1. Acceptance of Terms', content: 'By accessing or using the services provided by SIDMAB Events & Management ("we," "our," or "us"), you agree to be bound by these Terms of Service. If you do not agree to all of these terms, you may not use our services. These terms apply to all visitors, clients, and users of our website and services.' },
+  { id: 'services', title: '2. Our Services', content: 'We provide event planning and management services including but not limited to:\n\n- Event Planning: Full-service event planning for weddings, corporate events, birthdays, and special celebrations.\n- Decoration & Design: Creative event decoration, staging, and environmental design.\n- Catering Coordination: Coordination of catering services and menu planning.\n- Equipment Rentals: Rental of event equipment, furniture, and decor items.' },
+  { id: 'bookings', title: '3. Bookings & Payments', content: 'When you book our services, the following terms apply:\n\n- A deposit is required to confirm your booking. The deposit amount will be communicated during the booking process.\n- Full payment terms and schedules will be outlined in your service agreement.\n- Prices are subject to change without notice until a booking is confirmed with a deposit.\n- Additional services or changes to the agreed scope may incur extra charges.\n- All payments should be made using the agreed payment methods within the specified timeframes.' },
+  { id: 'cancellation', title: '4. Cancellation & Refunds', content: 'Our cancellation policy is as follows:\n\n- 30+ days before event: Full refund minus administrative fees.\n- 15-29 days before event: 50% refund of the deposit.\n- Less than 15 days before event: No refund. The deposit is non-refundable.\n\nCancellations must be made in writing via email. Refunds, if applicable, will be processed within 14 business days.' },
+  { id: 'liability', title: '5. Limitation of Liability', content: 'SIDMAB Events & Management shall not be held liable for any indirect, incidental, special, or consequential damages arising from the use of our services. Our total liability shall not exceed the amount paid by you for the specific service in question. We are not responsible for events beyond our reasonable control, including but not limited to natural disasters, pandemics, government restrictions, or force majeure events.' },
+  { id: 'ip', title: '6. Intellectual Property', content: 'All content on this website, including text, images, logos, graphics, and designs, is the property of SIDMAB Events & Management and is protected by copyright laws. You may not reproduce, distribute, or create derivative works from our content without written permission. Event photos taken by our team may be used for marketing purposes unless you opt out in writing.' },
+  { id: 'privacy', title: '7. Privacy', content: 'Your use of our services is also governed by our Privacy Policy. By using our services, you consent to the collection and use of your information as described in the Privacy Policy. We are committed to protecting your personal data and handling it with care.' },
+  { id: 'changes', title: '8. Changes to Terms', content: 'We reserve the right to modify these Terms of Service at any time. Changes will be effective immediately upon posting on this page. Your continued use of our services after any changes constitutes your acceptance of the new terms. We encourage you to review this page periodically.' },
+  { id: 'contact', title: '9. Contact Us', content: 'If you have any questions about these Terms of Service, please reach out to us at info@sidmab.com or call +234 800 000 0000.' },
 ]
+
+function ContentRenderer({ content }: { content: string }) {
+  const lines = content.split('\n').filter(Boolean)
+  const isBulletList = lines.every((l) => l.trimStart().startsWith('- '))
+
+  if (isBulletList) {
+    return (
+      <ul className="space-y-3">
+        {lines.map((line, i) => (
+          <li key={i} className="flex items-start gap-3 text-sm text-base-content/70">
+            <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-2 shrink-0" />
+            {line.trimStart().replace(/^- /, '')}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      {lines.map((line, i) => (
+        <p key={i} className="text-base-content/70 leading-relaxed">
+          {line.trim()}
+        </p>
+      ))}
+    </div>
+  )
+}
 
 function SectionCard({
   id,
@@ -63,9 +108,34 @@ function SectionCard({
 }
 
 export default function TermsPage() {
+  const [sections, setSections] = useState<Section[]>(defaultSections)
+  const [lastUpdated, setLastUpdated] = useState('July 10, 2026')
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/settings?_=' + Date.now())
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.termsContent) {
+          try {
+            const parsed = JSON.parse(data.termsContent)
+            if (parsed.sections) setSections(parsed.sections)
+            if (parsed.lastUpdated) setLastUpdated(parsed.lastUpdated)
+          } catch {}
+        }
+      })
+      .catch(() => {})
+      .finally(() => setMounted(true))
+  }, [])
+
+  const tocSections = (mounted ? sections : defaultSections).map((s) => ({
+    id: s.id,
+    label: s.title.replace(/^\d+\.\s*/, ''),
+    icon: iconMap[s.id] || HiDocumentText,
+  }))
+
   return (
     <>
-      <BackButton />
       {/* Hero */}
       <section className="relative pt-28 pb-16 overflow-hidden">
         <div className="absolute inset-0">
@@ -92,7 +162,7 @@ export default function TermsPage() {
             </p>
             <div className="flex items-center justify-center gap-2 mt-6 text-white/50 text-sm">
               <HiDocumentText className="w-4 h-4" />
-              <span>Last updated: July 10, 2026</span>
+              <span suppressHydrationWarning>Last updated: {mounted ? lastUpdated : 'July 10, 2026'}</span>
             </div>
           </motion.div>
         </div>
@@ -108,7 +178,7 @@ export default function TermsPage() {
                 On This Page
               </h3>
               <nav className="flex flex-col gap-1">
-                {sections.map(({ id, label, icon: Icon }) => (
+                {tocSections.map(({ id, label, icon: Icon }) => (
                   <a
                     key={id}
                     href={`#${id}`}
@@ -139,185 +209,16 @@ export default function TermsPage() {
 
           {/* Main Content */}
           <div className="flex-1 min-w-0 flex flex-col gap-8">
-            <SectionCard id="acceptance" title="1. Acceptance of Terms" icon={HiDocumentText}>
-              <p className="text-base-content/70 leading-relaxed">
-                By accessing or using the services provided by SIDMAB Events & Management
-                (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;), you agree to be
-                bound by these Terms of Service. If you do not agree to all of these terms, you
-                may not use our services. These terms apply to all visitors, clients, and users
-                of our website and services.
-              </p>
-            </SectionCard>
-
-            <SectionCard id="services" title="2. Our Services" icon={HiUserGroup}>
-              <p className="text-base-content/70 leading-relaxed mb-5">
-                We provide event planning and management services including but not limited to:
-              </p>
-              <div className="grid gap-3">
-                {[
-                  {
-                    title: 'Event Planning',
-                    desc: 'Full-service event planning for weddings, corporate events, birthdays, and special celebrations.',
-                  },
-                  {
-                    title: 'Decoration & Design',
-                    desc: 'Creative event decoration, staging, and environmental design.',
-                  },
-                  {
-                    title: 'Catering Coordination',
-                    desc: 'Coordination of catering services and menu planning.',
-                  },
-                  {
-                    title: 'Equipment Rentals',
-                    desc: 'Rental of event equipment, furniture, and decor items.',
-                  },
-                ].map((item) => (
-                  <div
-                    key={item.title}
-                    className="flex items-start gap-3 p-4 rounded-xl bg-base-200/30"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
-                    <div>
-                      <strong className="text-sm">{item.title}:</strong>{' '}
-                      <span className="text-sm text-base-content/60">{item.desc}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </SectionCard>
-
-            <SectionCard id="bookings" title="3. Bookings & Payments" icon={HiCash}>
-              <p className="text-base-content/70 leading-relaxed mb-5">
-                When you book our services, the following terms apply:
-              </p>
-              <ul className="space-y-3">
-                {[
-                  'A deposit is required to confirm your booking. The deposit amount will be communicated during the booking process.',
-                  'Full payment terms and schedules will be outlined in your service agreement.',
-                  'Prices are subject to change without notice until a booking is confirmed with a deposit.',
-                  'Additional services or changes to the agreed scope may incur extra charges.',
-                  'All payments should be made using the agreed payment methods within the specified timeframes.',
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-sm text-base-content/70">
-                    <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-2 shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </SectionCard>
-
-            <SectionCard id="cancellation" title="4. Cancellation & Refunds" icon={HiExclamationCircle}>
-              <p className="text-base-content/70 leading-relaxed mb-5">
-                Our cancellation policy is as follows:
-              </p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3 text-sm text-base-content/70">
-                  <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-2 shrink-0" />
-                  <div>
-                    <strong>30+ days before event:</strong> Full refund minus administrative fees.
-                  </div>
-                </li>
-                <li className="flex items-start gap-3 text-sm text-base-content/70">
-                  <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-2 shrink-0" />
-                  <div>
-                    <strong>15-29 days before event:</strong> 50% refund of the deposit.
-                  </div>
-                </li>
-                <li className="flex items-start gap-3 text-sm text-base-content/70">
-                  <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-2 shrink-0" />
-                  <div>
-                    <strong>Less than 15 days before event:</strong> No refund. The deposit is non-refundable.
-                  </div>
-                </li>
-              </ul>
-              <p className="text-base-content/70 leading-relaxed mt-5">
-                Cancellations must be made in writing via email. Refunds, if applicable, will be
-                processed within 14 business days.
-              </p>
-            </SectionCard>
-
-            <SectionCard id="liability" title="5. Limitation of Liability" icon={HiShieldCheck}>
-              <p className="text-base-content/70 leading-relaxed">
-                SIDMAB Events & Management shall not be held liable for any indirect, incidental,
-                special, or consequential damages arising from the use of our services. Our total
-                liability shall not exceed the amount paid by you for the specific service in
-                question. We are not responsible for events beyond our reasonable control, including
-                but not limited to natural disasters, pandemics, government restrictions, or force
-                majeure events.
-              </p>
-            </SectionCard>
-
-            <SectionCard id="ip" title="6. Intellectual Property" icon={HiGlobe}>
-              <p className="text-base-content/70 leading-relaxed">
-                All content on this website, including text, images, logos, graphics, and designs,
-                is the property of SIDMAB Events & Management and is protected by copyright laws.
-                You may not reproduce, distribute, or create derivative works from our content
-                without written permission. Event photos taken by our team may be used for
-                marketing purposes unless you opt out in writing.
-              </p>
-            </SectionCard>
-
-            <SectionCard id="privacy" title="7. Privacy" icon={HiScale}>
-              <p className="text-base-content/70 leading-relaxed">
-                Your use of our services is also governed by our{' '}
-                <a href="/privacy-policy" className="text-primary hover:underline font-medium">
-                  Privacy Policy
-                </a>
-                . By using our services, you consent to the collection and use of your information
-                as described in the Privacy Policy. We are committed to protecting your personal
-                data and handling it with care.
-              </p>
-            </SectionCard>
-
-            <SectionCard id="changes" title="8. Changes to Terms" icon={HiRefresh}>
-              <p className="text-base-content/70 leading-relaxed">
-                We reserve the right to modify these Terms of Service at any time. Changes will
-                be effective immediately upon posting on this page. Your continued use of our
-                services after any changes constitutes your acceptance of the new terms. We
-                encourage you to review this page periodically.
-              </p>
-            </SectionCard>
-
-            <SectionCard id="contact" title="9. Contact Us" icon={HiMail}>
-              <p className="text-base-content/70 leading-relaxed mb-6">
-                If you have any questions about these Terms of Service, please reach out to us:
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {[
-                  {
-                    label: 'Email',
-                    value: 'info@sidmab.com',
-                    href: 'mailto:info@sidmab.com',
-                  },
-                  {
-                    label: 'Phone',
-                    value: '+234 800 000 0000',
-                    href: 'tel:+2348000000000',
-                  },
-                  {
-                    label: 'Address',
-                    value: 'Lagos, Nigeria',
-                    href: null,
-                  },
-                ].map((item) => (
-                  <div key={item.label} className="p-5 rounded-xl bg-base-200/30 text-center">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-base-content/40 mb-2">
-                      {item.label}
-                    </p>
-                    {item.href ? (
-                      <a
-                        href={item.href}
-                        className="text-primary font-medium hover:underline"
-                      >
-                        {item.value}
-                      </a>
-                    ) : (
-                      <p className="text-sm text-base-content/70">{item.value}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </SectionCard>
+            {(mounted ? sections : defaultSections).map((section) => (
+              <SectionCard
+                key={section.id}
+                id={section.id}
+                title={section.title}
+                icon={iconMap[section.id] || HiDocumentText}
+              >
+                <ContentRenderer content={section.content} />
+              </SectionCard>
+            ))}
           </div>
         </div>
       </div>

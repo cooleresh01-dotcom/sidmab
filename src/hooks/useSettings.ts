@@ -14,6 +14,7 @@ interface SiteSettings {
   address: string
   workingHours: string
   logo: string
+  companyLogo: string
   favicon: string
   facebook: string
   instagram: string

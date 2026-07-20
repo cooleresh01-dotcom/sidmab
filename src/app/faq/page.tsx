@@ -1,23 +1,36 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useInView } from 'framer-motion'
 import { HiSearch, HiChevronDown } from 'react-icons/hi'
 import { faqs } from '@/lib/data'
 import PageHero from '@/components/ui/PageHero'
-import BackButton from '@/components/ui/BackButton'
+import { useSettings } from '@/hooks/useSettings'
+
 
 
 
 function FAQSection() {
   const [search, setSearch] = useState('')
   const [openIndex, setOpenIndex] = useState<string | null>('0-0')
+  const [faqData, setFaqData] = useState(faqs)
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
-  const filtered = faqs
+  useEffect(() => {
+    fetch('/api/settings').then(r => r.json()).then(data => {
+      if (data.faqContent) {
+        try {
+          const parsed = JSON.parse(data.faqContent)
+          if (parsed.categories) setFaqData(parsed.categories)
+        } catch {}
+      }
+    })
+  }, [])
+
+  const filtered = faqData
     .map((group) => ({
       ...group,
       items: group.items.filter(
@@ -133,7 +146,7 @@ function FAQSection() {
   )
 }
 
-function CTASection() {
+function CTASection({ settings }: { settings: any }) {
   return (
     <section className="section-padding bg-base-200/30">
       <div className="container mx-auto text-center max-w-2xl">
@@ -146,9 +159,9 @@ function CTASection() {
           <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
             <HiSearch className="w-6 h-6 text-primary" />
           </div>
-          <h2 className="text-2xl md:text-3xl font-bold mb-3">Still Have Questions?</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-3">{settings?.faqCtaTitle || 'Still Have Questions?'}</h2>
           <p className="text-base-content/50 mb-8 max-w-md mx-auto">
-            We are here to help. Get in touch with our team for personalised assistance.
+            {settings?.faqCtaDesc || 'We are here to help. Get in touch with our team for personalised assistance.'}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link href="/contact" className="px-7 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:opacity-90 transition-all duration-300 hover:-translate-y-0.5 shadow-lg shadow-primary/20">
@@ -165,17 +178,17 @@ function CTASection() {
 }
 
 export default function FAQPage() {
+  const { settings } = useSettings()
   return (
     <>
-      <BackButton />
       <PageHero
-        title="Frequently Asked Questions"
-        subtitle="Everything you need to know about our services and process."
-        image="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920"
-        badge="FAQ"
+        title={settings?.faqPageTitle || 'Frequently Asked Questions'}
+        subtitle={settings?.faqPageSubtitle || 'Everything you need to know about our services and process.'}
+        image={settings?.faqPageImage || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920'}
+        badge={settings?.faqPageBadge || 'FAQ'}
       />
       <FAQSection />
-      <CTASection />
+      <CTASection settings={settings} />
     </>
   )
 }

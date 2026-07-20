@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import Image from 'next/image'
 import { motion, useInView } from 'framer-motion'
 import {
@@ -14,19 +14,70 @@ import {
   HiRefresh,
   HiMail,
 } from 'react-icons/hi'
-import BackButton from '@/components/ui/BackButton'
 
-const sections = [
-  { id: 'introduction', label: 'Introduction', icon: HiShieldCheck },
-  { id: 'information', label: 'Information We Collect', icon: HiCollection },
-  { id: 'usage', label: 'How We Use Your Info', icon: HiAcademicCap },
-  { id: 'protection', label: 'Data Protection', icon: HiLockClosed },
-  { id: 'disclosure', label: 'Third-Party Disclosure', icon: HiGlobe },
-  { id: 'rights', label: 'Your Rights', icon: HiScale },
-  { id: 'cookies', label: 'Cookies', icon: HiInformationCircle },
-  { id: 'changes', label: 'Changes to Policy', icon: HiRefresh },
-  { id: 'contact', label: 'Contact Us', icon: HiMail },
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  introduction: HiShieldCheck,
+  information: HiCollection,
+  usage: HiAcademicCap,
+  protection: HiLockClosed,
+  disclosure: HiGlobe,
+  rights: HiScale,
+  cookies: HiInformationCircle,
+  changes: HiRefresh,
+  contact: HiMail,
+}
+
+interface Section {
+  id: string
+  title: string
+  content: string
+}
+
+const defaultSections: Section[] = [
+  { id: 'introduction', title: '1. Introduction', content: 'SIDMAB Events & Management ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or use our services. By accessing our platform, you consent to the practices described in this policy.' },
+  { id: 'information', title: '2. Information We Collect', content: 'We may collect the following types of information when you interact with our website or services:\n\n- Personal Data: Name, email address, phone number, and other contact details you provide through our contact forms or booking system.\n- Event Details: Information about your event preferences, dates, locations, and requirements.\n- Usage Data: Information about how you interact with our website, including pages visited and time spent.\n- Cookies: We use cookies to enhance your browsing experience and analyze site traffic.' },
+  { id: 'usage', title: '3. How We Use Your Information', content: 'We use the collected information for the following purposes:\n\n- To provide and manage our event planning and management services\n- To communicate with you regarding inquiries, bookings, and updates\n- To improve our website and services\n- To send promotional materials (with your consent)\n- To comply with legal obligations' },
+  { id: 'protection', title: '4. Data Protection', content: 'We implement appropriate security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction. These include encryption, secure servers, and strict access controls. However, no method of transmission over the Internet is 100% secure, and we cannot guarantee absolute security.' },
+  { id: 'disclosure', title: '5. Third-Party Disclosure', content: 'We do not sell, trade, or transfer your personal information to third parties without your consent, except as necessary to provide our services or as required by law. We may share data with trusted service providers who assist us in operating our website and conducting our business, provided they agree to keep your information confidential.' },
+  { id: 'rights', title: '6. Your Rights', content: 'Depending on your location, you may have the following rights regarding your personal data:\n\n- The right to access your personal data\n- The right to rectify inaccurate data\n- The right to delete your data\n- The right to restrict processing\n- The right to data portability\n- The right to withdraw consent\n\nTo exercise any of these rights, please contact us using the information below.' },
+  { id: 'cookies', title: '7. Cookies', content: 'Our website uses cookies to improve your experience. You can choose to disable cookies in your browser settings. However, disabling cookies may affect the functionality of certain features on our website. We use both session cookies and persistent cookies to enhance your browsing experience.' },
+  { id: 'changes', title: '8. Changes to This Policy', content: 'We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last updated" date. We encourage you to review this policy periodically for any changes.' },
+  { id: 'contact', title: '9. Contact Us', content: 'If you have any questions about this Privacy Policy, please reach out to us at info@sidmab.com or call +234 800 000 0000.' },
 ]
+
+function ContentRenderer({ content }: { content: string }) {
+  const lines = content.split('\n').filter(Boolean)
+  const isBulletList = lines.every((l) => l.trimStart().startsWith('- '))
+
+  if (isBulletList) {
+    return (
+      <ul className="space-y-3">
+        {lines.map((line, i) => (
+          <li key={i} className="flex items-start gap-3 text-sm text-base-content/70">
+            <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-2 shrink-0" />
+            {line.trimStart().replace(/^- /, '')}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      {lines.map((line, i) => {
+        const trimmed = line.trim()
+        if (trimmed.startsWith('- ')) {
+          return null
+        }
+        return (
+          <p key={i} className="text-base-content/70 leading-relaxed">
+            {trimmed}
+          </p>
+        )
+      })}
+    </div>
+  )
+}
 
 function SectionCard({
   id,
@@ -63,9 +114,38 @@ function SectionCard({
 }
 
 export default function PrivacyPolicy() {
+  const [sections, setSections] = useState<Section[]>(defaultSections)
+  const [lastUpdated, setLastUpdated] = useState('July 5, 2026')
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/settings?_=' + Date.now())
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.privacyContent) {
+          try {
+            const parsed = JSON.parse(data.privacyContent)
+            if (parsed.sections) setSections(parsed.sections)
+            if (parsed.lastUpdated) setLastUpdated(parsed.lastUpdated)
+          } catch {}
+        }
+      })
+      .catch(() => {})
+      .finally(() => setMounted(true))
+  }, [])
+
+  const tocSections = mounted ? sections.map((s) => ({
+    id: s.id,
+    label: s.title.replace(/^\d+\.\s*/, ''),
+    icon: iconMap[s.id] || HiShieldCheck,
+  })) : defaultSections.map((s) => ({
+    id: s.id,
+    label: s.title.replace(/^\d+\.\s*/, ''),
+    icon: iconMap[s.id] || HiShieldCheck,
+  }))
+
   return (
     <>
-      <BackButton />
       {/* Hero */}
       <section className="relative pt-28 pb-16 overflow-hidden">
         <div className="absolute inset-0">
@@ -92,7 +172,7 @@ export default function PrivacyPolicy() {
             </p>
             <div className="flex items-center justify-center gap-2 mt-6 text-white/50 text-sm">
               <HiShieldCheck className="w-4 h-4" />
-              <span>Last updated: July 5, 2026</span>
+              <span suppressHydrationWarning>Last updated: {mounted ? lastUpdated : 'July 5, 2026'}</span>
             </div>
           </motion.div>
         </div>
@@ -104,11 +184,11 @@ export default function PrivacyPolicy() {
           {/* Table of Contents — desktop */}
           <aside className="hidden lg:block w-72 shrink-0">
             <div className="sticky top-28">
-              <h3 className="text-sm font-semibold uppercase tracking-widest text-base-content/40 mb-6">
+              <h3 className="text-sm font-semibold uppercase tracking-widest text-base-content/40 mb-6" suppressHydrationWarning>
                 On This Page
               </h3>
-              <nav className="flex flex-col gap-1">
-                {sections.map(({ id, label, icon: Icon }) => (
+              <nav className="flex flex-col gap-1" suppressHydrationWarning>
+                {tocSections.map(({ id, label, icon: Icon }) => (
                   <a
                     key={id}
                     href={`#${id}`}
@@ -139,179 +219,16 @@ export default function PrivacyPolicy() {
 
           {/* Main Content */}
           <div className="flex-1 min-w-0 flex flex-col gap-8">
-            <SectionCard id="introduction" title="1. Introduction" icon={HiShieldCheck}>
-              <p className="text-base-content/70 leading-relaxed">
-                SIDMAB Events & Management (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;)
-                is committed to protecting your privacy. This Privacy Policy explains how we collect,
-                use, disclose, and safeguard your information when you visit our website or use our
-                services. By accessing our platform, you consent to the practices described in this
-                policy.
-              </p>
-            </SectionCard>
-
-            <SectionCard id="information" title="2. Information We Collect" icon={HiCollection}>
-              <p className="text-base-content/70 leading-relaxed mb-5">
-                We may collect the following types of information when you interact with our website
-                or services:
-              </p>
-              <div className="grid gap-3">
-                {[
-                  {
-                    title: 'Personal Data',
-                    desc: 'Name, email address, phone number, and other contact details you provide through our contact forms or booking system.',
-                  },
-                  {
-                    title: 'Event Details',
-                    desc: 'Information about your event preferences, dates, locations, and requirements.',
-                  },
-                  {
-                    title: 'Usage Data',
-                    desc: 'Information about how you interact with our website, including pages visited and time spent.',
-                  },
-                  {
-                    title: 'Cookies',
-                    desc: 'We use cookies to enhance your browsing experience and analyze site traffic.',
-                  },
-                ].map((item) => (
-                  <div
-                    key={item.title}
-                    className="flex items-start gap-3 p-4 rounded-xl bg-base-200/30"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
-                    <div>
-                      <strong className="text-sm">{item.title}:</strong>{' '}
-                      <span className="text-sm text-base-content/60">{item.desc}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </SectionCard>
-
-            <SectionCard id="usage" title="3. How We Use Your Information" icon={HiAcademicCap}>
-              <p className="text-base-content/70 leading-relaxed mb-5">
-                We use the collected information for the following purposes:
-              </p>
-              <ul className="space-y-3">
-                {[
-                  'To provide and manage our event planning and management services',
-                  'To communicate with you regarding inquiries, bookings, and updates',
-                  'To improve our website and services',
-                  'To send promotional materials (with your consent)',
-                  'To comply with legal obligations',
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-sm text-base-content/70">
-                    <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-2 shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </SectionCard>
-
-            <SectionCard id="protection" title="4. Data Protection" icon={HiLockClosed}>
-              <p className="text-base-content/70 leading-relaxed">
-                We implement appropriate security measures to protect your personal information from
-                unauthorized access, alteration, disclosure, or destruction. These include encryption,
-                secure servers, and strict access controls. However, no method of transmission over
-                the Internet is 100% secure, and we cannot guarantee absolute security.
-              </p>
-            </SectionCard>
-
-            <SectionCard id="disclosure" title="5. Third-Party Disclosure" icon={HiGlobe}>
-              <p className="text-base-content/70 leading-relaxed">
-                We do not sell, trade, or transfer your personal information to third parties without
-                your consent, except as necessary to provide our services or as required by law.
-                We may share data with trusted service providers who assist us in operating our website
-                and conducting our business, provided they agree to keep your information confidential.
-              </p>
-            </SectionCard>
-
-            <SectionCard id="rights" title="6. Your Rights" icon={HiScale}>
-              <p className="text-base-content/70 leading-relaxed mb-5">
-                Depending on your location, you may have the following rights regarding your personal
-                data:
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {[
-                  'The right to access your personal data',
-                  'The right to rectify inaccurate data',
-                  'The right to delete your data',
-                  'The right to restrict processing',
-                  'The right to data portability',
-                  'The right to withdraw consent',
-                ].map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-center gap-3 p-4 rounded-xl bg-base-200/30"
-                  >
-                    <span className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <span className="w-2 h-2 rounded-full bg-primary" />
-                    </span>
-                    <span className="text-sm text-base-content/70">{item}</span>
-                  </div>
-                ))}
-              </div>
-              <p className="text-base-content/70 leading-relaxed mt-5">
-                To exercise any of these rights, please contact us using the information below.
-              </p>
-            </SectionCard>
-
-            <SectionCard id="cookies" title="7. Cookies" icon={HiInformationCircle}>
-              <p className="text-base-content/70 leading-relaxed">
-                Our website uses cookies to improve your experience. You can choose to disable cookies
-                in your browser settings. However, disabling cookies may affect the functionality of
-                certain features on our website. We use both session cookies and persistent cookies
-                to enhance your browsing experience.
-              </p>
-            </SectionCard>
-
-            <SectionCard id="changes" title="8. Changes to This Policy" icon={HiRefresh}>
-              <p className="text-base-content/70 leading-relaxed">
-                We may update this Privacy Policy from time to time. We will notify you of any changes
-                by posting the new policy on this page and updating the &ldquo;Last updated&rdquo;
-                date. We encourage you to review this policy periodically for any changes.
-              </p>
-            </SectionCard>
-
-            <SectionCard id="contact" title="9. Contact Us" icon={HiMail}>
-              <p className="text-base-content/70 leading-relaxed mb-6">
-                If you have any questions about this Privacy Policy, please reach out to us:
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {[
-                  {
-                    label: 'Email',
-                    value: 'info@sidmab.com',
-                    href: 'mailto:info@sidmab.com',
-                  },
-                  {
-                    label: 'Phone',
-                    value: '+234 800 000 0000',
-                    href: 'tel:+2348000000000',
-                  },
-                  {
-                    label: 'Address',
-                    value: 'Lagos, Nigeria',
-                    href: null,
-                  },
-                ].map((item) => (
-                  <div key={item.label} className="p-5 rounded-xl bg-base-200/30 text-center">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-base-content/40 mb-2">
-                      {item.label}
-                    </p>
-                    {item.href ? (
-                      <a
-                        href={item.href}
-                        className="text-primary font-medium hover:underline"
-                      >
-                        {item.value}
-                      </a>
-                    ) : (
-                      <p className="text-sm text-base-content/70">{item.value}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </SectionCard>
+            {(mounted ? sections : defaultSections).map((section) => (
+              <SectionCard
+                key={section.id}
+                id={section.id}
+                title={section.title}
+                icon={iconMap[section.id] || HiShieldCheck}
+              >
+                <ContentRenderer content={section.content} />
+              </SectionCard>
+            ))}
           </div>
         </div>
       </div>

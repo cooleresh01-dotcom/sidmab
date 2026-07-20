@@ -1,24 +1,48 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useInView } from 'framer-motion'
 import { HiArrowRight, HiCalendar, HiUser } from 'react-icons/hi'
-import { blogPosts } from '@/lib/data'
 import { formatDate } from '@/lib/utils'
 import PageHero from '@/components/ui/PageHero'
-import BackButton from '@/components/ui/BackButton'
+import { useSettings } from '@/hooks/useSettings'
+
+
+interface BlogPost {
+  id: string
+  title: string
+  slug: string
+  excerpt: string
+  content: string
+  image: string
+  author: string
+  tags: string[]
+  published: boolean
+  featured: boolean
+  createdAt: string
+}
 
 function BlogGrid() {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const [posts, setPosts] = useState<BlogPost[]>([])
+
+  useEffect(() => {
+    fetch('/api/blog')
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setPosts(data)
+      })
+      .catch(() => {})
+  }, [])
 
   return (
     <section ref={ref} className="section-padding">
       <div className="container mx-auto">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogPosts.map((post, index) => (
+          {posts.map((post, index) => (
             <motion.div
               key={post.id}
               initial={{ opacity: 0, y: 30 }}
@@ -57,7 +81,7 @@ function BlogGrid() {
                       </span>
                       <span className="flex items-center gap-1">
                         <HiCalendar className="w-3.5 h-3.5" />
-                        {formatDate(post.date)}
+                        {formatDate(post.createdAt)}
                       </span>
                     </div>
                     <Link
@@ -78,14 +102,14 @@ function BlogGrid() {
 }
 
 export default function BlogPage() {
+  const { settings } = useSettings()
   return (
     <>
-      <BackButton />
       <PageHero
-        title="Latest Insights & Stories"
-        subtitle="Expert tips, trends, and inspiration for your next event."
-        image="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1920"
-        badge="Our Blog"
+        title={settings?.blogPageTitle || 'Latest Insights & Stories'}
+        subtitle={settings?.blogPageSubtitle || 'Expert tips, trends, and inspiration for your next event.'}
+        image={settings?.blogPageImage || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1920'}
+        badge={settings?.blogPageBadge || 'Our Blog'}
         height="tall"
         overlay="dark"
       />

@@ -26,6 +26,8 @@ import {
   Image,
   Film,
   Send,
+  Palette,
+  HelpCircle,
 } from 'lucide-react'
 
 const navItems = [
@@ -43,6 +45,11 @@ const navItems = [
   { label: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
   { label: 'SEO', href: '/dashboard/seo', icon: Search },
   { label: 'Media Library', href: '/dashboard/media', icon: Film },
+  { label: 'Privacy Policy', href: '/dashboard/privacy-policy', icon: FileText },
+  { label: 'Terms of Service', href: '/dashboard/terms', icon: FileText },
+  { label: 'Site Content', href: '/dashboard/content', icon: Palette },
+  { label: 'FAQ Editor', href: '/dashboard/faq', icon: HelpCircle },
+  { label: 'Careers', href: '/dashboard/careers', icon: Briefcase },
   { label: 'Settings', href: '/dashboard/settings', icon: Settings },
 ]
 

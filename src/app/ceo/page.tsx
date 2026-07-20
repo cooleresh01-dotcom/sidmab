@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 import { motion, useInView, useScroll, useTransform } from 'framer-motion'
 import { FaQuoteLeft, FaLinkedinIn, FaTwitter } from 'react-icons/fa'
 import { HiArrowRight } from 'react-icons/hi'
-import BackButton from '@/components/ui/BackButton'
+
 
 const defaultSettings = {
   ceoName: 'Sarah Johnson',
@@ -358,7 +358,7 @@ function CeoProfile({
   )
 }
 
-function CTASection() {
+function CTASection({ settings }: { settings: any }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true })
 
@@ -378,10 +378,10 @@ function CTASection() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Want to Work With Us?
+            {settings?.ceoCtaTitle || 'Want to Work With Us?'}
           </h2>
           <p className="text-base-content/60 mb-8 max-w-xl mx-auto text-lg leading-relaxed">
-            Let&apos;s create something extraordinary together. Reach out and tell us about your vision.
+            {settings?.ceoCtaDesc || "Let's create something extraordinary together. Reach out and tell us about your vision."}
           </p>
           <Link
             href="/contact"
@@ -421,7 +421,6 @@ export default function CeoPage() {
 
   return (
     <>
-      <BackButton />
       <HeroSection ceoName={settings.ceoName} ceoTitle={settings.ceoTitle} />
       <CeoProfile
         ceoName={settings.ceoName}
@@ -431,7 +430,7 @@ export default function CeoPage() {
         ceoMessage={settings.ceoMessage}
         ceoSignature={settings.ceoSignature}
       />
-      <CTASection />
+      <CTASection settings={settings} />
     </>
   )
 }

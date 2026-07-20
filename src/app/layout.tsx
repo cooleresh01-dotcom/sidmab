@@ -3,7 +3,7 @@ import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google"
 import "./globals.css"
 import { Providers } from "@/components/providers"
 import { ThemeProvider } from "@/components/ThemeProvider"
-import Navbar from "@/components/layout/Navbar"
+import ConditionalNavbar from "@/components/layout/ConditionalNavbar"
 import ConditionalFooter from "@/components/layout/ConditionalFooter"
 import { prisma } from "@/lib/db"
 
@@ -84,7 +84,7 @@ export default async function RootLayout({
       <body className="min-h-screen flex flex-col">
         <Providers>
           <ThemeProvider>
-            <Navbar />
+            <ConditionalNavbar />
             <main className="flex-1">{children}</main>
             <ConditionalFooter />
           </ThemeProvider>

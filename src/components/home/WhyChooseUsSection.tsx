@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { HiBadgeCheck, HiSparkles, HiSupport, HiLightBulb } from 'react-icons/hi'
 import FadeIn from './FadeIn'
 import { teamMembers } from '@/lib/data'
@@ -9,7 +10,7 @@ import { useSettings } from '@/hooks/useSettings'
 
 export default function WhyChooseUsSection() {
   const { settings } = useSettings()
-  const [apiTeam, setApiTeam] = useState<Array<{ name: string; role: string; image: string }>>([])
+  const [apiTeam, setApiTeam] = useState<Array<{ id: string; name: string; role: string; image: string }>>([])
 
   useEffect(() => {
     fetch('/api/team')
@@ -25,7 +26,7 @@ export default function WhyChooseUsSection() {
     { icon: HiLightBulb, key: '3' },
   ]
 
-  const displayTeam = apiTeam.length >= 3 ? apiTeam.slice(0, 3) : teamMembers.slice(0, 3)
+  const displayTeam = apiTeam.length >= 3 ? apiTeam.slice(0, 3) : teamMembers.slice(0, 3).map((m, i) => ({ ...m, id: '' }))
 
   return (
     <section className="py-16 bg-black/[0.02] relative overflow-hidden">
@@ -74,15 +75,17 @@ export default function WhyChooseUsSection() {
         <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
           {displayTeam.map((member, i) => (
             <FadeIn key={member.name} delay={i * 0.1}>
-              <div className="flex items-center gap-4 p-4 rounded-xl bg-white border border-black/[0.06] hover:border-black/10 transition-all duration-300 hover:shadow-md">
-                <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-white shadow-sm">
-                  <Image src={member.image} alt={member.name} fill className="object-cover object-top" sizes="48px" />
+              <Link href={`/team/${member.id || ''}`} className="block">
+                <div className="flex items-center gap-4 p-4 rounded-xl bg-white border border-black/[0.06] hover:border-black/10 transition-all duration-300 hover:shadow-md cursor-pointer">
+                  <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-white shadow-sm">
+                    <Image src={member.image} alt={member.name} fill className="object-cover object-top" sizes="48px" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-black text-sm">{member.name}</p>
+                    <p className="text-xs text-black/40">{member.role}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold text-black text-sm">{member.name}</p>
-                  <p className="text-xs text-black/40">{member.role}</p>
-                </div>
-              </div>
+              </Link>
             </FadeIn>
           ))}
         </div>

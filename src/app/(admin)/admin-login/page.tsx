@@ -4,12 +4,12 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { signIn } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Eye, EyeOff, LogIn, ArrowRight } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Eye, EyeOff, ArrowRight } from 'lucide-react'
+import { adminSignIn } from '@/lib/admin-auth-client'
 import { useSettings } from '@/hooks/useSettings'
 import CompanyLogo from '@/components/ui/CompanyLogo'
 
@@ -20,12 +20,15 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>
 
-export default function LoginPage() {
+export default function AdminLoginPage() {
   const router = useRouter()
   const { settings } = useSettings()
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const companyLogo = settings?.companyLogo || ''
+  const companyName = settings?.siteName || 'SIDMAB'
 
   const {
     register,
@@ -40,16 +43,12 @@ export default function LoginPage() {
     setError('')
 
     try {
-      const result = await signIn('credentials', {
-        email: data.email,
-        password: data.password,
-        redirect: false,
-      })
+      const result = await adminSignIn(data.email, data.password)
 
       if (result?.error) {
         setError('Invalid email or password')
       } else if (result?.ok) {
-        router.push('/account')
+        router.push('/dashboard')
       }
     } catch {
       setError('An unexpected error occurred')
@@ -75,9 +74,9 @@ export default function LoginPage() {
                 transition={{ delay: 0.3 }}
                 className="text-4xl font-bold leading-tight mb-4"
               >
-                Create unforgettable
+                Admin
                 <br />
-                experiences
+                Dashboard
               </motion.h2>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -85,7 +84,7 @@ export default function LoginPage() {
                 transition={{ delay: 0.4 }}
                 className="text-white/70 text-lg max-w-md"
               >
-                Sign in to manage your events, bookings, and account details.
+                Sign in to manage events, bookings, and settings.
               </motion.p>
             </div>
           </div>
@@ -96,9 +95,9 @@ export default function LoginPage() {
             transition={{ delay: 0.6 }}
             className="flex items-center gap-6 text-sm text-white/50"
           >
-            <span>Premium Event Planning</span>
+            <span>{companyName}</span>
             <span className="w-1 h-1 rounded-full bg-white/30" />
-            <span>Nigeria&apos;s Finest</span>
+            <span>Management Portal</span>
           </motion.div>
         </div>
       </div>
@@ -115,23 +114,20 @@ export default function LoginPage() {
             <CompanyLogo className="h-16 w-auto" width={80} height={80} />
           </div>
 
-          <h1 className="text-3xl font-bold mb-2">Welcome back</h1>
+          <h1 className="text-3xl font-bold mb-2">Admin Login</h1>
           <p className="text-base-content/50 mb-8">
-            Sign in to your SIDMAB account
+            Sign in to the management dashboard
           </p>
 
-          <AnimatePresence>
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="mb-6 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm text-center"
-              >
-                {error}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm text-center"
+            >
+              {error}
+            </motion.div>
+          )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-1.5">
@@ -140,7 +136,7 @@ export default function LoginPage() {
               </label>
               <input
                 type="email"
-                placeholder="you@example.com"
+                placeholder="admin@sidmab.com"
                 style={{ outline: 'none' }}
                 className={`w-full px-4 py-3 text-sm rounded-xl border-0 bg-base-200 text-base-content placeholder:text-base-content/40 transition-all duration-200 ${
                   errors.email ? 'ring-1 ring-red-400' : ''
@@ -179,12 +175,6 @@ export default function LoginPage() {
               )}
             </div>
 
-            <div className="flex justify-end">
-              <Link href="/forgot-password" className="text-sm hover:underline" style={{ color: 'var(--site-primary)' }}>
-                Forgot Password?
-              </Link>
-            </div>
-
             <button
               type="submit"
               disabled={loading}
@@ -198,19 +188,18 @@ export default function LoginPage() {
                 </>
               ) : (
                 <>
-                  Sign In
+                  Sign In to Dashboard
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
           </form>
 
-          <p className="text-center text-sm text-base-content/60 mt-8">
-            Don&apos;t have an account?{' '}
-            <Link href="/register" className="font-medium hover:underline" style={{ color: 'var(--site-primary)' }}>
-              Create an account
+          <div className="mt-6 pt-6 border-t border-base-300 text-center">
+            <Link href="/login" className="text-sm text-base-content/50 hover:text-base-content transition-colors">
+              &larr; Back to client login
             </Link>
-          </p>
+          </div>
         </motion.div>
       </div>
     </div>

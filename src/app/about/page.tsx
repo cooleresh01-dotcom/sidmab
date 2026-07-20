@@ -15,7 +15,7 @@ import { FaQuoteLeft } from 'react-icons/fa'
 import { teamMembers } from '@/lib/data'
 import { cn } from '@/lib/utils'
 import PageHero from '@/components/ui/PageHero'
-import BackButton from '@/components/ui/BackButton'
+
 
 function AnimatedCounter({
   end,
@@ -61,7 +61,7 @@ function TimelineSection({ settings }: { settings: Record<string, string> }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
-  const milestones = [
+  const defaultMilestones = [
     {
       year: '2010',
       title: 'The Beginning',
@@ -93,6 +93,16 @@ function TimelineSection({ settings }: { settings: Record<string, string> }) {
       desc: 'Expanding our services with innovative event technology and sustainable practices.',
     },
   ]
+
+  let milestones = defaultMilestones
+  if (settings.aboutTimeline) {
+    try {
+      const parsed = JSON.parse(settings.aboutTimeline)
+      if (parsed.milestones && Array.isArray(parsed.milestones)) {
+        milestones = parsed.milestones
+      }
+    } catch {}
+  }
 
   return (
     <section ref={ref} className="section-padding">
@@ -229,17 +239,17 @@ function MissionVisionValues({ settings }: { settings: Record<string, string> })
   )
 }
 
-function AchievementsSection() {
+function AchievementsSection({ settings }: { settings: Record<string, string> }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
   const stats = [
-    { value: 1000, suffix: '+', label: 'Events Managed' },
-    { value: 15, suffix: '+', label: 'Years Experience' },
-    { value: 250, suffix: '+', label: 'Corporate Clients' },
-    { value: 98, suffix: '%', label: 'Client Satisfaction' },
-    { value: 50, suffix: '+', label: 'Awards Won' },
-    { value: 500, suffix: '+', label: 'Happy Couples' },
+    { value: parseInt(settings?.aboutAchievement0_value || '1000'), suffix: settings?.aboutAchievement0_suffix || '+', label: settings?.aboutAchievement0_label || 'Events Managed' },
+    { value: parseInt(settings?.aboutAchievement1_value || '15'), suffix: settings?.aboutAchievement1_suffix || '+', label: settings?.aboutAchievement1_label || 'Years Experience' },
+    { value: parseInt(settings?.aboutAchievement2_value || '250'), suffix: settings?.aboutAchievement2_suffix || '+', label: settings?.aboutAchievement2_label || 'Corporate Clients' },
+    { value: parseInt(settings?.aboutAchievement3_value || '98'), suffix: settings?.aboutAchievement3_suffix || '%', label: settings?.aboutAchievement3_label || 'Client Satisfaction' },
+    { value: parseInt(settings?.aboutAchievement4_value || '50'), suffix: settings?.aboutAchievement4_suffix || '+', label: settings?.aboutAchievement4_label || 'Awards Won' },
+    { value: parseInt(settings?.aboutAchievement5_value || '500'), suffix: settings?.aboutAchievement5_suffix || '+', label: settings?.aboutAchievement5_label || 'Happy Couples' },
   ]
 
   return (
@@ -262,13 +272,13 @@ function AchievementsSection() {
           className="text-center max-w-2xl mx-auto mb-12"
         >
           <span className="font-semibold text-sm uppercase tracking-wider text-black/40">
-            Our Achievements
+            {settings?.aboutAchievementBadge || 'Our Achievements'}
           </span>
           <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4 text-black">
-            By the Numbers
+            {settings?.aboutAchievementTitle || 'By the Numbers'}
           </h2>
           <p className="text-black/50">
-            Our track record speaks for itself.
+            {settings?.aboutAchievementSubtitle || 'Our track record speaks for itself.'}
           </p>
         </motion.div>
 
@@ -291,13 +301,18 @@ function AchievementsSection() {
   )
 }
 
-function PartnersSection() {
+function PartnersSection({ settings }: { settings: Record<string, string> }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true })
 
-  const partners = Array.from({ length: 8 }, (_, i) => ({
-    name: `Partner ${i + 1}`,
-  }))
+  const partners = [
+    { name: settings.partner0_name || 'TechBridge', logo: settings.partner0_logo || '' },
+    { name: settings.partner1_name || 'Lagos Business School', logo: settings.partner1_logo || '' },
+    { name: settings.partner2_name || 'AfriBank Plc', logo: settings.partner2_logo || '' },
+    { name: settings.partner3_name || 'Greenfield Energy', logo: settings.partner3_logo || '' },
+    { name: settings.partner4_name || 'Nexus Logistics', logo: settings.partner4_logo || '' },
+    { name: settings.partner5_name || 'Prime Media', logo: settings.partner5_logo || '' },
+  ]
 
   return (
     <section ref={ref} className="section-padding">
@@ -309,17 +324,17 @@ function PartnersSection() {
           className="text-center max-w-2xl mx-auto mb-12"
         >
           <span className="text-primary font-semibold text-sm uppercase tracking-wider">
-            Partners & Certifications
+            {settings.partnersBadge || 'Our Partners'}
           </span>
           <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
-            Trusted & Certified
+            {settings.partnersTitle || 'Trusted Partners'}
           </h2>
           <p className="text-base-content/70">
-            We are proud to be recognized by leading industry organizations.
+            {settings.partnersSubtitle || 'We are proud to be recognized by leading industry organizations.'}
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
           {partners.map((partner, index) => (
             <motion.div
               key={partner.name}
@@ -328,9 +343,13 @@ function PartnersSection() {
               transition={{ duration: 0.4, delay: index * 0.05 }}
               className="card bg-base-100 shadow-sm hover:shadow-md transition-shadow duration-300 p-8 flex items-center justify-center"
             >
-              <div className="w-24 h-24 rounded-full bg-base-200 flex items-center justify-center text-base-content/40 font-bold text-sm text-center">
-                {partner.name}
-              </div>
+              {partner.logo ? (
+                <Image src={partner.logo} alt={partner.name} width={120} height={60} className="object-contain" />
+              ) : (
+                <div className="w-24 h-24 rounded-full bg-base-200 flex items-center justify-center text-base-content/60 font-bold text-sm text-center">
+                  {partner.name}
+                </div>
+              )}
             </motion.div>
           ))}
         </div>
@@ -434,7 +453,6 @@ export default function AboutPage() {
 
   return (
     <>
-      <BackButton />
       <PageHero
         title={settings.aboutTitle || 'About SIDMAB'}
         subtitle={settings.aboutSubtitle || "Nigeria's premier event planning company — crafting extraordinary experiences since 2010."}
@@ -444,8 +462,8 @@ export default function AboutPage() {
       />
       <TimelineSection settings={settings} />
       <MissionVisionValues settings={settings} />
-      <AchievementsSection />
-      <PartnersSection />
+      <AchievementsSection settings={settings} />
+      <PartnersSection settings={settings} />
       <TeamPreviewSection settings={settings} />
     </>
   )

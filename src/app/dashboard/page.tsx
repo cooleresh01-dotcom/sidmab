@@ -26,28 +26,21 @@ import {
 import StatsCard from '@/components/dashboard/StatsCard'
 import { getChartColors } from '@/lib/utils'
 
-const revenueData = [
-  { month: 'Jan', revenue: 12000 },
-  { month: 'Feb', revenue: 19000 },
-  { month: 'Mar', revenue: 15000 },
-  { month: 'Apr', revenue: 22000 },
-  { month: 'May', revenue: 28000 },
-  { month: 'Jun', revenue: 25000 },
-  { month: 'Jul', revenue: 32000 },
-  { month: 'Aug', revenue: 29000 },
-  { month: 'Sep', revenue: 35000 },
-  { month: 'Oct', revenue: 40000 },
-  { month: 'Nov', revenue: 38000 },
-  { month: 'Dec', revenue: 45000 },
-]
-
-const recentBookings = [
-  { id: 1, name: 'Chioma & Ade', service: 'Wedding Planning', date: '2026-08-15', status: 'confirmed', amount: 25000 },
-  { id: 2, name: 'James O.', service: 'Corporate Event', date: '2026-07-20', status: 'pending', amount: 15000 },
-  { id: 3, name: 'Amara E.', service: 'Birthday Party', date: '2026-07-10', status: 'completed', amount: 8000 },
-  { id: 4, name: 'Dr. Bello', service: 'Conference', date: '2026-06-28', status: 'pending', amount: 20000 },
-  { id: 5, name: 'Fatima S.', service: 'Decoration', date: '2026-06-15', status: 'confirmed', amount: 12000 },
-]
+interface DashboardStats {
+  totalBookings: number
+  totalRevenue: number
+  activeBookings: number
+  unreadMessages: number
+  monthlyData: { month: string; revenue: number; bookings: number }[]
+  recentBookings: {
+    id: string
+    name: string
+    service: string
+    date: string
+    status: string
+    amount: number
+  }[]
+}
 
 const statusBadge = (status: string) => {
   const styles: Record<string, string> = {
@@ -65,19 +58,29 @@ const statusBadge = (status: string) => {
 
 export default function DashboardPage() {
   const { data: session } = useSession()
-  const [greeting, setGreeting] = useState(() => {
+  const [greeting] = useState(() => {
     const hour = new Date().getHours()
     if (hour < 12) return 'Good morning'
     if (hour < 17) return 'Good afternoon'
     return 'Good evening'
   })
   const chartColors = getChartColors()
+  const [stats, setStats] = useState<DashboardStats | null>(null)
 
-  const stats = [
-    { label: 'Total Events', value: '1,247', change: '+12%', icon: <CalendarCheck className="w-5 h-5" /> },
-    { label: 'Revenue', value: '₦4.2M', change: '+23%', icon: <DollarSign className="w-5 h-5" /> },
-    { label: 'Active Bookings', value: '48', change: '+8%', icon: <TrendingUp className="w-5 h-5" /> },
-    { label: 'New Messages', value: '12', change: '+5', icon: <MessageSquare className="w-5 h-5" /> },
+  useEffect(() => {
+    fetch('/api/dashboard/stats')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data && !data.error) setStats(data)
+      })
+      .catch(() => {})
+  }, [])
+
+  const statCards = [
+    { label: 'Total Bookings', value: stats?.totalBookings?.toLocaleString() || '0', change: '', icon: <CalendarCheck className="w-5 h-5" /> },
+    { label: 'Revenue', value: `₦${((stats?.totalRevenue || 0) / 1000000).toFixed(1)}M`, change: '', icon: <DollarSign className="w-5 h-5" /> },
+    { label: 'Active Bookings', value: String(stats?.activeBookings || 0), change: '', icon: <TrendingUp className="w-5 h-5" /> },
+    { label: 'New Messages', value: String(stats?.unreadMessages || 0), change: '', icon: <MessageSquare className="w-5 h-5" /> },
   ]
 
   const quickActions = [
@@ -111,7 +114,7 @@ export default function DashboardPage() {
       </motion.div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, i) => (
+        {statCards.map((stat, i) => (
           <StatsCard
             key={stat.label}
             title={stat.label}
@@ -133,15 +136,10 @@ export default function DashboardPage() {
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold">Revenue Overview</h2>
-            <select className="text-xs px-3 py-1.5 rounded-lg border border-base-300 bg-base-100 text-base-content">
-              <option>This Year</option>
-              <option>This Month</option>
-              <option>Last Year</option>
-            </select>
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueData}>
+              <LineChart data={stats?.monthlyData || []}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
                 <XAxis dataKey="month" tick={{ fontSize: 12 }} stroke={chartColors.axis} />
                 <YAxis tick={{ fontSize: 12 }} stroke={chartColors.axis} />
@@ -218,7 +216,7 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {recentBookings.map((booking) => (
+                {(stats?.recentBookings || []).map((booking) => (
                   <tr key={booking.id} className="hover:bg-base-200/30 transition-colors border-b border-base-200 last:border-0">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">

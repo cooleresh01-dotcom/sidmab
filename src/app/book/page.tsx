@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -8,9 +8,18 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { motion, AnimatePresence } from 'framer-motion'
 import { HiCheck, HiMinus, HiPlus, HiArrowRight, HiArrowLeft } from 'react-icons/hi'
 import { useSession } from 'next-auth/react'
-import { services } from '@/lib/data'
+import { useSettings } from '@/hooks/useSettings'
 
-const eventTypes = ['Wedding', 'Corporate', 'Birthday', 'Conference', 'Outdoor', 'Decoration', 'Party', 'Other']
+interface ApiService {
+  id: string
+  title: string
+  slug: string
+  tagline: string
+  icon: string
+  published: boolean
+}
+
+// eventTypes now derived from settings in BookPage
 
 const bookingSchema = z.object({
   service: z.string().min(1, 'Please select a service'),
@@ -86,14 +95,14 @@ function ProgressBar({ currentStep }: { currentStep: number }) {
   )
 }
 
-function StepService({ register, errors, value }: { register: any; errors: any; value: string }) {
+function StepService({ register, errors, value, services }: { register: any; errors: any; value: string; services: ApiService[] }) {
   return (
     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {services.map((service) => (
         <label
           key={service.id}
           className={`relative flex flex-col p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
-            value === service.id
+            value === service.slug
               ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10 scale-[1.02]'
               : 'border-base-200 hover:border-primary/30 hover:shadow-md'
           }`}
@@ -101,10 +110,10 @@ function StepService({ register, errors, value }: { register: any; errors: any; 
           <input
             type="radio"
             {...register('service')}
-            value={service.id}
+            value={service.slug}
             className="hidden"
           />
-          {value === service.id && (
+          {value === service.slug && (
             <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
               <HiCheck className="w-3.5 h-3.5 text-white" />
             </div>
@@ -121,7 +130,7 @@ function StepService({ register, errors, value }: { register: any; errors: any; 
   )
 }
 
-function StepEventType({ register, errors }: { register: any; errors: any }) {
+function StepEventType({ register, errors, eventTypes }: { register: any; errors: any; eventTypes: string[] }) {
   return (
     <div className="form-control">
       <label className="label"><span className="label-text font-medium">Event Type *</span></label>
@@ -230,8 +239,8 @@ function StepPersonalInfo({ register, errors }: { register: any; errors: any }) 
   )
 }
 
-function StepReview({ data, onEdit }: { data: BookingFormData; onEdit: (step: number) => void }) {
-  const selectedService = services.find((s) => s.id === data.service)
+function StepReview({ data, onEdit, services }: { data: BookingFormData; onEdit: (step: number) => void; services: ApiService[] }) {
+  const selectedService = services.find((s) => s.slug === data.service)
   const rows = [
     { label: 'Service', value: selectedService?.title || data.service, step: 1 },
     { label: 'Event Type', value: data.eventType, step: 2 },
@@ -314,7 +323,7 @@ function Confetti() {
   )
 }
 
-function SuccessMessage() {
+function SuccessMessage({ settings }: { settings: any }) {
   return (
     <div className="text-center py-16">
       <Confetti />
@@ -332,7 +341,7 @@ function SuccessMessage() {
         transition={{ delay: 0.3 }}
         className="text-3xl font-bold mb-3"
       >
-        Booking Submitted!
+        {settings?.bookSuccessTitle || 'Booking Submitted!'}
       </motion.h2>
       <motion.p
         initial={{ opacity: 0, y: 20 }}
@@ -340,7 +349,7 @@ function SuccessMessage() {
         transition={{ delay: 0.5 }}
         className="text-lg text-base-content/70 max-w-md mx-auto"
       >
-        Thank you for your booking request. Our team will review your details and get back to you within 24 hours.
+        {settings?.bookSuccessDesc || 'Thank you for your booking request. Our team will review your details and get back to you within 24 hours.'}
       </motion.p>
     </div>
   )
@@ -354,6 +363,8 @@ function StepRenderer({
   setValue,
   watch,
   onEdit,
+  services,
+  eventTypes,
 }: {
   step: number
   register: any
@@ -362,6 +373,8 @@ function StepRenderer({
   setValue: any
   watch: any
   onEdit: (step: number) => void
+  services: ApiService[]
+  eventTypes: string[]
 }) {
   const props = { register, errors, setValue }
   const watchedService = watch('service')
@@ -369,21 +382,33 @@ function StepRenderer({
   const watchedBudget = watch('budget')
 
   switch (step) {
-    case 1: return <StepService {...props} value={watchedService} />
-    case 2: return <StepEventType {...props} />
+    case 1: return <StepService {...props} value={watchedService} services={services} />
+    case 2: return <StepEventType {...props} eventTypes={eventTypes} />
     case 3: return <StepDate {...props} />
     case 4: return <StepGuests {...props} value={watchedGuests} />
     case 5: return <StepBudget {...props} value={watchedBudget} />
     case 6: return <StepPersonalInfo {...props} />
-    case 7: return <StepReview data={getValues()} onEdit={onEdit} />
+    case 7: return <StepReview data={getValues()} onEdit={onEdit} services={services} />
     default: return null
   }
 }
 
 export default function BookPage() {
   const { data: session, status } = useSession()
+  const { settings } = useSettings()
+  const eventTypes = (settings?.bookEventTypes || 'Wedding,Corporate,Birthday,Conference,Outdoor,Decoration,Party,Other').split(',')
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [services, setServices] = useState<ApiService[]>([])
+
+  useEffect(() => {
+    fetch('/api/services')
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setServices(data)
+      })
+      .catch(() => {})
+  }, [])
 
   const {
     register,
@@ -460,9 +485,9 @@ export default function BookPage() {
             <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
               <HiCheck className="w-10 h-10 text-primary" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">Sign In Required</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">{settings?.bookSigninTitle || 'Sign In Required'}</h1>
             <p className="text-base-content/70 mb-8 max-w-md mx-auto">
-              You need to be signed in to book a consultation. Please sign in or create an account to continue.
+              {settings?.bookSigninDesc || 'You need to be signed in to book a consultation. Please sign in or create an account to continue.'}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/login?callbackUrl=/book" className="btn btn-primary text-white">
@@ -482,7 +507,7 @@ export default function BookPage() {
     return (
       <section className="pt-32 pb-20 min-h-screen flex items-center justify-center">
         <div className="container mx-auto max-w-lg">
-          <SuccessMessage />
+          <SuccessMessage settings={settings} />
         </div>
       </section>
     )
@@ -497,10 +522,10 @@ export default function BookPage() {
           transition={{ duration: 0.6 }}
           className="text-center mb-8"
         >
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider">Book Now</span>
-          <h1 className="text-3xl md:text-5xl font-bold mt-2 mb-4">Book a Consultation</h1>
+          <span className="text-primary font-semibold text-sm uppercase tracking-wider">{settings?.bookBadge || 'Book Now'}</span>
+          <h1 className="text-3xl md:text-5xl font-bold mt-2 mb-4">{settings?.bookTitle || 'Book a Consultation'}</h1>
           <p className="text-base-content/70 max-w-xl mx-auto">
-            Tell us about your event and we will create something amazing together.
+            {settings?.bookDesc || 'Tell us about your event and we will create something amazing together.'}
           </p>
         </motion.div>
 
@@ -525,6 +550,8 @@ export default function BookPage() {
                 setValue={setValue}
                 watch={watch}
                 onEdit={handleEditStep}
+                services={services}
+                eventTypes={eventTypes}
               />
             </motion.div>
           </AnimatePresence>

@@ -7,6 +7,7 @@ import { HiMail, HiPhone, HiLocationMarker, HiChevronDown } from 'react-icons/hi
 import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter, FaWhatsapp } from 'react-icons/fa'
 import NewsletterForm from './NewsletterForm'
 import { useSettings } from '@/hooks/useSettings'
+import CompanyLogo from '@/components/ui/CompanyLogo'
 
 const defaultServices = [
   { name: 'Wedding Planning', href: '/services/wedding' },
@@ -129,13 +130,7 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 md:gap-10">
             <div className="lg:col-span-6">
               <div className="flex items-center gap-3 mb-5">
-                {settings?.companyLogo ? (
-                  <Image src={settings.companyLogo} alt={siteName} width={40} height={40} className="h-10 w-auto" />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white font-bold text-sm">
-                    {siteName.charAt(0)}
-                  </div>
-                )}
+                <CompanyLogo className="h-10 w-auto" width={40} height={40} />
               </div>
               <p className="text-sm leading-relaxed max-w-sm text-white/40">
                 {settings?.footerDescription || 'Premier event planning & management — crafting unforgettable weddings, corporate events, and celebrations across Nigeria.'}
