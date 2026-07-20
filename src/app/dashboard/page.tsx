@@ -60,6 +60,7 @@ const searchableItems: SearchResult[] = [
   { label: 'Blog Page', section: 'Content', href: '/dashboard/content?tab=blog' },
   { label: 'Testimonials Page', section: 'Content', href: '/dashboard/content?tab=testimonials' },
   { label: 'FAQ & Contact Page', section: 'Content', href: '/dashboard/content?tab=faq-contact' },
+  { label: 'Contact Us', section: 'Content', href: '/dashboard/content?tab=faq-contact' },
   { label: 'Book Page', section: 'Content', href: '/dashboard/content?tab=book' },
   { label: 'CEO Page', section: 'Content', href: '/dashboard/content?tab=ceo' },
   { label: 'Service Detail Page', section: 'Content', href: '/dashboard/content?tab=service-detail' },
