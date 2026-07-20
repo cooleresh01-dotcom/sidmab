@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useRef } from 'react'
 import {
   Save,
   Home,
@@ -18,8 +17,6 @@ import {
   Briefcase,
   FileText,
   UserCheck,
-  Search,
-  X,
 } from 'lucide-react'
 
 type SettingsData = Record<string, string>
@@ -401,9 +398,6 @@ export default function ContentPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [saveError, setSaveError] = useState('')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchOpen, setSearchOpen] = useState(false)
-  const searchRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     fetch('/api/settings?_=' + Date.now())
@@ -451,28 +445,6 @@ export default function ContentPage() {
 
   const currentTab = tabs.find((t) => t.id === activeTab) || tabs[0]
 
-  const searchResults = searchQuery.trim()
-    ? tabs.flatMap((tab) => {
-        const results: { tabId: string; tabLabel: string; tabIcon: React.ReactNode; field: { key: string; label: string } }[] = []
-        for (const f of tab.fields) {
-          const q = searchQuery.toLowerCase()
-          if (f.type === 'section') continue
-          if (f.type === 'stats') {
-            if (f.prefix.toLowerCase().includes(q) || 'Stats'.includes(q)) {
-              results.push({ tabId: tab.id, tabLabel: tab.label, tabIcon: tab.icon, field: { key: `${f.prefix}0_value`, label: `${f.count} Stats` } })
-            }
-            continue
-          }
-          if ('key' in f && ('label' in f)) {
-            if (f.label.toLowerCase().includes(q) || f.key.toLowerCase().includes(q)) {
-              results.push({ tabId: tab.id, tabLabel: tab.label, tabIcon: tab.icon, field: { key: f.key, label: f.label } })
-            }
-          }
-        }
-        return results
-      })
-    : []
-
   return (
     <div className="space-y-6">
       <motion.div
@@ -486,91 +458,14 @@ export default function ContentPage() {
             Manage all public page content from one place.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <div ref={searchRef} className="relative">
-            <div
-              className={`flex items-center transition-all duration-200 ${
-                searchOpen
-                  ? 'w-64 bg-base-100 border border-base-300 rounded-lg'
-                  : 'w-10 h-10 bg-base-200 rounded-lg cursor-pointer hover:bg-base-300'
-              }`}
-            >
-              <button
-                onClick={() => {
-                  if (searchOpen && !searchQuery) {
-                    setSearchOpen(false)
-                  } else if (searchOpen) {
-                    setSearchQuery('')
-                  } else {
-                    setSearchOpen(true)
-                  }
-                }}
-                className="flex items-center justify-center shrink-0"
-              >
-                {searchOpen && searchQuery ? (
-                  <X className="w-4 h-4 text-base-content/50" />
-                ) : (
-                  <Search className="w-4 h-4 text-base-content/50" />
-                )}
-              </button>
-              {searchOpen && (
-                <input
-                  autoFocus
-                  type="text"
-                  placeholder="Search fields..."
-                  className="input input-sm border-0 bg-transparent focus:outline-none w-full"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onBlur={() => {
-                    setTimeout(() => {
-                      if (!searchQuery) setSearchOpen(false)
-                    }, 200)
-                  }}
-                />
-              )}
-            </div>
-            {searchOpen && searchQuery && searchResults.length > 0 && (
-              <div className="absolute right-0 top-full mt-2 w-80 max-h-80 overflow-y-auto bg-base-100 border border-base-300 rounded-xl shadow-xl z-50 p-2">
-                {searchResults.map(({ tabId, tabLabel, field }, i) => (
-                  <button
-                    key={`${tabId}-${field.key}-${i}`}
-                    className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-base-200 transition-colors flex items-center gap-3"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => {
-                      setActiveTab(tabId)
-                      setSearchQuery('')
-                      setSearchOpen(false)
-                      setTimeout(() => {
-                        const el = document.getElementById(`field-${field.key}`)
-                        el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                      }, 100)
-                    }}
-                  >
-                    <span className="text-primary text-xs font-semibold uppercase tracking-wider shrink-0">
-                      {tabLabel}
-                    </span>
-                    <span className="text-sm text-base-content truncate">
-                      {field.label}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
-            {searchOpen && searchQuery && searchResults.length === 0 && (
-              <div className="absolute right-0 top-full mt-2 w-72 bg-base-100 border border-base-300 rounded-xl shadow-xl z-50 p-4 text-center">
-                <p className="text-sm text-base-content/50">No fields found</p>
-              </div>
-            )}
-          </div>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="btn btn-primary text-white gap-2"
-          >
-            <Save className="w-4 h-4" />
-            {saved ? 'Saved!' : saving ? 'Saving...' : 'Save All'}
-          </button>
-        </div>
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="btn btn-primary text-white gap-2"
+        >
+          <Save className="w-4 h-4" />
+          {saved ? 'Saved!' : saving ? 'Saving...' : 'Save All'}
+        </button>
       </motion.div>
 
       {saveError && (

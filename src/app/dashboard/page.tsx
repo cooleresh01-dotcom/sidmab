@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import {
   CalendarCheck,
@@ -13,6 +13,8 @@ import {
   Eye,
   ClipboardList,
   BarChart3,
+  Search,
+  X,
 } from 'lucide-react'
 import {
   LineChart,
@@ -42,6 +44,52 @@ interface DashboardStats {
   }[]
 }
 
+interface SearchResult {
+  label: string
+  section: string
+  href: string
+}
+
+const searchableItems: SearchResult[] = [
+  { label: 'Site Content', section: 'Content', href: '/dashboard/content' },
+  { label: 'Home Page', section: 'Content', href: '/dashboard/content' },
+  { label: 'About Page', section: 'Content', href: '/dashboard/content' },
+  { label: 'Services Page', section: 'Content', href: '/dashboard/content' },
+  { label: 'Portfolio Page', section: 'Content', href: '/dashboard/content' },
+  { label: 'Team Page', section: 'Content', href: '/dashboard/content' },
+  { label: 'Blog Page', section: 'Content', href: '/dashboard/content' },
+  { label: 'Testimonials Page', section: 'Content', href: '/dashboard/content' },
+  { label: 'FAQ & Contact Page', section: 'Content', href: '/dashboard/content' },
+  { label: 'Book Page', section: 'Content', href: '/dashboard/content' },
+  { label: 'CEO Page', section: 'Content', href: '/dashboard/content' },
+  { label: 'Service Detail Page', section: 'Content', href: '/dashboard/content' },
+  { label: 'Portfolio Detail Page', section: 'Content', href: '/dashboard/content' },
+  { label: 'Team Detail Page', section: 'Content', href: '/dashboard/content' },
+  { label: 'Hero Slides', section: 'Content', href: '/dashboard/content' },
+  { label: 'Stats', section: 'Content', href: '/dashboard/content' },
+  { label: 'Badges', section: 'Content', href: '/dashboard/content' },
+  { label: 'Background Images', section: 'Content', href: '/dashboard/content' },
+  { label: 'CTA Sections', section: 'Content', href: '/dashboard/content' },
+  { label: 'Bookings', section: 'Management', href: '/dashboard/bookings' },
+  { label: 'Services', section: 'Management', href: '/dashboard/services' },
+  { label: 'Portfolio', section: 'Management', href: '/dashboard/portfolio' },
+  { label: 'Team Members', section: 'Management', href: '/dashboard/team' },
+  { label: 'Blog Posts', section: 'Management', href: '/dashboard/blog' },
+  { label: 'Testimonials', section: 'Management', href: '/dashboard/testimonials' },
+  { label: 'FAQ', section: 'Management', href: '/dashboard/faq' },
+  { label: 'Gallery', section: 'Management', href: '/dashboard/gallery' },
+  { label: 'Media', section: 'Management', href: '/dashboard/media' },
+  { label: 'Messages', section: 'Management', href: '/dashboard/messages' },
+  { label: 'Newsletter', section: 'Management', href: '/dashboard/newsletter' },
+  { label: 'Careers', section: 'Management', href: '/dashboard/careers' },
+  { label: 'Users', section: 'Management', href: '/dashboard/users' },
+  { label: 'Analytics', section: 'Reports', href: '/dashboard/analytics' },
+  { label: 'SEO Settings', section: 'Settings', href: '/dashboard/seo' },
+  { label: 'Site Settings', section: 'Settings', href: '/dashboard/settings' },
+  { label: 'Terms & Conditions', section: 'Settings', href: '/dashboard/terms' },
+  { label: 'Privacy Policy', section: 'Settings', href: '/dashboard/privacy-policy' },
+]
+
 const statusBadge = (status: string) => {
   const styles: Record<string, string> = {
     pending: 'bg-amber-100 text-amber-700',
@@ -66,6 +114,9 @@ export default function DashboardPage() {
   })
   const chartColors = getChartColors()
   const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     fetch('/api/dashboard/stats')
@@ -90,6 +141,22 @@ export default function DashboardPage() {
     { label: 'Messages', href: '/dashboard/messages', icon: <Eye className="w-4 h-4" /> },
   ]
 
+  const searchResults = searchQuery.trim()
+    ? searchableItems.filter((item) => {
+        const q = searchQuery.toLowerCase()
+        return (
+          item.label.toLowerCase().includes(q) ||
+          item.section.toLowerCase().includes(q)
+        )
+      })
+    : []
+
+  const groupedResults = searchResults.reduce<Record<string, SearchResult[]>>((acc, item) => {
+    if (!acc[item.section]) acc[item.section] = []
+    acc[item.section].push(item)
+    return acc
+  }, {})
+
   return (
     <div className="space-y-6">
       <motion.div
@@ -112,6 +179,73 @@ export default function DashboardPage() {
           New Booking
         </Link>
       </motion.div>
+
+      <div ref={searchRef} className="relative">
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/40" />
+          <input
+            type="text"
+            placeholder="Search content to edit..."
+            className="input w-full pl-12 pr-10 bg-base-100 border border-base-300 rounded-xl focus:outline-none focus:border-primary"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value)
+              if (!searchOpen) setSearchOpen(true)
+            }}
+            onFocus={() => setSearchOpen(true)}
+            onBlur={() => {
+              setTimeout(() => {
+                setSearchOpen(false)
+              }, 200)
+            }}
+          />
+          {searchQuery && (
+            <button
+              onClick={() => { setSearchQuery(''); setSearchOpen(false) }}
+              className="absolute right-4 top-1/2 -translate-y-1/2"
+            >
+              <X className="w-4 h-4 text-base-content/40 hover:text-base-content" />
+            </button>
+          )}
+        </div>
+        <AnimatePresence>
+          {searchOpen && searchQuery && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              className="absolute top-full left-0 right-0 mt-2 bg-base-100 border border-base-300 rounded-xl shadow-xl z-50 max-h-96 overflow-y-auto"
+            >
+              {searchResults.length > 0 ? (
+                Object.entries(groupedResults).map(([section, items]) => (
+                  <div key={section}>
+                    <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-base-content/40 border-b border-base-200">
+                      {section}
+                    </div>
+                    {items.map((item) => (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-base-200 transition-colors text-sm"
+                        onClick={() => { setSearchQuery(''); setSearchOpen(false) }}
+                      >
+                        <span className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'color-mix(in srgb, var(--site-primary) 10%, transparent)', color: 'var(--site-primary)' }}>
+                          <Search className="w-3.5 h-3.5" />
+                        </span>
+                        <span className="font-medium text-base-content">{item.label}</span>
+                      </Link>
+                    ))}
+                  </div>
+                ))
+              ) : (
+                <div className="p-6 text-center">
+                  <p className="text-sm text-base-content/50">No results for &ldquo;{searchQuery}&rdquo;</p>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((stat, i) => (
