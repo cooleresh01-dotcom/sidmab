@@ -136,7 +136,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > window.innerHeight * 0.5)
+      setScrolled(window.scrollY > window.innerHeight * 0.9)
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
@@ -172,12 +172,12 @@ export default function Navbar() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -100, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-black/5"
+            className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-md shadow-sm border-b border-white/10"
           >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
               <Link href="/" className="flex items-center gap-3">
                 <CompanyLogo className="h-10 w-auto" width={40} height={40} />
-                <span className="text-sm font-bold text-black hidden sm:block">{companyName}</span>
+                <span className="text-sm font-bold text-white hidden sm:block">{companyName}</span>
               </Link>
 
               <nav className="hidden lg:flex items-center gap-1">
@@ -189,7 +189,7 @@ export default function Navbar() {
                       href={item.href}
                       className={cn(
                         'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
-                        active ? 'text-white' : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                        active ? 'text-white' : 'text-white/60 hover:text-white hover:bg-white/10'
                       )}
                       style={active ? { background: 'var(--site-primary)' } : {}}
                     >
@@ -200,7 +200,7 @@ export default function Navbar() {
                 {session && (
                   <Link href="/account" className={cn(
                     'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
-                    pathname.startsWith('/account') ? 'text-white' : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                    pathname.startsWith('/account') ? 'text-white' : 'text-white/60 hover:text-white hover:bg-white/10'
                   )}
                   style={pathname.startsWith('/account') ? { background: 'var(--site-primary)' } : {}}
                   >
@@ -210,7 +210,7 @@ export default function Navbar() {
               </nav>
 
               <div className="flex items-center gap-3">
-                <a href={`tel:${phone.replace(/\s/g, '')}`} className="hidden sm:flex w-9 h-9 rounded-lg items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-black transition-colors">
+                <a href={`tel:${phone.replace(/\s/g, '')}`} className="hidden sm:flex w-9 h-9 rounded-lg items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors">
                   <HiPhone className="w-4 h-4" />
                 </a>
                 <Link
@@ -222,9 +222,9 @@ export default function Navbar() {
                 </Link>
                 <button
                   onClick={() => setIsOpen(!isOpen)}
-                  className="lg:hidden w-10 h-10 rounded-xl flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors"
+                  className="lg:hidden w-10 h-10 rounded-xl flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors"
                 >
-                  <HiMenu className="w-5 h-5 text-black" />
+                  <HiMenu className="w-5 h-5 text-white" />
                 </button>
               </div>
             </div>
