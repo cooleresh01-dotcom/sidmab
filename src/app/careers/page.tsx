@@ -83,7 +83,7 @@ function BenefitsSection({ settings }: { settings: any }) {
   const [benefitsData, setBenefitsData] = useState(benefits)
 
   useEffect(() => {
-    fetch('/api/settings').then(r => r.json()).then(data => {
+    fetch('/api/settings?_=' + Date.now()).then(r => r.json()).then(data => {
       if (data.careerBenefits) {
         try {
           const parsed = JSON.parse(data.careerBenefits)
@@ -292,7 +292,7 @@ export default function CareersPage() {
   const [jobsData, setJobsData] = useState(careerOpenings)
 
   useEffect(() => {
-    fetch('/api/settings').then(r => r.json()).then(data => {
+    fetch('/api/settings?_=' + Date.now()).then(r => r.json()).then(data => {
       if (data.careerContent) {
         try {
           const parsed = JSON.parse(data.careerContent)

@@ -409,7 +409,7 @@ export default function CeoPage() {
   const pathname = usePathname()
 
   useEffect(() => {
-    fetch('/api/settings')
+    fetch('/api/settings?_=' + Date.now())
       .then((res) => res.json())
       .then((data) => {
         if (data && !data.error) {

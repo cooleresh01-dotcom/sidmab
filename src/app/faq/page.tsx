@@ -20,7 +20,7 @@ function FAQSection() {
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
   useEffect(() => {
-    fetch('/api/settings').then(r => r.json()).then(data => {
+    fetch('/api/settings?_=' + Date.now()).then(r => r.json()).then(data => {
       if (data.faqContent) {
         try {
           const parsed = JSON.parse(data.faqContent)

@@ -60,7 +60,7 @@ export function useSettings() {
 
     const controller = new AbortController()
 
-    fetch('/api/settings', { signal: controller.signal })
+    fetch('/api/settings?_=' + Date.now(), { signal: controller.signal })
       .then((res) => res.json())
       .then((data) => {
         if (data && !data.error) {
