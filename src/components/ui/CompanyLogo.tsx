@@ -22,7 +22,9 @@ export default function CompanyLogo({ className = '', width = 40, height = 40 }:
       width={width}
       height={height}
       quality={100}
+      unoptimized
       className={className}
+      style={{ imageRendering: 'auto' }}
     />
   )
 }
