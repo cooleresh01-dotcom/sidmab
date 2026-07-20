@@ -181,6 +181,7 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
               <Link href="/" className="flex items-center gap-3">
                 <CompanyLogo className="h-14 w-auto" width={56} height={56} />
+                {!companyLogo && <span className="text-white text-lg font-bold">{companyName}</span>}
               </Link>
 
               <div className="flex items-center gap-4">
